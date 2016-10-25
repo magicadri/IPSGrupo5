@@ -1,0 +1,20 @@
+A nivel de administracion hay que ampliar la funcionalidad de añadir una reserva entre dos fechas por ejemplo todos los lunes de 8 a 9. 
+
+La gestion de plazas limitadas de actividades del centro. A la que exclusivamente los socios se apuntaban, hay que reservas un dia antes, y es gratis.
+No hay listas de espera. Se puede llamar por telefono al centro para reservar eso. Tambien en recepcion.
+
+Cuando va a empezar la actividad. Se pasa lista. El que no esté 5 min antes pierde su derecho a plaza. Hacen cola si hay plaza libre. El monitor apunta al socio 
+nuevo. Se apunta quien reserva y no va.
+
+----------------------------------
+
+Hacer historias de ususario de ésto.
+Ordenar segun prioridad.
+
+Priorizar parte del centro, luego socio desde casa y por ultimo, la facilidad de controlar online la asistencia por el monitor.
+
+Se puede hacer todas en bloque, pero en un futuro tiene que ser online por el monitor.
+
+----------------------------------
+
+Sprint de 3 semanas. 15 dias.

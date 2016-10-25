@@ -1,0 +1,34 @@
+Club deportivo de ámbito privado
+
+Cursillos deportes (ténis, etc), pago al inscribirse. Distintas duraciones (un mes, un curso...).
+X plazas, listas de espera cuando se agotan.
+
+Entrada a socios y no socios. Precio reducido para socios y actividades exclusivas gratuitas y gimnasio gratuito.
+Actividades: Plazas limitadas (llamar y reservar o en el propio centro), plazas ilimitadas (todos los socios pueden ir). 
+Pago de los socios gestionado por una empresa a parte.
+
+Información en el centro, página web con horarios de las actividades actualizada por trimestres.
+Cuando los socios quieren utilizar una sala tienen que contactar por teléfono y reservar (mínimo una hora de en punto a en punto, máximo dos horas).
+Un socio no puede reservar dos instalaciones en la misma franja horaria.
+Problema, si un socio no va se perdería dinero, pasarle la tarifa a la cuota en caso de ausencia.
+tiempo y recursos en liberar la reserva. Se paga al utilizarla, no al reservar (problema si la persona reserva y no se presenta).
+
+El alquiler de las instalaciones tiene que ser pagado en metálico, no hay métodos de pago. Tarjetas no salen rentables (pagos pequeños).
+Todo pasa por recepcién (gran saturacién en épocas de alta actividad).
+Acumulación de dinero en la caja.
+
+Cursillos de Octubre planificados, pagos realizados etc, empezar en Noviembre.
+Actividades planificadas, organizadas en horarios, normalmente trimestrales.
+
+Prioridad: gestión de las reservas (orientado a socios). A poder ser un sistema de reservas y cancelaciones remoto, desde casa para los socios. 
+Registro de las cancelaciones para evitar problemas con los clientes.
+
+Distintas prioridades a la hora de reservar, eventos / grandes centros. Podría interesar aumentar el tiempo de la reserva si no es
+tan solo para los socios. Dividir las reservas en para socios / individuales y para "empresas". Si un centro quiere reservar a una hora
+en la que un socio tiene reservado, notificar a la admin pero dar prioridad al centro.
+
+Sistema de reservas desde casa utilizando número de socio, etc. No implemetar login.
+No hay límites de tiempo para las reservas (podrías reservar para dentro de un año). Aún así, no se puede reservar desde casa para una hora 
+demasiado cercana.
+Si un socio reserva en persona puede reservar desde ese mismo momento hasta para dentro de quince días.
+Plazo máximo de cancelación de reservas, hasta una hora antes de la propia reserva. 
