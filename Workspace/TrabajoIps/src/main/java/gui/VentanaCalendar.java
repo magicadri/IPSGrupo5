@@ -4,6 +4,7 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.FlowLayout;
 
+import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
@@ -37,6 +38,7 @@ import javax.swing.table.TableColumn;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import javax.swing.JTextPane;
+import javax.swing.JComboBox;
 
 public class VentanaCalendar extends JDialog {
 
@@ -49,6 +51,9 @@ public class VentanaCalendar extends JDialog {
 	private JLabel lblDescripcion;
 	private JLabel lblHora;
 	private JLabel lbHora;
+	private JComboBox comboBoxInstalacion;
+	private DefaultComboBoxModel cmodel;
+	private String socioID = "adri";
 
 	/**
 	 * Launch the application.
@@ -61,6 +66,14 @@ public class VentanaCalendar extends JDialog {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+	}
+
+	public String getSocioID() {
+		return socioID;
+	}
+
+	public void setSocioID(String socioID) {
+		this.socioID = socioID;
 	}
 
 	/**
@@ -87,37 +100,21 @@ public class VentanaCalendar extends JDialog {
 		contentPanel.add(getLblDescripcion());
 		contentPanel.add(getLblHora());
 		contentPanel.add(getLbHora());
+		contentPanel.add(getComboBoxInstalacion());
 	}
-	
-	
-	//Quitar cuando se haga el de abajo.
-	private JDateChooser getDateChooser() {
-		if (dateChooser == null) {
-			dateChooser = new JDateChooser();
-		}
-		dateChooser.setBounds(44, 30, 95, 20);
-		return dateChooser;
-	}
-	
-	//TODO 
-	// Cambiar por el metodo que reconozca lo seleccionado en la combobox y actualice correspondientemente
-	
-	/*
+
 	private JDateChooser getDateChooser() {
 		if (dateChooser == null) {
 			dateChooser = new JDateChooser();
 			dateChooser.addPropertyChangeListener(new PropertyChangeListener() {
 				public void propertyChange(PropertyChangeEvent arg0) {
 					limpiarTabla();
-					// Actualizar el horario para cada dia cambiado
-					if (chbPiscina.isSelected()) {
-						llenarTabla(parser.getPiscina());
-					}
-					if (chbTenis.isSelected()) {
-						llenarTabla(parser.getTenis());
-					}
-					if (chbFutbol.isSelected()) {
-						llenarTabla(parser.getFutbol());
+					try {
+						if(getInstalacionFromNombre(String.valueOf(getComboBoxInstalacion().getSelectedItem()))!=null)
+								llenarTabla(getInstalacionFromNombre(String.valueOf(getComboBoxInstalacion().getSelectedItem())));
+					} catch (SQLException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
 					}
 				}
 			});
@@ -125,7 +122,16 @@ public class VentanaCalendar extends JDialog {
 		}
 		return dateChooser;
 	}
-	*/
+	
+	private Instalacion getInstalacionFromNombre(String nombre) throws SQLException
+	{
+		Parser parser = new Parser();
+		parser.fillArrays();
+		for(Instalacion i : parser.getInstalaciones())
+			if(i.getInstalacion_nombre().equals(nombre))
+				return i;
+		return null;
+	}
 
 	private JTable getTable() {
 		if (table == null) {
@@ -141,41 +147,47 @@ public class VentanaCalendar extends JDialog {
 							{ "20:00", null }, { "21:00", null }, { "22:00", null }, { "23:00", null }, },
 					new String[] { "Horas", "Disponibilidad" });
 			table.setModel(dm);
-			
-			//Listener para tomar los valores de las filas de la tabla
-			table.getSelectionModel().addListSelectionListener(new ListSelectionListener(){
+
+			// Listener para tomar los valores de las filas de la tabla
+			table.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
 				@Override
 				public void valueChanged(ListSelectionEvent ev) {
-					//Pone en la descripcion el valor de la columna fila/columna
-					txPDescripcion.setText((String) table.getModel().getValueAt(table.getSelectedRow(),0)+" "+table.getModel().getValueAt(table.getSelectedRow(), 1));
+					// Pone en la descripcion el valor de la columna
+					// fila/columna
+					txPDescripcion.setText((String) table.getModel().getValueAt(table.getSelectedRow(), 0) + " "
+							+ table.getModel().getValueAt(table.getSelectedRow(), 1));
 				}
-				
-				
-			});			
+
+			});
 		}
 		return table;
 	}
-
-
 
 	/**
 	 * Limpia los valores de la tabla en la columna de las reservas
 	 */
 	private void limpiarTabla() {
 		for (int i = 0; i < table.getRowCount(); i++) {
-					table.clearSelection();
-					table.setValueAt("", i, 1);
+			table.clearSelection();
+			table.setValueAt("", i, 1);
 		}
 	}
-	
+
 	/**
 	 * Limpia los valores de la tabla para una reserva en particular
 	 */
 	private void limpiarReserva(String inst) {
 		for (int i = 0; i < table.getRowCount(); i++) {
-			if(table.getValueAt(i, 1).equals(inst))
-					table.setValueAt("", i, 1);
+			if (table.getValueAt(i, 1).equals(inst))
+				table.setValueAt("", i, 1);
 		}
+	}
+
+	private int getInstalacionIDFromNombre(String nombre) {
+		for (Instalacion i : parser.getInstalaciones())
+			if (i.getInstalacion_nombre().equals(nombre))
+				return i.getInstalacionID();
+		return -1;
 	}
 
 	/**
@@ -195,35 +207,17 @@ public class VentanaCalendar extends JDialog {
 			Date a = getDateChooser().getDate();
 			String dia = sacarDia(a);
 			if (String.valueOf(getDia(reserva.getHoraComienzo())).equals(dia)) {
-
-				if (ins.getInstalacionID().equals("piscina")) { // Piscina
-
-					table.setValueAt("Reserva Piscina", reserva.getHoraComienzo().getHours(), 1);
-					tcol = table.getColumnModel().getColumn(1);
-	//				if(reserva.getSocioID().equals("admin"))
-						tcol.setCellRenderer(ccr);
-//					else 
-						tcol.setCellRenderer(ccg);
-
-				} else if (ins.getInstalacionID().equals("canchafutbol")) { // Futbol
-
-					table.setValueAt("Reserva Futbol", reserva.getHoraComienzo().getHours(), 1);
-					tcol = table.getColumnModel().getColumn(1);
-//					if(reserva.getSocioID().equals("admin"))
-						tcol.setCellRenderer(ccr);
-//					else 
-						tcol.setCellRenderer(ccg);
-
-				} else if (ins.getInstalacionID().equals("canchatenis")) { // Tenis
-
-					table.setValueAt("Reserva Tenis", reserva.getHoraComienzo().getHours(), 1);
-					tcol = table.getColumnModel().getColumn(1);
-//					if(reserva.getSocioID().equals("admin"))
-						tcol.setCellRenderer(ccr);
-//					else 
-						tcol.setCellRenderer(ccg);
-
-				}
+				if (getInstalacionIDFromNombre(String.valueOf(getComboBoxInstalacion().getSelectedItem())) != -1)
+					if (ins.getInstalacionID() == (getInstalacionIDFromNombre(
+							String.valueOf(getComboBoxInstalacion().getSelectedItem())))) { // Piscina
+						table.setValueAt(String.valueOf(getComboBoxInstalacion().getSelectedItem()),
+								reserva.getHoraComienzo().getHours(), 1);
+						tcol = table.getColumnModel().getColumn(1);
+						if (reserva.getSocioID().equals(socioID))
+							tcol.setCellRenderer(ccr);
+						else
+							tcol.setCellRenderer(ccg);
+					}
 			}
 		}
 	}
@@ -239,7 +233,6 @@ public class VentanaCalendar extends JDialog {
 		return var[2];
 	}
 
-	
 	private JTextPane getTxPDescripcion() {
 		if (txPDescripcion == null) {
 			txPDescripcion = new JTextPane();
@@ -247,6 +240,7 @@ public class VentanaCalendar extends JDialog {
 		}
 		return txPDescripcion;
 	}
+
 	private JLabel getLblDescripcion() {
 		if (lblDescripcion == null) {
 			lblDescripcion = new JLabel("Descripcion:");
@@ -254,6 +248,7 @@ public class VentanaCalendar extends JDialog {
 		}
 		return lblDescripcion;
 	}
+
 	private JLabel getLblHora() {
 		if (lblHora == null) {
 			lblHora = new JLabel("Hora:");
@@ -261,19 +256,44 @@ public class VentanaCalendar extends JDialog {
 		}
 		return lblHora;
 	}
+
 	private JLabel getLbHora() {
 		if (lbHora == null) {
 			lbHora = new JLabel("");
 			lbHora.setBounds(54, 77, 46, 14);
-			lbHora.setText(String.valueOf(LocalDateTime.now().getHour())+":"+String.valueOf(LocalDateTime.now().getMinute()));
+			lbHora.setText(String.valueOf(LocalDateTime.now().getHour()) + ":"
+					+ String.valueOf(LocalDateTime.now().getMinute()));
 		}
 		return lbHora;
 	}
-	
-	private int getDia(Timestamp t)
-	{
+
+	private int getDia(Timestamp t) {
 		Calendar cal = Calendar.getInstance();
 		cal.setTimeInMillis(t.getTime());
 		return cal.get(Calendar.DAY_OF_MONTH);
 	}
+
+	private JComboBox getComboBoxInstalacion() {
+		String[] modelItems = new String[] { "Elija instalacion:", "Piscina", "Cancha fútbol", "Pista tenis" };
+		cmodel = new DefaultComboBoxModel(modelItems);
+		if (comboBoxInstalacion == null) {
+			comboBoxInstalacion = new JComboBox();
+			comboBoxInstalacion.setBounds(10, 105, 157, 20);
+			comboBoxInstalacion.setModel(cmodel);
+		}
+		comboBoxInstalacion.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent arg0) {
+            	limpiarTabla();
+				try {
+					if(getInstalacionFromNombre(String.valueOf(getComboBoxInstalacion().getSelectedItem()))!=null)
+							llenarTabla(getInstalacionFromNombre(String.valueOf(getComboBoxInstalacion().getSelectedItem())));
+				} catch (SQLException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+            }
+        });
+		return comboBoxInstalacion;
+	}
+
 }

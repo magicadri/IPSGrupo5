@@ -12,7 +12,7 @@ public class Reserva {
 	
 	Parser parser;
 	private int reservaID;
-	private int socioID;
+	private String socioID;
 	private int instalacionID;
 	private Timestamp horaComienzo;
 	private Timestamp horaFinal;
@@ -21,7 +21,7 @@ public class Reserva {
 	private String modoPago;
 	private int precio;
 
-	public Reserva(int reservaID, int socioID, int instalacionID, Timestamp horaComienzo, Timestamp horaFinal,
+	public Reserva(int reservaID, String socioID, int instalacionID, Timestamp horaComienzo, Timestamp horaFinal,
 			Timestamp horaEntrada, Timestamp horaSalida, String modoPago, int precio) {
 		this.reservaID = reservaID;
 		this.socioID= socioID;
@@ -39,7 +39,7 @@ public class Reserva {
 		return this.reservaID;
 	}
 	
-	public int getSocioID() {
+	public String getSocioID() {
 		return socioID;
 	}
 
@@ -78,7 +78,7 @@ public class Reserva {
 	 * 
 	 * @author David
 	 */
-	public void cancelarReserva(int socioID, Timestamp horaComienzo, Timestamp horaFinal){		
+	public void cancelarReserva(String socioID, Timestamp horaComienzo, Timestamp horaFinal){		
 		if(marcarReserva(socioID, horaComienzo, horaFinal)){
 			System.out.println("Reserva del socio " + socioID + " borrada.");
 			removeReservaDeBase(parser.borrarReserva(socioID, horaComienzo, horaFinal));
@@ -92,7 +92,7 @@ public class Reserva {
 	 * 
 	 * @author David
 	 */
-	private boolean marcarReserva(int socioID, Timestamp horaComienzo, Timestamp horaFinal){
+	private boolean marcarReserva(String socioID, Timestamp horaComienzo, Timestamp horaFinal){
 		try {
 			parser.removeArrays();
 			parser.fillArrays();
@@ -127,7 +127,7 @@ public class Reserva {
 	 * 
 	 * @author David
 	 */
-	public void hacerReserva(int reservaID, int socioID, int instalacionID, Timestamp horaComienzo, Timestamp horaFinal, Timestamp horaEntrada, Timestamp horaSalida, String modoPago, int precio){
+	public void hacerReserva(int reservaID, String socioID, int instalacionID, Timestamp horaComienzo, Timestamp horaFinal, Timestamp horaEntrada, Timestamp horaSalida, String modoPago, int precio){
 		//Nueva reserva
 		Reserva reserva = new Reserva(reservaID, socioID, instalacionID, horaComienzo, horaFinal, horaEntrada, horaSalida, modoPago, precio);
 		
@@ -263,7 +263,7 @@ public class Reserva {
 	 * 
 	 * @author David
 	 */
-	private boolean comprobarDisponibilidadPorSocio(int socioID, Date horaComienzo, Date horaFinal) {
+	private boolean comprobarDisponibilidadPorSocio(String socioID, Date horaComienzo, Date horaFinal) {
 		try {
 			parser.removeArrays();
 			parser.fillArrays();

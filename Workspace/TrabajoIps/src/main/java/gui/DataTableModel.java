@@ -4,6 +4,11 @@ import javax.swing.table.DefaultTableModel;
 
 public class DataTableModel extends DefaultTableModel{
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -7822109193451355190L;
+
 	public DataTableModel(Object[][] d , String[] s)
 	{
 		super(d,s);

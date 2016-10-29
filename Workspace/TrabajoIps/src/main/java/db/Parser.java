@@ -58,20 +58,26 @@ public class Parser {
 		rs = s.executeQuery("select * from INSTALACION");
 		while(rs.next())
 		{
-			instalaciones.add(new Instalacion(rs.getString("instalacionID")));
+			instalaciones.add(new Instalacion(rs.getInt("instalacionID"), rs.getString("instalacion_nombre")));
 		}
 		
 		s = c.createStatement();
 		rs = s.executeQuery("Select * From RESERVA");
 		while(rs.next())
 		{
-			reservas.add(new Reserva(rs.getInt("reservaID"), rs.getInt("socioID"), rs.getInt("instalacionID"),
+			reservas.add(new Reserva(rs.getInt("reservaID"),rs.getString("socioID"), rs.getInt("instalacionID"),
 					rs.getTimestamp("horaComienzo"), rs.getTimestamp("horaFinal"),
 					rs.getTimestamp("horaEntrada"), rs.getTimestamp("horaSalida"), 
 					rs.getString("modoPago"), rs.getInt("precio")));
 		}
 		
-		// TODO cuota y entrada_cuota
+		s = c.createStatement();
+		rs = s.executeQuery("Select * From RECIBO");
+		while(rs.next())
+		{
+			recibos.add(new Recibo(rs.getInt("reciboID"),rs.getString("socioID"), rs.getInt("importe"),
+					rs.getTimestamp("fecha")));
+		}
 		
 //		s = c.createStatement();
 //		rs = s.executeQuery("Select * From ACTIVIDAD");
@@ -129,11 +135,11 @@ public class Parser {
 	 * @return true si la tiene, false si no la tiene
 	 */
 	@SuppressWarnings("deprecation")
-	public boolean comprobarDisponibilidadPorSocio(int socioID, Date horaC, Date horaF) {
+	public boolean comprobarDisponibilidadPorSocio(String socioID, Date horaC, Date horaF) {
 		boolean resultado = false;
 
 		for (Reserva reserva : reservas) {
-			if (reserva.getHoraComienzo().getHours()==horaC.getHours() && reserva.getHoraFinal().getHours()==horaF.getHours() && reserva.getSocioID()==socioID) {
+			if (reserva.getHoraComienzo().getHours()==horaC.getHours() && reserva.getHoraFinal().getHours()==horaF.getHours() && reserva.getSocioID().equals(socioID)) {
 				resultado = true;
 			}
 		}
@@ -150,11 +156,11 @@ public class Parser {
 	 * @return true si se puede borrar, false si no se puede
 	 */
 	@SuppressWarnings("deprecation")
-	public boolean marcarReserva(int socioID,  Date horaC, Date horaF) {
+	public boolean marcarReserva(String socioID,  Date horaC, Date horaF) {
 		boolean resultado = false;
 		int aux = 0;
 		for (Reserva reserva : reservas) {
-			if (reserva.getHoraComienzo().getHours()==horaC.getHours() && reserva.getHoraFinal().getHours()==horaF.getHours() && reserva.getSocioID()==socioID  &&
+			if (reserva.getHoraComienzo().getHours()==horaC.getHours() && reserva.getHoraFinal().getHours()==horaF.getHours() && reserva.getSocioID().equals(socioID)  &&
 					reserva.getHoraComienzo().getMonth() == horaC.getMonth() && reserva.getHoraComienzo().getYear() == horaC.getYear()) {
 				//Cancelado mas de una hora antes
 				if( reserva.getHoraComienzo().getHours() - LocalDateTime.now().getHour() > 1){
@@ -181,11 +187,11 @@ public class Parser {
 	 * @return la reserva si se pudo borrar, null si no se pudo
 	 */
 	@SuppressWarnings("deprecation")
-	public Reserva borrarReserva(int socioID,  Date horaC, Date horaF) {
+	public Reserva borrarReserva(String socioID,  Date horaC, Date horaF) {
 		Reserva resultado = null;
 
 		for (Reserva reserva : reservas) {
-			if (reserva.getHoraComienzo().getHours()==horaC.getHours() && reserva.getHoraFinal().getHours()==horaF.getHours() && reserva.getSocioID()==socioID &&
+			if (reserva.getHoraComienzo().getHours()==horaC.getHours() && reserva.getHoraFinal().getHours()==horaF.getHours() && reserva.getSocioID().equals(socioID) &&
 					reserva.getHoraComienzo().getMonth() == horaC.getMonth() && reserva.getHoraComienzo().getYear() == horaC.getYear()) {
 				resultado = reserva;
 			}

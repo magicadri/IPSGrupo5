@@ -188,56 +188,6 @@ public class VentanaCalendarAdmin extends JDialog {
 		}
 	}
 
-	/**
-	 * Coge las reservas de una instalacion y rellena la tabla
-	 * 
-	 * @param ins,
-	 *            Instalacion
-	 */
-	@SuppressWarnings("deprecation")
-	private void llenarTabla(Instalacion ins) {
-		ArrayList<Reserva> reservas = parser.getReservas();
-		TableColumn tcol;
-		ColorCellRed ccr = new ColorCellRed();
-		ColorCellGreen ccg = new ColorCellGreen();
-
-		for (Reserva reserva : reservas) {
-
-			Date a = getDateChooser().getDate();
-			String dia = sacarDia(a);
-			if (String.valueOf(getDia(reserva.getHoraComienzo())).equals(dia)) {
-
-				if (ins.getInstalacionID().equals("piscina")) { // Piscina
-
-					table.setValueAt("Reserva Piscina", reserva.getHoraComienzo().getHours(), 1);
-					tcol = table.getColumnModel().getColumn(1);
-				//	if(reserva.getSocioID().equals("admin"))
-						tcol.setCellRenderer(ccr);
-					//else 
-						tcol.setCellRenderer(ccg);
-
-				} else if (ins.getInstalacionID().equals("canchafutbol")) { // Futbol
-
-					table.setValueAt("Reserva Futbol", reserva.getHoraComienzo().getHours(), 1);
-					tcol = table.getColumnModel().getColumn(1);
-					//if(reserva.getSocioID().equals("admin"))
-						tcol.setCellRenderer(ccr);
-					//else 
-						tcol.setCellRenderer(ccg);
-
-				} else if (ins.getInstalacionID().equals("canchatenis")) { // Tenis
-
-					table.setValueAt("Reserva Tenis", reserva.getHoraComienzo().getHours(), 1);
-					tcol = table.getColumnModel().getColumn(1);
-					//if(reserva.getSocioID().equals("admin"))
-						tcol.setCellRenderer(ccr);
-					//else 
-						tcol.setCellRenderer(ccg);
-
-				}
-			}
-		}
-	}
 
 	/**
 	 * Saca el dia de un Date

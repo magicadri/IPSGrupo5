@@ -4,13 +4,19 @@ import java.util.Date;
 
 public class Instalacion {
 	
-	private String instalacionID;
+	private int instalacionID;
+	private String instalacion_nombre;
 	
-	public Instalacion(String instalacionID) {
+	public Instalacion(int instalacionID, String instalacion_nombre) {
 		this.instalacionID = instalacionID;
+		this.instalacion_nombre=instalacion_nombre;
 	}
 
-	public String getInstalacionID() {
+	public String getInstalacion_nombre() {
+		return instalacion_nombre;
+	}
+
+	public int getInstalacionID() {
 		return instalacionID;
 	}
 	

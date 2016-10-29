@@ -1,31 +1,21 @@
 package logic;
 
+import java.sql.Timestamp;
+
 public class Recibo {
 	
-	private String reciboID;
-	private String socioID;
-	private String reservaID;
-	private String instalacionID;
-	private int importe;
+	private int reciboID;
+    private String socioID;
+    private int importe;
+    private Timestamp fecha;
 	
-	
-	public String getReciboID() {
+	public int getReciboID() {
 		return reciboID;
 	}
 
 
 	public String getSocioID() {
 		return socioID;
-	}
-
-
-	public String getReservaID() {
-		return reservaID;
-	}
-
-
-	public String getInstalacionID() {
-		return instalacionID;
 	}
 	
 	public int getImporte()
@@ -34,13 +24,17 @@ public class Recibo {
 	}
 
 
-	public Recibo(String reciboID, String socioID, String reservaID, String instalacionID, int importe)
+	public Timestamp getFecha() {
+		return fecha;
+	}
+
+
+	public Recibo(int reciboID, String socioID, int importe, Timestamp fecha)
 	{
 		this.reciboID=reciboID;
 		this.socioID=socioID;
-		this.reservaID=reservaID;
-		this.instalacionID=instalacionID;
 		this.importe=importe;
+		this.fecha=fecha;
 	}
 
 }
