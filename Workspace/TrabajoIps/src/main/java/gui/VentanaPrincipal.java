@@ -28,7 +28,7 @@ public class VentanaPrincipal extends JFrame {
             Database.getInstance();
             VentanaPrincipal frame = new VentanaPrincipal();
             frame.setVisible(true);
-          
+
         } catch (Exception e) {
             e.printStackTrace();
         }

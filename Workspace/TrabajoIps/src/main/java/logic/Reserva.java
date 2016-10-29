@@ -10,6 +10,7 @@ import db.Parser;
 
 public class Reserva {
 	
+	Parser parser;
 	private int reservaID;
 	private int socioID;
 	private int instalacionID;
@@ -31,7 +32,7 @@ public class Reserva {
 		this.horaSalida = horaSalida;
 		this.modoPago = modoPago;
 		this.precio = precio;
-
+		this.parser = new Parser();
 	}
 
 	public int getReservaID(){
@@ -68,6 +69,54 @@ public class Reserva {
 
 	public int getPrecio() {
 		return precio;
+	}
+	
+	/**
+	 * Borra la reserva del socio entre las horas marcadas
+	 * 
+	 * historia->(Como socio quiero cancelar la reserva de una instalación para no tener que pagar por algo que no voy a utilizar)
+	 * 
+	 * @author David
+	 */
+	public void cancelarReserva(int socioID, Timestamp horaComienzo, Timestamp horaFinal){		
+		if(marcarReserva(socioID, horaComienzo, horaFinal)){
+			System.out.println("Reserva del socio " + socioID + " borrada.");
+			removeReservaDeBase(parser.borrarReserva(socioID, horaComienzo, horaFinal));
+		}
+	}
+	
+	/**
+	 * Comprueba si la reserva se puede borrar
+	 * 
+	 * @return true si se puede, false si no se puede
+	 * 
+	 * @author David
+	 */
+	private boolean marcarReserva(int socioID, Timestamp horaComienzo, Timestamp horaFinal){
+		try {
+			parser.removeArrays();
+			parser.fillArrays();
+		} catch (SQLException e) {
+			e.printStackTrace();
+			System.err.println("Error al hacer marcarReserva con la reserva del socio: " + socioID);
+		}
+		return parser.marcarReserva(socioID, horaComienzo, horaFinal);
+	}
+	
+	/**
+	 * Remove a una reserva de la base de datos
+	 * 
+	 * @return true, si se ha podido borrar. False, si ha habido un error.
+	 * 
+	 * @author David
+	 */
+	private void removeReservaDeBase(Reserva reserva){
+		try {
+			Database.getInstance().getC().createStatement().execute("DELETE FROM Reserva WHERE reservaID =" + reserva.getReservaID() + ";" );
+		} catch (SQLException e) {
+			e.printStackTrace();
+			System.err.println("Error al hacer removeReservaABase con la reserva : " + reserva.getReservaID());
+		}
 	}
 
 	/**
@@ -121,6 +170,7 @@ public class Reserva {
 	 * Comprueba que la fecha de reserva esté en un rango de al menos 1 dia hasta 15 como maximo
 	 * 
 	 * @return true si esta en el rango, false si no lo esta
+	 * 
 	 * @author David
 	 */
 	@SuppressWarnings("deprecation")
@@ -157,6 +207,7 @@ public class Reserva {
 	 * Comprueba que las horas de una reserva no superen el maximo de 2
 	 * 
 	 * @return true si no lo superan, false si lo hacen
+	 * 
 	 * @author David
 	 */
 	@SuppressWarnings("deprecation")
@@ -171,6 +222,7 @@ public class Reserva {
 	 * Add a una reserva a la base de datos
 	 * 
 	 * @return true, si se ha podido añadir. False, si ha habido un error.
+	 * 
 	 * @author David
 	 */
 	private boolean addReservaABase(Reserva reserva){
@@ -190,11 +242,12 @@ public class Reserva {
 	 * Comprueba si una instalacion esta ocupada en una franja horaria para un dia determinado
 	 * 
 	 * @return true si está disponible, false si no lo esta
+	 * 
 	 * @author David
 	 */
 	private boolean comprobarDisponibilidadPorInstalacion(int instalacionID, Date horaComienzo, Date horaFinal) {
-		Parser parser = new Parser();
 		try {
+			parser.removeArrays();
 			parser.fillArrays();
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -207,11 +260,12 @@ public class Reserva {
 	 * Comprueba si un socio tiene mas de una reserva simultanea
 	 * 
 	 * @return true si la tiene, false si no la tiene
+	 * 
 	 * @author David
 	 */
 	private boolean comprobarDisponibilidadPorSocio(int socioID, Date horaComienzo, Date horaFinal) {
-		Parser parser = new Parser();
 		try {
+			parser.removeArrays();
 			parser.fillArrays();
 		} catch (SQLException e) {
 			e.printStackTrace();

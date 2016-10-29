@@ -4,6 +4,8 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -81,6 +83,21 @@ public class Parser {
 	}
 	
 	/**
+	 * Limpia todos los arrays
+	 */
+	public void removeArrays(){
+		if(socios != null)
+			for(int i=socios.size()-1;i>=0; i--)
+				socios.remove(i);
+		if(instalaciones != null)
+			for(int i=instalaciones.size()-1;i>=0;i--)
+				instalaciones.remove(i);
+		if(reservas != null)
+			for(int i=reservas.size()-1;i>=0; i--)
+				reservas.remove(i);
+	}
+	
+	/**
 	 * Comprueba si está ocupada en una franja horaria
 	 * 
 	 * @param horaC,
@@ -89,6 +106,7 @@ public class Parser {
 	 *            hora final
 	 * @return true si está disponible, false si no
 	 */
+	@SuppressWarnings("deprecation")
 	public boolean comprobarDisponibilidadPorInstalacion(int instalacionID, Date horaC, Date horaF) {
 		boolean resultado = true;
 
@@ -110,6 +128,7 @@ public class Parser {
 	 *            hora final
 	 * @return true si la tiene, false si no la tiene
 	 */
+	@SuppressWarnings("deprecation")
 	public boolean comprobarDisponibilidadPorSocio(int socioID, Date horaC, Date horaF) {
 		boolean resultado = false;
 
@@ -118,6 +137,60 @@ public class Parser {
 				resultado = true;
 			}
 		}
+		return resultado;
+	}
+	
+	/**
+	 * Borra la reserva de un socio
+	 * @param socioID
+	 * @param horaC,
+	 * 			  hora de comienzo
+	 * @param horaF,
+	 *            hora final
+	 * @return true si se puede borrar, false si no se puede
+	 */
+	@SuppressWarnings("deprecation")
+	public boolean marcarReserva(int socioID,  Date horaC, Date horaF) {
+		boolean resultado = false;
+		int aux = 0;
+		for (Reserva reserva : reservas) {
+			if (reserva.getHoraComienzo().getHours()==horaC.getHours() && reserva.getHoraFinal().getHours()==horaF.getHours() && reserva.getSocioID()==socioID  &&
+					reserva.getHoraComienzo().getMonth() == horaC.getMonth() && reserva.getHoraComienzo().getYear() == horaC.getYear()) {
+				//Cancelado mas de una hora antes
+				if( reserva.getHoraComienzo().getHours() - LocalDateTime.now().getHour() > 1){
+					resultado = true;
+				}else{
+					aux = 1;
+					resultado = false;
+					System.out.println("No se puede cancelar una reserva menos de 1 hora antes.");
+				}				
+			}
+		}
+		if(aux == 0)
+			System.out.println("No se ha encontrado la reserva del socio: " + socioID);
+		return resultado;
+	}
+	
+	/**
+	 * Borra la reserva de un socio
+	 * @param socioID
+	 * @param horaC,
+	 * 			  hora de comienzo
+	 * @param horaF,
+	 *            hora final
+	 * @return la reserva si se pudo borrar, null si no se pudo
+	 */
+	@SuppressWarnings("deprecation")
+	public Reserva borrarReserva(int socioID,  Date horaC, Date horaF) {
+		Reserva resultado = null;
+
+		for (Reserva reserva : reservas) {
+			if (reserva.getHoraComienzo().getHours()==horaC.getHours() && reserva.getHoraFinal().getHours()==horaF.getHours() && reserva.getSocioID()==socioID &&
+					reserva.getHoraComienzo().getMonth() == horaC.getMonth() && reserva.getHoraComienzo().getYear() == horaC.getYear()) {
+				resultado = reserva;
+			}
+		}
+		reservas.remove(resultado);
 		return resultado;
 	}
 }
