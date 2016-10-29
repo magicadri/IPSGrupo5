@@ -200,27 +200,27 @@ public class VentanaCalendar extends JDialog {
 
 					table.setValueAt("Reserva Piscina", reserva.getHoraComienzo().getHours(), 1);
 					tcol = table.getColumnModel().getColumn(1);
-					if(reserva.getSocioID().equals("admin"))
+	//				if(reserva.getSocioID().equals("admin"))
 						tcol.setCellRenderer(ccr);
-					else 
+//					else 
 						tcol.setCellRenderer(ccg);
 
 				} else if (ins.getInstalacionID().equals("canchafutbol")) { // Futbol
 
 					table.setValueAt("Reserva Futbol", reserva.getHoraComienzo().getHours(), 1);
 					tcol = table.getColumnModel().getColumn(1);
-					if(reserva.getSocioID().equals("admin"))
+//					if(reserva.getSocioID().equals("admin"))
 						tcol.setCellRenderer(ccr);
-					else 
+//					else 
 						tcol.setCellRenderer(ccg);
 
 				} else if (ins.getInstalacionID().equals("canchatenis")) { // Tenis
 
 					table.setValueAt("Reserva Tenis", reserva.getHoraComienzo().getHours(), 1);
 					tcol = table.getColumnModel().getColumn(1);
-					if(reserva.getSocioID().equals("admin"))
+//					if(reserva.getSocioID().equals("admin"))
 						tcol.setCellRenderer(ccr);
-					else 
+//					else 
 						tcol.setCellRenderer(ccg);
 
 				}

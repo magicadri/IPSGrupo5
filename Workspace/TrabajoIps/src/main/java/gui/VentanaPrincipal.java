@@ -11,9 +11,11 @@ import java.awt.event.ActionListener;
 //import com.toedter.calendar.JCalendar;
 //import com.toedter.calendar.JMonthChooser;
 
+
 public class VentanaPrincipal extends JFrame {
 
-    private JPanel contentPane;
+	private static final long serialVersionUID = -2863489269021675801L;
+	private JPanel contentPane;
     private JPanel panelEscoger;
     private JButton btnSocio;
     private JButton btnAdmin;
@@ -21,11 +23,12 @@ public class VentanaPrincipal extends JFrame {
     /**
      * Launch the application.
      */
-    public static void main(String[] args) {
+	public static void main(String[] args) {
         try {
             Database.getInstance();
             VentanaPrincipal frame = new VentanaPrincipal();
             frame.setVisible(true);
+          
         } catch (Exception e) {
             e.printStackTrace();
         }

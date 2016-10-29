@@ -26,16 +26,16 @@ public class Database {
 		connectionProps.put("user", "SA");
 		try {
 			c = DriverManager.getConnection("jdbc:h2:tcp://localhost/~/test", connectionProps);
-
+		
 		} catch (SQLException e) {
 			throw new RuntimeException(e.getMessage(), e);
 		}
 
-		try {
-			c.close();
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
+//		try {
+//			c.close();
+//		} catch (SQLException e) {
+//			e.printStackTrace();
+//		}
 
 	}
 

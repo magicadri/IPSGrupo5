@@ -1,9 +1,9 @@
 DROP TABLE IF EXISTS socio
 DROP TABLE IF EXISTS reserva
 DROP TABLE IF EXISTS instalacion
-DROP TABLE IF EXISTS actividad
-DROP TABLE IF EXISTS cuota
-DROP TABLE IF EXISTS entrada_cuota
+-- DROP TABLE IF EXISTS actividad
+-- DROP TABLE IF EXISTS cuota
+-- DROP TABLE IF EXISTS entrada_cuota
 
 CREATE TABLE socio (
 	socioID varchar(32) NOT NULL,
@@ -31,19 +31,19 @@ CREATE TABLE reserva (
 	CONSTRAINT chk_modoPago (modoPago IN ("efectivo", "cuota"))
 );
 
-CREATE TABLE cuota (
-    cuotaID INTEGER NOT NULL,
-    socioID VARCHAR(32) NOT NULL,
-    mes DATE NOT NULL,
+-- CREATE TABLE cuota (
+    -- cuotaID INTEGER NOT NULL,
+    -- socioID VARCHAR(32) NOT NULL,
+    -- mes DATE NOT NULL,
 
-    PRIMARY KEY (cuotaID)
-)
+    -- PRIMARY KEY (cuotaID)
+-- )
 
-CREATE TABLE entrada_cuota(
-    cuotaID INTEGER NOT NULL,
-    importe integer,
-    concepto VARCHAR(64)
-)
+-- CREATE TABLE entrada_cuota(
+    -- cuotaID INTEGER NOT NULL,
+    -- importe integer,
+    -- concepto VARCHAR(64)
+-- )
 
 /*
 CREATE TABLE RECIBO (

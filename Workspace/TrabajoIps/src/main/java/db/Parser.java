@@ -63,21 +63,21 @@ public class Parser {
 		rs = s.executeQuery("Select * From RESERVA");
 		while(rs.next())
 		{
-			reservas.add(new Reserva(rs.getString("socioID"), rs.getString("instalacionID"),
+			reservas.add(new Reserva(rs.getInt("reservaID"), rs.getInt("socioID"), rs.getInt("instalacionID"),
 					rs.getTimestamp("horaComienzo"), rs.getTimestamp("horaFinal"),
 					rs.getTimestamp("horaEntrada"), rs.getTimestamp("horaSalida"), 
-					rs.getString("modoPago"), rs.getBoolean("pagado"), rs.getInt("precio")));
+					rs.getString("modoPago"), rs.getInt("precio")));
 		}
 		
 		// TODO cuota y entrada_cuota
 		
-		s = c.createStatement();
-		rs = s.executeQuery("Select * From ACTIVIDAD");
-		while(rs.next())
-		{
-			actividades.add(new Actividad(rs.getString("actividadID"), rs.getTimestamp("fechaComienzo"), rs.getTimestamp("fechaFinal")));
-		}
-		
+//		s = c.createStatement();
+//		rs = s.executeQuery("Select * From ACTIVIDAD");
+//		while(rs.next())
+//		{
+//			actividades.add(new Actividad(rs.getString("actividadID"), rs.getTimestamp("fechaComienzo"), rs.getTimestamp("fechaFinal")));
+//		}
+//		
 	}
 	
 	/**
@@ -89,15 +89,35 @@ public class Parser {
 	 *            hora final
 	 * @return true si está disponible, false si no
 	 */
-	public boolean comprobarDisponibilidad(Date horaC, Date horaF) {
+	public boolean comprobarDisponibilidadPorInstalacion(int instalacionID, Date horaC, Date horaF) {
 		boolean resultado = true;
 
 		for (Reserva reserva : reservas) {
-			if (reserva.getHoraComienzo().equals(horaC) && reserva.getHoraFinal().equals(horaF)) {
+			if (reserva.getHoraComienzo().getHours()==horaC.getHours() && reserva.getHoraFinal().getHours()==horaF.getHours() && reserva.getInstalacionID()==instalacionID) {
 				resultado = false;
 			}
 		}
 		return resultado;
 	}
 	
+	
+	/**
+	 * Comprueba si un socio tiene mas de una instalacion reservada simultaneamente
+	 * 
+	 * @param horaC,
+	 *            hora de comienzo
+	 * @param horaF,
+	 *            hora final
+	 * @return true si la tiene, false si no la tiene
+	 */
+	public boolean comprobarDisponibilidadPorSocio(int socioID, Date horaC, Date horaF) {
+		boolean resultado = false;
+
+		for (Reserva reserva : reservas) {
+			if (reserva.getHoraComienzo().getHours()==horaC.getHours() && reserva.getHoraFinal().getHours()==horaF.getHours() && reserva.getSocioID()==socioID) {
+				resultado = true;
+			}
+		}
+		return resultado;
+	}
 }
