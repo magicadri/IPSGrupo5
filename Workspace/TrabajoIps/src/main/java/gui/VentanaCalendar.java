@@ -54,6 +54,7 @@ public class VentanaCalendar extends JDialog {
 	private JComboBox comboBoxInstalacion;
 	private DefaultComboBoxModel cmodel;
 	private String socioID = "adri";
+	private JButton btnMisReservas;
 
 	/**
 	 * Launch the application.
@@ -101,6 +102,7 @@ public class VentanaCalendar extends JDialog {
 		contentPanel.add(getLblHora());
 		contentPanel.add(getLbHora());
 		contentPanel.add(getComboBoxInstalacion());
+		contentPanel.add(getBtnMisReservas());
 	}
 
 	private JDateChooser getDateChooser() {
@@ -295,5 +297,17 @@ public class VentanaCalendar extends JDialog {
         });
 		return comboBoxInstalacion;
 	}
-
+	private JButton getBtnMisReservas() {
+		if (btnMisReservas == null) {
+			btnMisReservas = new JButton("Mis reservas");
+			btnMisReservas.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent arg0) {
+					MisReservas ms = new MisReservas();
+					ms.setVisible(true);
+				}
+			});
+			btnMisReservas.setBounds(30, 159, 109, 23);
+		}
+		return btnMisReservas;
+	}
 }

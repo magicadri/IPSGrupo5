@@ -4,7 +4,9 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.FlowLayout;
 
+import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
+import javax.swing.JComboBox;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -21,6 +23,9 @@ import logic.Reserva;
 import logic.Socio;
 
 import java.beans.PropertyChangeListener;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
@@ -29,6 +34,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.Properties;
 import java.beans.PropertyChangeEvent;
 
 import javax.swing.JTextField;
@@ -55,6 +61,13 @@ public class VentanaCalendarAdmin extends JDialog {
 	private JLabel lbHora;
 	private JButton btnLlegada;
 	private JButton btnSalida;
+	private JComboBox comboBoxInstalacion;
+	private DefaultComboBoxModel cmodel;
+	private String socioID = "adri";
+	private String SocioTxB;
+
+
+
 
 	/**
 	 * Launch the application.
@@ -95,6 +108,8 @@ public class VentanaCalendarAdmin extends JDialog {
 		contentPanel.add(getLbHora());
 		contentPanel.add(getBtnLlegada());
 		contentPanel.add(getBtnSalida());
+		contentPanel.add(getComboBoxInstalacion());
+
 	}
 
 	//Quitar cuando se haga el de abajo.
@@ -236,18 +251,50 @@ public class VentanaCalendarAdmin extends JDialog {
 			btnLlegada = new JButton("Llegada");
 			btnLlegada.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
+					//SACAR DE LA TABLA EL SOCIO DONDE SE ESTA SELECCIONANDO
+					String SocioID = (String) table.getModel().getValueAt(table.getSelectedRow(), 0);
 					//Se saca la hora de la columna seleccionada
 					String string = (String) table.getModel().getValueAt(table.getSelectedRow(),0);
 					String[] Hora1 = string.split(":");
 					String Hora = Hora1[0];
 					//Set hora de llegada
-					table.setValueAt(LocalDateTime.now().getHour()+":"+LocalDateTime.now().getMinute(), table.getSelectedRow(), 2);
 					//if(((int)table.getModel().getValueAt(1,table.getSelectedColumn())) == LocalDateTime.now().getHour()){
 					if(Hora.equals(String.valueOf(LocalDateTime.now().getHour()))){
 						JOptionPane.showMessageDialog(null, "Llegada a las: "+ LocalDateTime.now().getHour());
+						table.setValueAt(LocalDateTime.now().getHour()+":"+LocalDateTime.now().getMinute(), table.getSelectedRow(), 2);
+
+						
+						
+						
+						//DB
+						
+						Calendar calendar = Calendar.getInstance();
+						java.sql.Timestamp TimeStamp = new java.sql.Timestamp(calendar.getTime().getTime());
+						
+						Properties connectionProps = new Properties();
+						connectionProps.put("user", "SA");
+						String query  = "UPDATE RESERVA SET horaEntrada =? WHERE IDSOCIO = "+SocioID;
+						Connection conn = null;
+						try {
+							conn = DriverManager.getConnection("jdbc:h2:tcp://localhost/~/test", connectionProps);
+						} catch (SQLException e1) {
+							e1.printStackTrace();
+						}
+						
+						
+							PreparedStatement ps;
+							try {
+								ps = conn.prepareStatement(query);
+								ps.setTimestamp(6, TimeStamp);
+								ps.executeQuery();
+							} catch (SQLException e1) {
+								e1.printStackTrace();
+							}
+							
+						
 					}
 					else{
-						JOptionPane.showMessageDialog(null, "Error");
+						JOptionPane.showMessageDialog(null, "Error. No es una hora correcta.");
 					}
 					
 				}
@@ -266,13 +313,14 @@ public class VentanaCalendarAdmin extends JDialog {
 					String[] Hora1 = string.split(":");
 					String Hora = Hora1[0];
 					//Set hora de salida
-					table.setValueAt(LocalDateTime.now().getHour()+":"+LocalDateTime.now().getMinute(), table.getSelectedRow(), 3);
 					//if(((int)table.getModel().getValueAt(1,table.getSelectedColumn())) == LocalDateTime.now().getHour()){
 					if(Hora.equals(String.valueOf(LocalDateTime.now().getHour()))){
 						JOptionPane.showMessageDialog(null, "Salida las: "+ LocalDateTime.now().getHour());
+						table.setValueAt(LocalDateTime.now().getHour()+":"+LocalDateTime.now().getMinute(), table.getSelectedRow(), 3);
+
 					}
 					else{
-						JOptionPane.showMessageDialog(null, "Error");
+						JOptionPane.showMessageDialog(null, "Error. No es una hora correcta.");
 					}
 					
 				}
@@ -287,5 +335,89 @@ public class VentanaCalendarAdmin extends JDialog {
 		Calendar cal = Calendar.getInstance();
 		cal.setTimeInMillis(t.getTime());
 		return cal.get(Calendar.DAY_OF_MONTH);
+	}
+	
+	
+	
+	
+	
+	
+	
+	private JComboBox getComboBoxInstalacion() {
+		String[] modelItems = new String[] { "Elija instalacion:", "Piscina", "Cancha fútbol", "Pista tenis" };
+		cmodel = new DefaultComboBoxModel(modelItems);
+		if (comboBoxInstalacion == null) {
+			comboBoxInstalacion = new JComboBox();
+			comboBoxInstalacion.setBounds(10, 105, 157, 20);
+			comboBoxInstalacion.setModel(cmodel);
+		}
+		comboBoxInstalacion.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent arg0) {
+            	limpiarTabla();
+				try {
+					if(getInstalacionFromNombre(String.valueOf(getComboBoxInstalacion().getSelectedItem()))!=null)
+							llenarTabla(getInstalacionFromNombre(String.valueOf(getComboBoxInstalacion().getSelectedItem())));
+				} catch (SQLException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+            }
+        });
+		return comboBoxInstalacion;
+	}
+	
+	
+	
+	
+	
+	
+	private Instalacion getInstalacionFromNombre(String nombre) throws SQLException
+	{
+		Parser parser = new Parser();
+		parser.fillArrays();
+		for(Instalacion i : parser.getInstalaciones())
+			if(i.getInstalacion_nombre().equals(nombre))
+				return i;
+		return null;
+	}
+	
+	
+	
+	
+	
+	
+	@SuppressWarnings("deprecation")
+	private void llenarTabla(Instalacion ins) {
+		TableColumn tcol;
+		ColorCellRed ccr = new ColorCellRed();
+		ColorCellGreen ccg = new ColorCellGreen();
+
+		for (Reserva reserva : parser.getReservas()) {
+
+			Date a = getDateChooser().getDate();
+			String dia = sacarDia(a);
+			if (String.valueOf(getDia(reserva.getHoraComienzo())).equals(dia)) {
+				if (getInstalacionIDFromNombre(String.valueOf(getComboBoxInstalacion().getSelectedItem())) != -1)
+					if (ins.getInstalacionID() == (getInstalacionIDFromNombre(
+							String.valueOf(getComboBoxInstalacion().getSelectedItem())))) { // Piscina
+						table.setValueAt(String.valueOf(getComboBoxInstalacion().getSelectedItem()),
+								reserva.getHoraComienzo().getHours(), 1);
+						tcol = table.getColumnModel().getColumn(1);
+						if (reserva.getSocioID().equals(socioID))
+							
+							tcol.setCellRenderer(ccr);
+						
+						else
+							tcol.setCellRenderer(ccg);
+					}
+			}
+		}
+	}
+	
+	private int getInstalacionIDFromNombre(String nombre) {
+		for (Instalacion i : parser.getInstalaciones())
+			if (i.getInstalacion_nombre().equals(nombre))
+				return i.getInstalacionID();
+		return -1;
 	}
 }

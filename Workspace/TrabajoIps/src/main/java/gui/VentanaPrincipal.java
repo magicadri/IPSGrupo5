@@ -1,6 +1,8 @@
 package gui;
 
 import db.Database;
+import db.Parser;
+import logic.Reserva;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
@@ -10,6 +12,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 //import com.toedter.calendar.JCalendar;
 //import com.toedter.calendar.JMonthChooser;
+import java.util.ArrayList;
+import java.util.List;
 
 
 public class VentanaPrincipal extends JFrame {
@@ -19,6 +23,9 @@ public class VentanaPrincipal extends JFrame {
     private JPanel panelEscoger;
     private JButton btnSocio;
     private JButton btnAdmin;
+    public String IDSocio;
+    
+	private Parser Parser = new Parser();
 
     /**
      * Launch the application.
@@ -68,6 +75,28 @@ public class VentanaPrincipal extends JFrame {
             btnSocio.setBounds(26, 168, 329, 138);
             btnSocio.addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent arg0) {
+                	
+                	IDSocio =JOptionPane.showInputDialog("Introduce tu ID de socio: ");
+                	VentanaCalendar VC = new VentanaCalendar();
+            		VC.setVisible(true);
+            		for (Reserva reserva : Parser.getReservas()) {
+
+                	//Meter bucle para todos los socio ID 
+                	if(IDSocio.equals(reserva.getSocioID())){
+                	
+                		
+                		
+                	}
+                	
+                	else {
+                		JOptionPane.showMessageDialog(null, "No existe esa ID de socio");
+                	}
+            		}
+                	
+                	
+                	
+                
+                	
 
                 }
             });
@@ -81,6 +110,8 @@ public class VentanaPrincipal extends JFrame {
             btnAdmin.setBounds(397, 168, 308, 138);
             btnAdmin.addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent arg0) {
+                	VentanaCalendarAdmin VCA = new VentanaCalendarAdmin();
+                	VCA.setVisible(true);
 
                 }
             });
