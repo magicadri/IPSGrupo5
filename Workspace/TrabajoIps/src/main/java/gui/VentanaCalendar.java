@@ -2,6 +2,7 @@ package gui;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.FlowLayout;
 
 import javax.swing.DefaultComboBoxModel;
@@ -34,6 +35,7 @@ import java.beans.PropertyChangeEvent;
 import javax.swing.JTextField;
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
@@ -134,10 +136,42 @@ public class VentanaCalendar extends JDialog {
 				return i;
 		return null;
 	}
+	
+	private int isItMe(int hour, String inst)
+	{
+		int id = 0;
+		if(inst.equals("Piscina"))
+			id=1;
+		else if(inst.equals("Pista tenis"))
+			id=2;
+		else if(inst.equals("Cancha fútbol"))
+			id=3;
+		for(Reserva res : parser.getReservas())
+			if(res.getHoraComienzo().getHours()== hour && res.getInstalacionID() == id && res.getSocioID().equals(socioID))
+				return 0;
+		if(id!=0)
+			return 1;
+		return -1;
+	}
 
 	private JTable getTable() {
 		if (table == null) {
-			table = new JTable();
+			table = new JTable() {
+			    @Override
+			    public Component prepareRenderer(TableCellRenderer renderer, int row, int col) {
+			        Component comp = super.prepareRenderer(renderer, row, col);
+			        String value = String.valueOf(getModel().getValueAt(row, col));
+			        if (isItMe(row, value)==0) {
+			                comp.setBackground(Color.red);
+			            } else if(isItMe(row,value)==1)
+			            {
+			                comp.setBackground(Color.green);
+			            }else
+			            	comp.setBackground(Color.WHITE);
+			        
+			        return comp;
+			    }
+			};
 			table.setBounds(175, 11, 248, 384);
 
 			DataTableModel dm = new DataTableModel(
@@ -150,7 +184,7 @@ public class VentanaCalendar extends JDialog {
 					new String[] { "Horas", "Disponibilidad" });
 			table.setModel(dm);
 
-			// Listener para tomar los valores de las filas de la tabla
+			/*// Listener para tomar los valores de las filas de la tabla
 			table.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
 				@Override
 				public void valueChanged(ListSelectionEvent ev) {
@@ -160,7 +194,7 @@ public class VentanaCalendar extends JDialog {
 							+ table.getModel().getValueAt(table.getSelectedRow(), 1));
 				}
 
-			});
+			});*/
 		}
 		return table;
 	}
@@ -209,10 +243,15 @@ public class VentanaCalendar extends JDialog {
 			Date a = getDateChooser().getDate();
 			String dia = sacarDia(a);
 			if (String.valueOf(getDia(reserva.getHoraComienzo())).equals(dia)) {
-				if (getInstalacionIDFromNombre(String.valueOf(getComboBoxInstalacion().getSelectedItem())) != -1)
-					if (ins.getInstalacionID() == (getInstalacionIDFromNombre(
-							String.valueOf(getComboBoxInstalacion().getSelectedItem())))) { // Piscina
-						table.setValueAt(String.valueOf(getComboBoxInstalacion().getSelectedItem()),
+				if (getInstalacionIDFromNombre(String.valueOf(comboBoxInstalacion.getSelectedItem())) != -1)
+					if (ins.getInstalacionID() == (reserva.getInstalacionID())) { 
+						int duracion = reserva.getHoraFinal().getHours() - reserva.getHoraComienzo().getHours();
+						if(duracion>1)
+							for(int i=0; i<duracion;i++)
+								table.setValueAt(String.valueOf(comboBoxInstalacion.getSelectedItem()),
+										reserva.getHoraComienzo().getHours()+i, 1);
+						else
+							table.setValueAt(String.valueOf(comboBoxInstalacion.getSelectedItem()),
 								reserva.getHoraComienzo().getHours(), 1);
 						tcol = table.getColumnModel().getColumn(1);
 						if (reserva.getSocioID().equals(socioID))
@@ -287,8 +326,8 @@ public class VentanaCalendar extends JDialog {
             public void actionPerformed(ActionEvent arg0) {
             	limpiarTabla();
 				try {
-					if(getInstalacionFromNombre(String.valueOf(getComboBoxInstalacion().getSelectedItem()))!=null)
-							llenarTabla(getInstalacionFromNombre(String.valueOf(getComboBoxInstalacion().getSelectedItem())));
+					if(getInstalacionFromNombre(String.valueOf(comboBoxInstalacion.getSelectedItem()))!=null)
+							llenarTabla(getInstalacionFromNombre(String.valueOf(comboBoxInstalacion.getSelectedItem())));
 				} catch (SQLException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
