@@ -3,7 +3,10 @@ package logic;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
+import java.util.Calendar;
 import java.util.Date;
+
+import javax.swing.JOptionPane;
 
 import db.Database;
 import db.Parser;
@@ -20,9 +23,10 @@ public class Reserva {
 	private Timestamp horaSalida;
 	private String modoPago;
 	private int precio;
+	private boolean pagado;
 
 	public Reserva(int reservaID, String socioID, int instalacionID, Timestamp horaComienzo, Timestamp horaFinal,
-			Timestamp horaEntrada, Timestamp horaSalida, String modoPago, int precio) {
+			Timestamp horaEntrada, Timestamp horaSalida, String modoPago, boolean pagado, int precio) {
 		this.reservaID = reservaID;
 		this.socioID= socioID;
 		this.instalacionID = instalacionID;
@@ -65,6 +69,10 @@ public class Reserva {
 
 	public String getModoPago() {
 		return modoPago;
+	}
+	
+	public boolean getPagado(){
+		return pagado;
 	}
 
 	public int getPrecio() {
@@ -129,9 +137,9 @@ public class Reserva {
 	 * 
 	 * @author David
 	 */
-	public void hacerReserva(int reservaID, String socioID, int instalacionID, Timestamp horaComienzo, Timestamp horaFinal, Timestamp horaEntrada, Timestamp horaSalida, String modoPago, int precio){
+	public void hacerReserva(int reservaID, String socioID, int instalacionID, Timestamp horaComienzo, Timestamp horaFinal, Timestamp horaEntrada, Timestamp horaSalida, String modoPago, boolean pagado, int precio){
 		//Nueva reserva
-		Reserva reserva = new Reserva(reservaID, socioID, instalacionID, horaComienzo, horaFinal, horaEntrada, horaSalida, modoPago, precio);
+		Reserva reserva = new Reserva(reservaID, socioID, instalacionID, horaComienzo, horaFinal, horaEntrada, horaSalida, modoPago, pagado, precio);
 		
 		//Comprobar maximo de horas
 		if(comprobarMaxHorasSeguidas(horaComienzo, horaFinal)){
@@ -145,27 +153,33 @@ public class Reserva {
 						if(comprobarDisponibilidadPorInstalacion(instalacionID, horaComienzo, horaFinal)){
 							boolean aux = addReservaABase(reserva);
 							if(aux){
-								System.out.println("Reserva " + reservaID + " añadida a la base de datos.");
+								JOptionPane.showMessageDialog(null, "Reserva " + reservaID + " añadida a la base de datos.");
 							}else{
-								System.out.println("Reserva " + reservaID + " no ha podido ser añadida a la base de datos.");
+								JOptionPane.showMessageDialog(null, "Reserva " + reservaID + " no ha podido ser añadida a la base de datos.");
 							}
 						}else{
-							System.out.println("Reserva " + reservaID + " tiene un problema de colision de horarios.");
+							JOptionPane.showMessageDialog(null, "Reserva " + reservaID + " tiene un problema de colision de horarios.");
 						}
 					}else{
-						System.out.println("El socio " + socioID + " tiene mas de una reserva simultanea.");
+						JOptionPane.showMessageDialog(null, "El socio " + socioID + " tiene mas de una reserva simultanea.");
 					}
 				}else{
-					System.out.println("Los horarios de la reserva " + reservaID + "no pueden durar mas de 2 horas");
+					JOptionPane.showMessageDialog(null, "Los horarios de la reserva " + reservaID + "no pueden durar mas de 2 horas");
 				}
 			}else{
-				System.out.println("No se puede hacer una reserva con menos de 1 hora, ni con mas de 15 dias, de antelacion.");
+				JOptionPane.showMessageDialog(null, "No se puede hacer una reserva con menos de 1 hora, ni con mas de 15 dias, de antelacion.");
 			}
 		}else{
-			System.out.println("Los horarios de la reserva " + reservaID + "no pueden durar mas de 2 horas.");
+			JOptionPane.showMessageDialog(null, "Los horarios de la reserva " + reservaID + "no pueden durar mas de 2 horas.");
 		}
 		
 		
+	}
+	
+	private int getDia(Timestamp t) {
+		Calendar cal = Calendar.getInstance();
+		cal.setTimeInMillis(t.getTime());
+		return cal.get(Calendar.DAY_OF_MONTH);
 	}
 	
 	/**
@@ -180,18 +194,18 @@ public class Reserva {
 		//fecha anterior a la actual
 		if(!horaComienzo.before(Timestamp.valueOf(LocalDateTime.now()))){
 			//mismo mes
-			if(horaComienzo.getMonth() == LocalDateTime.now().getMonthValue()){
+			if(horaComienzo.getMonth()+1 == LocalDateTime.now().getMonthValue()){
 				//dias
-				if(horaComienzo.getDay() - LocalDateTime.now().getDayOfMonth() >=1 && horaComienzo.getDay() - LocalDateTime.now().getDayOfMonth() <= 15){
+				if(getDia(horaComienzo) - LocalDateTime.now().getDayOfMonth() >=0 && getDia(horaComienzo) - LocalDateTime.now().getDayOfMonth() <= 15){
 					return true;
 				}else{
 					return false;
 				}
 			}else{
 				//Mes siguiente
-				if(horaComienzo.getMonth() - LocalDateTime.now().getMonthValue() <= 1){
+				if(horaComienzo.getMonth()+1 - LocalDateTime.now().getMonthValue() <= 1){
 					//dias
-					if(horaComienzo.getDay()+30 - LocalDateTime.now().getDayOfMonth() >=1 && horaComienzo.getDay()+30 - LocalDateTime.now().getDayOfMonth() <= 15){
+					if(getDia(horaComienzo)+30 - LocalDateTime.now().getDayOfMonth() >=1 && getDia(horaComienzo)+30 - LocalDateTime.now().getDayOfMonth() <= 15){
 						return true;
 					}else{
 						return false;
@@ -229,9 +243,14 @@ public class Reserva {
 	 */
 	private boolean addReservaABase(Reserva reserva){
 		try {
-			Database.getInstance().getC().createStatement().execute("INSERT INTO Reserva (reservaID, socioID, instalacionID, horaComienzo, horaFinal, horaEntrada, horaSalida, modoPago, precio) VALUES (" 
-			+ reserva.getReservaID() + "," + reserva.getSocioID() + "," + reserva.getInstalacionID() + ",'" + reserva.getHoraComienzo() + "','" + reserva.getHoraFinal() + "','" + reserva.getHoraEntrada() + "','" + reserva.getHoraSalida() + "','" + reserva.getModoPago()
-			+ "'," + reserva.getPrecio() + ");");
+			if(reserva.getHoraEntrada() != null)
+				Database.getInstance().getC().createStatement().execute("INSERT INTO Reserva (reservaID, socioID, instalacionID, horaComienzo, horaFinal, horaEntrada, horaSalida, modoPago, pagado, precio) VALUES (" 
+						+ reserva.getReservaID() + ",'" + reserva.getSocioID() + "'," + reserva.getInstalacionID() + ",'" + reserva.getHoraComienzo() + "','" + reserva.getHoraFinal() + "','" + reserva.getHoraEntrada() + "','" + reserva.getHoraSalida() + "','" + reserva.getModoPago()
+						+ "'," + reserva.getPagado() +"," + reserva.getPrecio() + ");");
+			else
+				Database.getInstance().getC().createStatement().execute("INSERT INTO Reserva (reservaID, socioID, instalacionID, horaComienzo, horaFinal, horaEntrada, horaSalida, modoPago, pagado, precio) VALUES (" 
+						+ reserva.getReservaID() + ",'" + reserva.getSocioID() + "'," + reserva.getInstalacionID() + ",'" + reserva.getHoraComienzo() + "','" + reserva.getHoraFinal() + "'," + reserva.getHoraEntrada() + "," + reserva.getHoraSalida() + ",'" + reserva.getModoPago()
+						+ "'," + reserva.getPagado() +"," + reserva.getPrecio() + ");");
 			return true;
 		} catch (SQLException e) {
 			e.printStackTrace();

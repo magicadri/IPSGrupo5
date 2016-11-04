@@ -55,21 +55,22 @@ public class VentanaCalendar extends JDialog {
 	private JLabel lbHora;
 	private JComboBox comboBoxInstalacion;
 	private DefaultComboBoxModel cmodel;
-	private String socioID = "adri";
+	private String socioID;
 	private JButton btnMisReservas;
+	private JButton btnReservarEstaInstalacion;
 
-	/**
-	 * Launch the application.
-	 */
-	public static void main(String[] args) {
-		try {
-			VentanaCalendar dialog = new VentanaCalendar();
-			dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
-			dialog.setVisible(true);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
+//	/**
+//	 * Launch the application.
+//	 */
+//	public static void main(String[] args) {
+//		try {
+//			VentanaCalendar dialog = new VentanaCalendar();
+//			dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+//			dialog.setVisible(true);
+//		} catch (Exception e) {
+//			e.printStackTrace();
+//		}
+//	}
 
 	public String getSocioID() {
 		return socioID;
@@ -82,7 +83,8 @@ public class VentanaCalendar extends JDialog {
 	/**
 	 * Create the dialog.
 	 */
-	public VentanaCalendar() {
+	public VentanaCalendar(String socioID) {
+		setSocioID(socioID);
 		setBounds(100, 100, 887, 470);
 		getContentPane().setLayout(new BorderLayout());
 		contentPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
@@ -105,6 +107,7 @@ public class VentanaCalendar extends JDialog {
 		contentPanel.add(getLbHora());
 		contentPanel.add(getComboBoxInstalacion());
 		contentPanel.add(getBtnMisReservas());
+		contentPanel.add(getBtnReservarEstaInstalacion());
 	}
 
 	private JDateChooser getDateChooser() {
@@ -348,5 +351,23 @@ public class VentanaCalendar extends JDialog {
 			btnMisReservas.setBounds(30, 159, 109, 23);
 		}
 		return btnMisReservas;
+	}
+	
+	/**
+	 * Abre la ventana de hacer reservas pasandole la ID del socio actual y la fecha
+	 */
+	private JButton getBtnReservarEstaInstalacion() {
+		if (btnReservarEstaInstalacion == null) {
+			btnReservarEstaInstalacion = new JButton("Reservar");
+			btnReservarEstaInstalacion.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent arg0) {
+					VentanaReserva vr = new VentanaReserva(getSocioID(), new Timestamp(dateChooser.getDate().getTime()));
+					vr.setVisible(true);
+					vr.setModal(true);
+				}
+			});
+			btnReservarEstaInstalacion.setBounds(517, 343, 215, 29);
+		}
+		return btnReservarEstaInstalacion;
 	}
 }

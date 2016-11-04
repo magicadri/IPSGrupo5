@@ -68,7 +68,7 @@ public class Parser {
 			reservas.add(new Reserva(rs.getInt("reservaID"),rs.getString("socioID"), rs.getInt("instalacionID"),
 					rs.getTimestamp("horaComienzo"), rs.getTimestamp("horaFinal"),
 					rs.getTimestamp("horaEntrada"), rs.getTimestamp("horaSalida"), 
-					rs.getString("modoPago"), rs.getInt("precio")));
+					rs.getString("modoPago"),rs.getBoolean("pagado"), rs.getInt("precio")));
 		}
 		
 		s = c.createStatement();

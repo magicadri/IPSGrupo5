@@ -77,27 +77,15 @@ public class VentanaPrincipal extends JFrame {
                 public void actionPerformed(ActionEvent arg0) {
                 	
                 	IDSocio =JOptionPane.showInputDialog("Introduce tu ID de socio: ");
-                	VentanaCalendar VC = new VentanaCalendar();
+                	VentanaCalendar VC = new VentanaCalendar(IDSocio);
             		VC.setVisible(true);
-            		for (Reserva reserva : Parser.getReservas()) {
-
-                	//Meter bucle para todos los socio ID 
-                	if(IDSocio.equals(reserva.getSocioID())){
-                	
-                		
-                		
-                	}
-                	
-                	else {
-                		JOptionPane.showMessageDialog(null, "No existe esa ID de socio");
-                	}
-            		}
-                	
-                	
-                	
-                
-                	
-
+            		
+//            		for (Reserva reserva : Parser.getReservas()) {
+//            			if(IDSocio.equals(reserva.getSocioID())) { }
+//            			else {
+//            				JOptionPane.showMessageDialog(null, "No existe esa ID de socio");
+//            			}
+//            		}
                 }
             });
         }
