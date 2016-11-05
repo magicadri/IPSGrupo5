@@ -23,10 +23,10 @@ public class Reserva {
 	private Timestamp horaSalida;
 	private String modoPago;
 	private int precio;
-	private boolean pagado;
+	private boolean reciboGenerado;
 
 	public Reserva(int reservaID, String socioID, int instalacionID, Timestamp horaComienzo, Timestamp horaFinal,
-			Timestamp horaEntrada, Timestamp horaSalida, String modoPago, boolean pagado, int precio) {
+			Timestamp horaEntrada, Timestamp horaSalida, String modoPago, boolean reciboGenerado, int precio) {
 		this.reservaID = reservaID;
 		this.socioID= socioID;
 		this.instalacionID = instalacionID;
@@ -36,7 +36,12 @@ public class Reserva {
 		this.horaSalida = horaSalida;
 		this.modoPago = modoPago;
 		this.precio = precio;
+		this.reciboGenerado=reciboGenerado;
 		this.parser = new Parser();
+	}
+
+	public boolean getReciboGenerado() {
+		return reciboGenerado;
 	}
 
 	public int getReservaID(){
@@ -71,10 +76,6 @@ public class Reserva {
 		return modoPago;
 	}
 	
-	public boolean getPagado(){
-		return pagado;
-	}
-
 	public int getPrecio() {
 		return precio;
 	}
@@ -137,9 +138,9 @@ public class Reserva {
 	 * 
 	 * @author David
 	 */
-	public void hacerReserva(int reservaID, String socioID, int instalacionID, Timestamp horaComienzo, Timestamp horaFinal, Timestamp horaEntrada, Timestamp horaSalida, String modoPago, boolean pagado, int precio){
+	public void hacerReserva(int reservaID, String socioID, int instalacionID, Timestamp horaComienzo, Timestamp horaFinal, Timestamp horaEntrada, Timestamp horaSalida, String modoPago,boolean reciboGenerado, int precio){
 		//Nueva reserva
-		Reserva reserva = new Reserva(reservaID, socioID, instalacionID, horaComienzo, horaFinal, horaEntrada, horaSalida, modoPago, pagado, precio);
+		Reserva reserva = new Reserva(reservaID, socioID, instalacionID, horaComienzo, horaFinal, horaEntrada, horaSalida, modoPago, reciboGenerado, precio);
 		
 		//Comprobar maximo de horas
 		if(comprobarMaxHorasSeguidas(horaComienzo, horaFinal)){
@@ -246,11 +247,11 @@ public class Reserva {
 			if(reserva.getHoraEntrada() != null)
 				Database.getInstance().getC().createStatement().execute("INSERT INTO Reserva (reservaID, socioID, instalacionID, horaComienzo, horaFinal, horaEntrada, horaSalida, modoPago, pagado, precio) VALUES (" 
 						+ reserva.getReservaID() + ",'" + reserva.getSocioID() + "'," + reserva.getInstalacionID() + ",'" + reserva.getHoraComienzo() + "','" + reserva.getHoraFinal() + "','" + reserva.getHoraEntrada() + "','" + reserva.getHoraSalida() + "','" + reserva.getModoPago()
-						+ "'," + reserva.getPagado() +"," + reserva.getPrecio() + ");");
+						+ "'," + reserva.getReciboGenerado() +"," + reserva.getPrecio() + ");");
 			else
 				Database.getInstance().getC().createStatement().execute("INSERT INTO Reserva (reservaID, socioID, instalacionID, horaComienzo, horaFinal, horaEntrada, horaSalida, modoPago, pagado, precio) VALUES (" 
 						+ reserva.getReservaID() + ",'" + reserva.getSocioID() + "'," + reserva.getInstalacionID() + ",'" + reserva.getHoraComienzo() + "','" + reserva.getHoraFinal() + "'," + reserva.getHoraEntrada() + "," + reserva.getHoraSalida() + ",'" + reserva.getModoPago()
-						+ "'," + reserva.getPagado() +"," + reserva.getPrecio() + ");");
+						+ "'," + reserva.getReciboGenerado() +"," + reserva.getPrecio() + ");");
 			return true;
 		} catch (SQLException e) {
 			e.printStackTrace();

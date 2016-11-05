@@ -98,8 +98,8 @@ public class VentanaPrincipal extends JFrame {
             btnAdmin.setBounds(397, 168, 308, 138);
             btnAdmin.addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent arg0) {
-                	VentanaCalendarAdmin VCA = new VentanaCalendarAdmin();
-                	VCA.setVisible(true);
+                	VentanaAdminMenu vam = new VentanaAdminMenu();
+                	vam.setVisible(true);
 
                 }
             });

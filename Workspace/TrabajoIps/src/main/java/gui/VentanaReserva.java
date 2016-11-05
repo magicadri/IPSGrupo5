@@ -50,14 +50,17 @@ public class VentanaReserva extends JDialog {
 	private Timestamp horaFinal;
 	private String modoPago;
 	private int precio;
+	private VentanaCalendar vc;
 	//---------------------------------------
 	
 	/**
 	 * Create the dialog.
 	 */
-	public VentanaReserva(String socioID, Timestamp fecha) {
+	public VentanaReserva(VentanaCalendar vc, String socioID, Timestamp fecha) {
+		super(vc,true);
 		this.socioID = socioID;
 		this.fecha = fecha;
+		this.vc=vc;
 		setTitle("Ventana reserva");
 		setBounds(100, 100, 891, 620);
 		getContentPane().setLayout(new BorderLayout());
@@ -92,7 +95,7 @@ public class VentanaReserva extends JDialog {
 			{
 				cbInstalaciones = new JComboBox<String>();
 				cbInstalaciones.setFont(new Font("Tahoma", Font.PLAIN, 25));
-				opcionesInstalacion = new String[] {"", "Piscina", "Cancha de futbol", "Pista de tennis"};
+				opcionesInstalacion = new String[] {"", "Piscina", "Cancha fútbol", "Pista tenis"};
 				DefaultComboBoxModel<String> modelo = new DefaultComboBoxModel<String>(opcionesInstalacion);
 				cbInstalaciones.setModel(modelo);
 				GridBagConstraints gbc_cbInstalaciones = new GridBagConstraints();
@@ -199,7 +202,12 @@ public class VentanaReserva extends JDialog {
 					public void actionPerformed(ActionEvent arg0) {
 						boolean isPosible = hacerComprobaciones();
 						if(isPosible){
-							hacerReserva();
+							try {
+								hacerReserva();
+							} catch (SQLException e) {
+								// TODO Auto-generated catch block
+								e.printStackTrace();
+							}
 						}else{
 							resetearVentana();
 						}
@@ -222,13 +230,15 @@ public class VentanaReserva extends JDialog {
 				buttonPane.add(cancelButton);
 			}
 		}
+		this.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
 	}
 	
 	/**
 	 * Hace la reserva seleccionada por el usuario
+	 * @throws SQLException 
 	 */
 	@SuppressWarnings("deprecation")
-	private void hacerReserva(){
+	private void hacerReserva() throws SQLException{
 		Timestamp tt = new Timestamp(fecha.getTime());
 		tt.setHours((int)spHoraComienzo.getValue());
 		horaComienzo = tt;
@@ -255,7 +265,9 @@ public class VentanaReserva extends JDialog {
 		
 		reserva = new Reserva(id, this.socioID, this.instalacionID, this.horaComienzo, this.horaFinal, nulo, nulo, this.modoPago, false, this.precio);
 		
-		reserva.hacerReserva(id, socioID, instalacionID, horaComienzo, horaFinal, nulo, nulo, modoPago, false, precio);
+		reserva.hacerReserva(id, socioID, instalacionID, horaComienzo, horaFinal, nulo, nulo, modoPago,false, precio);
+		parser.fillArrays();
+		vc.llenarTabla(vc.getInstalacionFromNombre(String.valueOf(vc.getComboBoxInstalacion().getSelectedItem())));
 	}
 	
 	

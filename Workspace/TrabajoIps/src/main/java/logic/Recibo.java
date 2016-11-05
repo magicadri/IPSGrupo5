@@ -1,40 +1,24 @@
 package logic;
 
-import java.sql.Timestamp;
-
 public class Recibo {
 	
-	private int reciboID;
-    private String socioID;
-    private int importe;
-    private Timestamp fecha;
-	
-	public int getReciboID() {
-		return reciboID;
+	private String socioID;
+	private int importe;
+	private String descripcion;
+	public Recibo(String socioID, int importe, String descripcion)
+	{
+		this.socioID=socioID;
+		this.importe=importe;
+		this.descripcion=descripcion;
 	}
-
-
 	public String getSocioID() {
 		return socioID;
 	}
-	
-	public int getImporte()
-	{
+	public int getImporte() {
 		return importe;
 	}
-
-
-	public Timestamp getFecha() {
-		return fecha;
-	}
-
-
-	public Recibo(int reciboID, String socioID, int importe, Timestamp fecha)
-	{
-		this.reciboID=reciboID;
-		this.socioID=socioID;
-		this.importe=importe;
-		this.fecha=fecha;
+	public String getDescripcion() {
+		return descripcion;
 	}
 
 }

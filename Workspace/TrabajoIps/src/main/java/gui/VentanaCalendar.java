@@ -58,19 +58,20 @@ public class VentanaCalendar extends JDialog {
 	private String socioID;
 	private JButton btnMisReservas;
 	private JButton btnReservarEstaInstalacion;
+	private VentanaCalendar ref = this;
 
-//	/**
-//	 * Launch the application.
-//	 */
-//	public static void main(String[] args) {
-//		try {
-//			VentanaCalendar dialog = new VentanaCalendar();
-//			dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
-//			dialog.setVisible(true);
-//		} catch (Exception e) {
-//			e.printStackTrace();
-//		}
-//	}
+	/**
+	 * Launch the application.
+	 */
+	public static void main(String[] args) {
+		try {
+			VentanaCalendar dialog = new VentanaCalendar("adri");
+			dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+			dialog.setVisible(true);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
 
 	public String getSocioID() {
 		return socioID;
@@ -117,8 +118,10 @@ public class VentanaCalendar extends JDialog {
 				public void propertyChange(PropertyChangeEvent arg0) {
 					limpiarTabla();
 					try {
-						if(getInstalacionFromNombre(String.valueOf(getComboBoxInstalacion().getSelectedItem()))!=null)
-								llenarTabla(getInstalacionFromNombre(String.valueOf(getComboBoxInstalacion().getSelectedItem())));
+						if (getInstalacionFromNombre(
+								String.valueOf(getComboBoxInstalacion().getSelectedItem())) != null)
+							llenarTabla(getInstalacionFromNombre(
+									String.valueOf(getComboBoxInstalacion().getSelectedItem())));
 					} catch (SQLException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
@@ -129,30 +132,31 @@ public class VentanaCalendar extends JDialog {
 		}
 		return dateChooser;
 	}
-	
-	private Instalacion getInstalacionFromNombre(String nombre) throws SQLException
-	{
+
+	Instalacion getInstalacionFromNombre(String nombre) throws SQLException {
 		Parser parser = new Parser();
 		parser.fillArrays();
-		for(Instalacion i : parser.getInstalaciones())
-			if(i.getInstalacion_nombre().equals(nombre))
+		for (Instalacion i : parser.getInstalaciones())
+			if (i.getInstalacion_nombre().equals(nombre))
 				return i;
 		return null;
 	}
-	
-	private int isItMe(int hour, String inst)
-	{
+
+	private int isItMe(int hour, String inst) {
 		int id = 0;
-		if(inst.equals("Piscina"))
-			id=1;
-		else if(inst.equals("Pista tenis"))
-			id=2;
-		else if(inst.equals("Cancha fútbol"))
-			id=3;
-		for(Reserva res : parser.getReservas())
-			if(res.getHoraComienzo().getHours()== hour && res.getInstalacionID() == id && res.getSocioID().equals(socioID))
-				return 0;
-		if(id!=0)
+		int duracion = 0;
+		for (Instalacion i : parser.getInstalaciones())
+			if (i.getInstalacion_nombre().equals(inst)) {
+				id = i.getInstalacionID();
+			}
+		for (Reserva res : parser.getReservas()) {
+			duracion = getHora(res.getHoraFinal()) - getHora(res.getHoraComienzo());
+			for (int i = 0; i < duracion; i++)
+				if (getHora(res.getHoraComienzo()) + i == hour)
+					if (res.getInstalacionID() == id && res.getSocioID().equals(socioID))
+						return 0;
+		}
+		if (id != 0)
 			return 1;
 		return -1;
 	}
@@ -160,20 +164,19 @@ public class VentanaCalendar extends JDialog {
 	private JTable getTable() {
 		if (table == null) {
 			table = new JTable() {
-			    @Override
-			    public Component prepareRenderer(TableCellRenderer renderer, int row, int col) {
-			        Component comp = super.prepareRenderer(renderer, row, col);
-			        String value = String.valueOf(getModel().getValueAt(row, col));
-			        if (isItMe(row, value)==0) {
-			                comp.setBackground(Color.red);
-			            } else if(isItMe(row,value)==1)
-			            {
-			                comp.setBackground(Color.green);
-			            }else
-			            	comp.setBackground(Color.WHITE);
-			        
-			        return comp;
-			    }
+				@Override
+				public Component prepareRenderer(TableCellRenderer renderer, int row, int col) {
+					Component comp = super.prepareRenderer(renderer, row, col);
+					String value = String.valueOf(getModel().getValueAt(row, col));
+					if (isItMe(row, value) == 0) {
+						comp.setBackground(Color.red);
+					} else if (isItMe(row, value) == 1) {
+						comp.setBackground(Color.green);
+					} else
+						comp.setBackground(Color.WHITE);
+
+					return comp;
+				}
 			};
 			table.setBounds(175, 11, 248, 384);
 
@@ -187,17 +190,19 @@ public class VentanaCalendar extends JDialog {
 					new String[] { "Horas", "Disponibilidad" });
 			table.setModel(dm);
 
-			/*// Listener para tomar los valores de las filas de la tabla
-			table.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
-				@Override
-				public void valueChanged(ListSelectionEvent ev) {
-					// Pone en la descripcion el valor de la columna
-					// fila/columna
-					txPDescripcion.setText((String) table.getModel().getValueAt(table.getSelectedRow(), 0) + " "
-							+ table.getModel().getValueAt(table.getSelectedRow(), 1));
-				}
-
-			});*/
+			/*
+			 * // Listener para tomar los valores de las filas de la tabla
+			 * table.getSelectionModel().addListSelectionListener(new
+			 * ListSelectionListener() {
+			 * 
+			 * @Override public void valueChanged(ListSelectionEvent ev) { //
+			 * Pone en la descripcion el valor de la columna // fila/columna
+			 * txPDescripcion.setText((String)
+			 * table.getModel().getValueAt(table.getSelectedRow(), 0) + " " +
+			 * table.getModel().getValueAt(table.getSelectedRow(), 1)); }
+			 * 
+			 * });
+			 */
 		}
 		return table;
 	}
@@ -234,33 +239,26 @@ public class VentanaCalendar extends JDialog {
 	 * 
 	 * @param ins,
 	 *            Instalacion
+	 * @throws SQLException
 	 */
 	@SuppressWarnings("deprecation")
-	private void llenarTabla(Instalacion ins) {
-		TableColumn tcol;
-		ColorCellRed ccr = new ColorCellRed();
-		ColorCellGreen ccg = new ColorCellGreen();
-
+	void llenarTabla(Instalacion ins) throws SQLException {
+		parser.fillArrays();
 		for (Reserva reserva : parser.getReservas()) {
 
 			Date a = getDateChooser().getDate();
 			String dia = sacarDia(a);
 			if (String.valueOf(getDia(reserva.getHoraComienzo())).equals(dia)) {
 				if (getInstalacionIDFromNombre(String.valueOf(comboBoxInstalacion.getSelectedItem())) != -1)
-					if (ins.getInstalacionID() == (reserva.getInstalacionID())) { 
-						int duracion = reserva.getHoraFinal().getHours() - reserva.getHoraComienzo().getHours();
-						if(duracion>1)
-							for(int i=0; i<duracion;i++)
+					if (ins.getInstalacionID() == (reserva.getInstalacionID())) {
+						int duracion = getHora(reserva.getHoraFinal()) - getHora(reserva.getHoraComienzo());
+						if (duracion > 1)
+							for (int i = 0; i < duracion; i++)
 								table.setValueAt(String.valueOf(comboBoxInstalacion.getSelectedItem()),
-										reserva.getHoraComienzo().getHours()+i, 1);
+										getHora(reserva.getHoraComienzo()) + i, 1);
 						else
 							table.setValueAt(String.valueOf(comboBoxInstalacion.getSelectedItem()),
-								reserva.getHoraComienzo().getHours(), 1);
-						tcol = table.getColumnModel().getColumn(1);
-						if (reserva.getSocioID().equals(socioID))
-							tcol.setCellRenderer(ccr);
-						else
-							tcol.setCellRenderer(ccg);
+									getHora(reserva.getHoraComienzo()), 1);
 					}
 			}
 		}
@@ -317,7 +315,13 @@ public class VentanaCalendar extends JDialog {
 		return cal.get(Calendar.DAY_OF_MONTH);
 	}
 
-	private JComboBox getComboBoxInstalacion() {
+	private int getHora(Timestamp t) {
+		Calendar cal = Calendar.getInstance();
+		cal.setTimeInMillis(t.getTime());
+		return cal.get(Calendar.HOUR_OF_DAY);
+	}
+
+	JComboBox getComboBoxInstalacion() {
 		String[] modelItems = new String[] { "Elija instalacion:", "Piscina", "Cancha fútbol", "Pista tenis" };
 		cmodel = new DefaultComboBoxModel(modelItems);
 		if (comboBoxInstalacion == null) {
@@ -326,19 +330,20 @@ public class VentanaCalendar extends JDialog {
 			comboBoxInstalacion.setModel(cmodel);
 		}
 		comboBoxInstalacion.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent arg0) {
-            	limpiarTabla();
+			public void actionPerformed(ActionEvent arg0) {
+				limpiarTabla();
 				try {
-					if(getInstalacionFromNombre(String.valueOf(comboBoxInstalacion.getSelectedItem()))!=null)
-							llenarTabla(getInstalacionFromNombre(String.valueOf(comboBoxInstalacion.getSelectedItem())));
+					if (getInstalacionFromNombre(String.valueOf(comboBoxInstalacion.getSelectedItem())) != null)
+						llenarTabla(getInstalacionFromNombre(String.valueOf(comboBoxInstalacion.getSelectedItem())));
 				} catch (SQLException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
-            }
-        });
+			}
+		});
 		return comboBoxInstalacion;
 	}
+
 	private JButton getBtnMisReservas() {
 		if (btnMisReservas == null) {
 			btnMisReservas = new JButton("Mis reservas");
@@ -352,18 +357,19 @@ public class VentanaCalendar extends JDialog {
 		}
 		return btnMisReservas;
 	}
-	
+
 	/**
-	 * Abre la ventana de hacer reservas pasandole la ID del socio actual y la fecha
+	 * Abre la ventana de hacer reservas pasandole la ID del socio actual y la
+	 * fecha
 	 */
 	private JButton getBtnReservarEstaInstalacion() {
 		if (btnReservarEstaInstalacion == null) {
 			btnReservarEstaInstalacion = new JButton("Reservar");
 			btnReservarEstaInstalacion.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent arg0) {
-					VentanaReserva vr = new VentanaReserva(getSocioID(), new Timestamp(dateChooser.getDate().getTime()));
+					VentanaReserva vr = new VentanaReserva(ref, getSocioID(),
+							new Timestamp(dateChooser.getDate().getTime()));
 					vr.setVisible(true);
-					vr.setModal(true);
 				}
 			});
 			btnReservarEstaInstalacion.setBounds(517, 343, 215, 29);
