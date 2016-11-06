@@ -7,8 +7,11 @@ import java.sql.Statement;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+
+import javax.swing.JOptionPane;
 
 import logic.Actividad;
 import logic.Cuota;
@@ -188,18 +191,30 @@ public class Parser {
 			if (reserva.getHoraComienzo().getHours()==horaC.getHours() && reserva.getHoraFinal().getHours()==horaF.getHours() && reserva.getSocioID().equals(socioID)  &&
 					reserva.getHoraComienzo().getMonth() == horaC.getMonth() && reserva.getHoraComienzo().getYear() == horaC.getYear()) {
 				//Cancelado mas de una hora antes
-				if( reserva.getHoraComienzo().getHours() - LocalDateTime.now().getHour() > 1){
+				if(getDia(reserva.getHoraComienzo()) == LocalDateTime.now().getDayOfMonth())
+					if( reserva.getHoraComienzo().getHours() - LocalDateTime.now().getHour() > 1){
+						resultado = true;
+						aux = 1;
+					}else{
+						aux = 1;
+						resultado = false;
+						System.out.println("No se puede cancelar una reserva menos de 1 hora antes.");
+					}
+				else{
 					resultado = true;
-				}else{
 					aux = 1;
-					resultado = false;
-					System.out.println("No se puede cancelar una reserva menos de 1 hora antes.");
-				}				
+				}
 			}
 		}
 		if(aux == 0)
-			System.out.println("No se ha encontrado la reserva del socio: " + socioID);
+			JOptionPane.showMessageDialog(null, "No se ha encontrado la reserva del socio: " + socioID);
 		return resultado;
+	}
+	
+	private int getDia(Timestamp t) {
+		Calendar cal = Calendar.getInstance();
+		cal.setTimeInMillis(t.getTime());
+		return cal.get(Calendar.DAY_OF_MONTH);
 	}
 	
 	/**

@@ -89,11 +89,14 @@ public class Reserva {
 	 */
 	
 	//Cancelar reservas por el centro para que queden libres para socios
-	public void cancelarReserva(String socioID, Timestamp horaComienzo, Timestamp horaFinal){		
+	public boolean cancelarReserva(String socioID, Timestamp horaComienzo, Timestamp horaFinal){
+		boolean result = marcarReserva(socioID, horaComienzo, horaFinal);
 		if(marcarReserva(socioID, horaComienzo, horaFinal)){
 			System.out.println("Reserva del socio " + socioID + " borrada.");
 			removeReservaDeBase(parser.borrarReserva(socioID, horaComienzo, horaFinal));
+			return result;
 		}
+		return result;
 	}
 	
 	/**

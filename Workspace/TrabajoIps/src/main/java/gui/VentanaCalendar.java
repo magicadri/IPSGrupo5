@@ -59,6 +59,7 @@ public class VentanaCalendar extends JDialog {
 	private JButton btnMisReservas;
 	private JButton btnReservarEstaInstalacion;
 	private VentanaCalendar ref = this;
+	private JButton btnCancelarReserva;
 
 	/**
 	 * Launch the application.
@@ -109,6 +110,7 @@ public class VentanaCalendar extends JDialog {
 		contentPanel.add(getComboBoxInstalacion());
 		contentPanel.add(getBtnMisReservas());
 		contentPanel.add(getBtnReservarEstaInstalacion());
+		contentPanel.add(getBtnCancelarReserva());
 	}
 
 	private JDateChooser getDateChooser() {
@@ -207,10 +209,19 @@ public class VentanaCalendar extends JDialog {
 		return table;
 	}
 
+	public void actualizar() {
+		parser.removeArrays();
+		try {
+			parser.fillArrays();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
+
 	/**
 	 * Limpia los valores de la tabla en la columna de las reservas
 	 */
-	private void limpiarTabla() {
+	public void limpiarTabla() {
 		for (int i = 0; i < table.getRowCount(); i++) {
 			table.clearSelection();
 			table.setValueAt("", i, 1);
@@ -372,37 +383,51 @@ public class VentanaCalendar extends JDialog {
 					vr.setVisible(true);
 				}
 			});
-			btnReservarEstaInstalacion.setBounds(517, 343, 215, 29);
+			btnReservarEstaInstalacion.setBounds(517, 314, 215, 29);
 		}
 		return btnReservarEstaInstalacion;
 	}
-	
+
 	@SuppressWarnings("deprecation")
 	public void llenarTablaUsuario() {
 		TableColumn tcol;
 
 		for (Reserva reserva : parser.getReservas()) {
-			
-						int duracion = reserva.getHoraFinal().getHours() - reserva.getHoraComienzo().getHours();
-						if(duracion>1)
-							if(socioID.equals(reserva.getSocioID())  && (reserva.getInstalacionID()== 1)){
-							for(int i=0; i<duracion;i++)
-								table.setValueAt("Piscina",
-										reserva.getHoraComienzo().getHours()+i, 1);
-								
-							}
-							else if(socioID.equals(reserva.getSocioID())  && (reserva.getInstalacionID()== 2))
-								for(int i=0; i<duracion;i++)
-									table.setValueAt("Cancha de futbol",
-											reserva.getHoraComienzo().getHours()+i, 1);
-							
-							else if(socioID.equals(reserva.getSocioID())  && (reserva.getInstalacionID()== 3))
-								for(int i=0; i<duracion;i++)
-									table.setValueAt("Pista de tenis",
-											reserva.getHoraComienzo().getHours()+i, 1);
-					}
-			}
+
+			int duracion = reserva.getHoraFinal().getHours() - reserva.getHoraComienzo().getHours();
+			if (duracion > 1)
+				if (socioID.equals(reserva.getSocioID()) && (reserva.getInstalacionID() == 1)) {
+					for (int i = 0; i < duracion; i++)
+						table.setValueAt("Piscina", reserva.getHoraComienzo().getHours() + i, 1);
+
+				} else if (socioID.equals(reserva.getSocioID()) && (reserva.getInstalacionID() == 2))
+					for (int i = 0; i < duracion; i++)
+						table.setValueAt("Cancha de futbol", reserva.getHoraComienzo().getHours() + i, 1);
+
+				else if (socioID.equals(reserva.getSocioID()) && (reserva.getInstalacionID() == 3))
+					for (int i = 0; i < duracion; i++)
+						table.setValueAt("Pista de tenis", reserva.getHoraComienzo().getHours() + i, 1);
+		}
+	}
 	
-	
+	/**
+	 * Abre la ventana de cancelar reservas pasandole la ID del socio actual
+	 * y la fecha
+	 * @return
+	 */
+	private JButton getBtnCancelarReserva() {
+		if (btnCancelarReserva == null) {
+			btnCancelarReserva = new JButton("Cancelar reserva");
+			btnCancelarReserva.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent arg0) {
+					VentanaCancelarReserva vcr = new VentanaCancelarReserva(ref, getSocioID(),
+							new Timestamp(dateChooser.getDate().getTime()));
+					vcr.setVisible(true);
+				}
+			});
+			btnCancelarReserva.setBounds(517, 366, 215, 29);
+		}
+		return btnCancelarReserva;
+	}
 
 }
