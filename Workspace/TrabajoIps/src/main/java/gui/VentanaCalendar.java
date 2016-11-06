@@ -391,6 +391,8 @@ public class VentanaCalendar extends JDialog {
 	@SuppressWarnings("deprecation")
 	public void llenarTablaUsuario() {
 		TableColumn tcol;
+		ColorCellRed ccr = new ColorCellRed();
+		ColorCellGreen ccg = new ColorCellGreen();
 
 		for (Reserva reserva : parser.getReservas()) {
 
@@ -399,6 +401,7 @@ public class VentanaCalendar extends JDialog {
 				if (socioID.equals(reserva.getSocioID()) && (reserva.getInstalacionID() == 1)) {
 					for (int i = 0; i < duracion; i++)
 						table.setValueAt("Piscina", reserva.getHoraComienzo().getHours() + i, 1);
+						
 
 				} else if (socioID.equals(reserva.getSocioID()) && (reserva.getInstalacionID() == 2))
 					for (int i = 0; i < duracion; i++)

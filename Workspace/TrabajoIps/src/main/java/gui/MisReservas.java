@@ -32,6 +32,7 @@ import javax.swing.JTable;
 import javax.swing.JButton;
 import java.awt.event.ActionListener;
 import java.sql.SQLException;
+import java.time.LocalDate;
 import java.awt.event.ActionEvent;
 
 
@@ -127,7 +128,29 @@ public class MisReservas extends JFrame {
 	
 	private JTable getTable() {
 		if (table == null) {
-			table = new JTable();
+			table = new JTable(){
+				/* OJO
+				@Override
+				public Component prepareRenderer(TableCellRenderer renderer, int row, int col) {
+					Component comp = super.prepareRenderer(renderer, row, col);
+					
+					if((Integer)spinnerDesde.getValue() == 0)
+						return comp;
+					
+					for(int i=0;i<=table.getRowCount(); i++)
+						
+					if ((Integer)table.getModel().getValueAt(i, 1) < LocalDate.now().getDayOfMonth()) {
+						comp.setBackground(Color.red);
+					} else 
+						comp.setBackground(Color.GREEN);
+					
+
+					return comp;
+				}
+			
+			*/
+			};
+			
 			table.setBounds(177, 68, 378, 384);
 
 			DataTableModel dm = new DataTableModel(
@@ -255,7 +278,7 @@ public class MisReservas extends JFrame {
 	private JSpinner getSpinnerDesde() {
 		if (spinnerDesde == null) {
 			spinnerDesde = new JSpinner();
-			spinnerDesde.setModel(new SpinnerNumberModel(1, 0, 31, 1));
+			spinnerDesde.setModel(new SpinnerNumberModel(0, 0, 31, 1));
 			spinnerDesde.setBounds(26, 65, 36, 20);
 		}
 		return spinnerDesde;
@@ -296,6 +319,9 @@ public class MisReservas extends JFrame {
 	
 	@SuppressWarnings("deprecation")
 	public void llenarTablaUsuario() {
+		ColorCellRed ccr = new ColorCellRed();
+		ColorCellGreen ccg = new ColorCellGreen();
+		TableColumn tcol = null;
 		int i = 0;
 		for (Reserva reserva : parser.getReservas()) {
 			int Desde = (Integer) spinnerDesde.getValue();
@@ -311,7 +337,13 @@ public class MisReservas extends JFrame {
 								table.setValueAt(reserva.getHoraComienzo().getDate(),i,1);
 								table.setValueAt(reserva.getHoraComienzo().getHours() +":"
 										+reserva.getHoraComienzo().getMinutes()+reserva.getHoraComienzo().getMinutes(),i,2);
+								
+								//No funciona porque no muestra las reservas que ya han pasado
+								if(reserva.getHoraComienzo().getDate()< Desde){
+									tcol = table.getColumnModel().getColumn(1);
+									tcol.setCellRenderer(ccr);
 
+								}
 							}
 							
 							else if(getSocioID().equals(reserva.getSocioID())  && (reserva.getInstalacionID()== 2)){
@@ -345,21 +377,21 @@ public class MisReservas extends JFrame {
 	private JLabel getLblNewLabel() {
 		if (lblNewLabel == null) {
 			lblNewLabel = new JLabel("Hora");
-			lblNewLabel.setBounds(226, 52, 46, 14);
+			lblNewLabel.setBounds(469, 52, 46, 14);
 		}
 		return lblNewLabel;
 	}
 	private JLabel getLblInstalacin() {
 		if (lblInstalacin == null) {
 			lblInstalacin = new JLabel("Instalaci\u00F3n");
-			lblInstalacin.setBounds(342, 52, 66, 14);
+			lblInstalacin.setBounds(201, 52, 66, 14);
 		}
 		return lblInstalacin;
 	}
 	private JLabel getLblNewLabel_1() {
 		if (lblNewLabel_1 == null) {
 			lblNewLabel_1 = new JLabel("Dia");
-			lblNewLabel_1.setBounds(476, 52, 46, 14);
+			lblNewLabel_1.setBounds(348, 52, 46, 14);
 		}
 		return lblNewLabel_1;
 	}

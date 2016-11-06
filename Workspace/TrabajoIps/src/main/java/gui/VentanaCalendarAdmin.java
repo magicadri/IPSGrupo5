@@ -65,6 +65,9 @@ public class VentanaCalendarAdmin extends JDialog {
 	private DefaultComboBoxModel cmodel;
 	private String socioID;
 	private String SocioTxB;
+	private JButton btnCancelarReserva;
+	private VentanaCalendarAdmin ref = this;
+
 
 	/**
 	 * Create the dialog.
@@ -93,6 +96,7 @@ public class VentanaCalendarAdmin extends JDialog {
 		contentPanel.add(getBtnLlegada());
 		contentPanel.add(getBtnSalida());
 		contentPanel.add(getComboBoxInstalacion());
+		contentPanel.add(getBtnCancelarReserva());
 
 	}
 
@@ -161,7 +165,7 @@ public class VentanaCalendarAdmin extends JDialog {
 	/**
 	 * Limpia los valores de la tabla en la columna de las reservas
 	 */
-	private void limpiarTabla() {
+	public void limpiarTabla() {
 		for (int i = 0; i < table.getRowCount(); i++) {
 			table.clearSelection();
 			table.setValueAt("", i, 1);
@@ -349,7 +353,7 @@ public class VentanaCalendarAdmin extends JDialog {
 		return cal.get(Calendar.DAY_OF_MONTH);
 	}
 
-	private JComboBox getComboBoxInstalacion() {
+	public JComboBox getComboBoxInstalacion() {
 		String[] modelItems = new String[] { "Elija instalacion:", "Piscina", "Cancha fútbol", "Pista tenis" };
 		cmodel = new DefaultComboBoxModel(modelItems);
 		if (comboBoxInstalacion == null) {
@@ -373,7 +377,7 @@ public class VentanaCalendarAdmin extends JDialog {
 		return comboBoxInstalacion;
 	}
 
-	private Instalacion getInstalacionFromNombre(String nombre) throws SQLException {
+	public Instalacion getInstalacionFromNombre(String nombre) throws SQLException {
 		Parser parser = new Parser();
 		parser.fillArrays();
 		for (Instalacion i : parser.getInstalaciones())
@@ -381,9 +385,9 @@ public class VentanaCalendarAdmin extends JDialog {
 				return i;
 		return null;
 	}
+	
 
-	@SuppressWarnings("deprecation")
-	private void llenarTabla(Instalacion ins) {
+	@SuppressWarnings("deprecation") public void llenarTabla(Instalacion ins) {
 		TableColumn tcol;
 		ColorCellRed ccr = new ColorCellRed();
 		ColorCellGreen ccg = new ColorCellGreen();
@@ -418,4 +422,21 @@ public class VentanaCalendarAdmin extends JDialog {
 				return i.getInstalacionID();
 		return -1;
 	}
+	private JButton getBtnCancelarReserva() {
+		if (btnCancelarReserva == null) {
+			btnCancelarReserva = new JButton("Cancelar reserva");
+			btnCancelarReserva.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent arg0) {
+					VentanaCancelarReservaAdmin vcr = new VentanaCancelarReservaAdmin(ref, "admin",
+							new Timestamp(dateChooser.getDate().getTime()));
+					vcr.setVisible(true);
+				}
+			});
+			btnCancelarReserva.setBounds(644, 230, 217, 23);
+		}
+		return btnCancelarReserva;
+	}
+	
+	
+	
 }

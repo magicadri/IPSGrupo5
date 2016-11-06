@@ -21,6 +21,7 @@ public class VentanaAdminMenu extends JFrame {
 	private JButton btnConsultarDisponibilidad;
 	private JButton btnPasarPago;
 	private JButton btnQuitarRecibo;
+	private JButton btnAdministracion;
 
 	/**
 	 * Create the frame.
@@ -32,6 +33,11 @@ public class VentanaAdminMenu extends JFrame {
 		setContentPane(contentPane);
 		GridBagLayout gbl_contentPane = new GridBagLayout();
 		contentPane.setLayout(gbl_contentPane);
+		GridBagConstraints gbc_btnAdministracion = new GridBagConstraints();
+		gbc_btnAdministracion.insets = new Insets(0, 0, 5, 5);
+		gbc_btnAdministracion.gridx = 3;
+		gbc_btnAdministracion.gridy = 1;
+		contentPane.add(getBtnAdministracion(), gbc_btnAdministracion);
 		GridBagConstraints gbc_btnHacerReserva = new GridBagConstraints();
 		gbc_btnHacerReserva.insets = new Insets(0, 0, 5, 0);
 		gbc_btnHacerReserva.gridx = 7;
@@ -116,5 +122,17 @@ public class VentanaAdminMenu extends JFrame {
 			});
 		}
 		return btnQuitarRecibo;
+	}
+	private JButton getBtnAdministracion() {
+		if (btnAdministracion == null) {
+			btnAdministracion = new JButton("Administracion");
+			btnAdministracion.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent arg0) {
+					VentanaCalendarAdmin VCA = new VentanaCalendarAdmin();
+					VCA.setVisible(true);
+				}
+			});
+		}
+		return btnAdministracion;
 	}
 }
