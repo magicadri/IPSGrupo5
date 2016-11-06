@@ -1,5 +1,7 @@
 package gui;
 
+import java.awt.Color;
+import java.awt.Component;
 import java.awt.EventQueue;
 
 import javax.swing.JFrame;
@@ -8,6 +10,8 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableCellRenderer;
+import javax.swing.table.TableColumn;
 
 import db.Parser;
 
@@ -25,6 +29,10 @@ import java.util.List;
 import java.util.Objects;
 
 import javax.swing.JTable;
+import javax.swing.JButton;
+import java.awt.event.ActionListener;
+import java.sql.SQLException;
+import java.awt.event.ActionEvent;
 
 
 public class MisReservas extends JFrame {
@@ -35,16 +43,18 @@ public class MisReservas extends JFrame {
 	private static final long serialVersionUID = 1L;
 	private JPanel contentPane;
 	private JLabel lblDesde;
-	private JSpinner spinnerComienzo;
+	private JSpinner spinnerDesde;
 	private JLabel lblHasta;
 	private JSpinner spinnerHasta;
-	private Parser Parser = new Parser();
-	//List<Reserva> Reservas = new ArrayList<>(Parser.getReservas());
-	private String socioID = "adri";
-	
-	
+	private Parser parser;
+	VentanaPrincipal VP = new VentanaPrincipal();
 
 	private JTable table;
+	private JButton btnActualizar;
+	String socioID;
+	private JLabel lblNewLabel;
+	private JLabel lblInstalacin;
+	private JLabel lblNewLabel_1;
 
 
 	
@@ -52,14 +62,14 @@ public class MisReservas extends JFrame {
 	/**
 	 * Launch the application.
 	 */
+	
+	/*
 	public static void main(String[] args) {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
 					MisReservas frame = new MisReservas();
-					Parser Parser = new Parser();
 					frame.setVisible(true);
-					System.out.println("dsdasdadasda");
 
 					
 					
@@ -70,11 +80,20 @@ public class MisReservas extends JFrame {
 			}
 		});
 	}
+	
 
+	
+	
+	*/ 
+	
+	
+	
+	
 	/**
 	 * Create the frame.
 	 */
-	public MisReservas() {
+	public MisReservas(String socioID) {
+		setSocioID(socioID);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 787, 532);
 		contentPane = new JPanel();
@@ -82,11 +101,21 @@ public class MisReservas extends JFrame {
 		setContentPane(contentPane);
 		contentPane.setLayout(null);
 		contentPane.add(getLblDesde());
-		contentPane.add(getSpinnerComienzo());
+		contentPane.add(getSpinnerDesde());
 		contentPane.add(getLblHasta());
 		contentPane.add(getSpinnerHasta());
 		contentPane.add(getTable());
-		
+		contentPane.add(getBtnActualizar());
+		contentPane.add(getLblNewLabel());
+		contentPane.add(getLblInstalacin());
+		contentPane.add(getLblNewLabel_1());
+		parser = new Parser();
+		try {
+			parser.fillArrays();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		
 		
 	
@@ -94,6 +123,39 @@ public class MisReservas extends JFrame {
 		//RellenarTabla();
 				
 	}
+	
+	
+	private JTable getTable() {
+		if (table == null) {
+			table = new JTable();
+			table.setBounds(177, 68, 378, 384);
+
+			DataTableModel dm = new DataTableModel(
+					new Object[][] { { null, null,null }, {  null, null,null }, {  null, null,null }, { null, null,null },
+							{  null,null,null }, {  null,null,null }, {  null, null,null }, {  null, null,null },
+							{  null, null,null }, {  null, null,null }, {  null, null,null }, {  null, null,null },
+							{  null, null,null }, {  null, null,null }, { null, null,null }, {  null, null,null },
+							{  null, null,null }, {  null, null,null }, {  null, null,null }, {  null, null,null },
+							{  null, null,null }, {  null, null,null }, {  null, null,null }, {  null, null,null }, },
+					new String[] { "Horas", "Instalación", "Día" });
+			table.setModel(dm);
+
+			/*// Listener para tomar los valores de las filas de la tabla
+			table.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
+				@Override
+				public void valueChanged(ListSelectionEvent ev) {
+					// Pone en la descripcion el valor de la columna
+					// fila/columna
+					txPDescripcion.setText((String) table.getModel().getValueAt(table.getSelectedRow(), 0) + " "
+							+ table.getModel().getValueAt(table.getSelectedRow(), 1));
+				}
+
+			});*/
+		}
+		return table;
+	}
+	
+	/*
 	
 	private JTable getTable() {
 		if (table == null) {
@@ -163,6 +225,8 @@ public class MisReservas extends JFrame {
 		}
 		return table;
 	}
+	*/
+	
 	
 	
 	
@@ -188,13 +252,13 @@ public class MisReservas extends JFrame {
 		}
 		return lblDesde;
 	}
-	private JSpinner getSpinnerComienzo() {
-		if (spinnerComienzo == null) {
-			spinnerComienzo = new JSpinner();
-			spinnerComienzo.setModel(new SpinnerNumberModel(0, 0, 31, 1));
-			spinnerComienzo.setBounds(26, 65, 36, 20);
+	private JSpinner getSpinnerDesde() {
+		if (spinnerDesde == null) {
+			spinnerDesde = new JSpinner();
+			spinnerDesde.setModel(new SpinnerNumberModel(1, 0, 31, 1));
+			spinnerDesde.setBounds(26, 65, 36, 20);
 		}
-		return spinnerComienzo;
+		return spinnerDesde;
 	}
 	private JLabel getLblHasta() {
 		if (lblHasta == null) {
@@ -206,32 +270,110 @@ public class MisReservas extends JFrame {
 	private JSpinner getSpinnerHasta() {
 		if (spinnerHasta == null) {
 			spinnerHasta = new JSpinner();
-			spinnerHasta.setModel(new SpinnerNumberModel(0, 0, 31, 1));
+			spinnerHasta.setModel(new SpinnerNumberModel(31, 0, 31, 1));
 			spinnerHasta.setBounds(26, 146, 39, 20);
 		}
 		return spinnerHasta;
 	}
-	
-	//OJO
-	
-	public void comprobarSpinner(){
-		Parser.getReservas();
+
 		
-	}
 	
-	/*
-	public void RellenarTabla(){
-		
-		ArrayList<Reserva> Lista = Parser.getReservas();
-		DefaultTableModel model = (DefaultTableModel) table.getModel();
-		Object[] row = new Object[8];
-		for(int i=0;i<Reservas.size(); i++){
-			row[0] = Reservas.get(i).getInstalacionID();
+	private JButton getBtnActualizar() {
+		if (btnActualizar == null) {
+			btnActualizar = new JButton("Actualizar");
+			btnActualizar.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent arg0) {
+					limpiarTabla();
+					llenarTablaUsuario();
+				}
+			});
+			btnActualizar.setBounds(34, 206, 89, 23);
 		}
-		
-			model.addRow(row);
-		
+		return btnActualizar;
 	}
-	*/
 	
+	
+	
+	@SuppressWarnings("deprecation")
+	public void llenarTablaUsuario() {
+		int i = 0;
+		for (Reserva reserva : parser.getReservas()) {
+			int Desde = (Integer) spinnerDesde.getValue();
+			int Hasta = (Integer) spinnerHasta.getValue();
+			
+			if(reserva.getHoraComienzo().getDate() >= Desde  && reserva.getHoraComienzo().getDate() <= Hasta){
+						int duracion = reserva.getHoraFinal().getHours() - reserva.getHoraComienzo().getHours();
+						
+						if(duracion>=1)
+							if(getSocioID().equals(reserva.getSocioID())  && (reserva.getInstalacionID() == 1)){
+							
+								table.setValueAt("Piscina",i,0);
+								table.setValueAt(reserva.getHoraComienzo().getDate(),i,1);
+								table.setValueAt(reserva.getHoraComienzo().getHours() +":"
+										+reserva.getHoraComienzo().getMinutes()+reserva.getHoraComienzo().getMinutes(),i,2);
+
+							}
+							
+							else if(getSocioID().equals(reserva.getSocioID())  && (reserva.getInstalacionID()== 2)){
+								table.setValueAt("Cancha de futbol",i,0);
+								table.setValueAt(reserva.getHoraComienzo().getDate(),i,1);
+								table.setValueAt(reserva.getHoraComienzo().getHours() +":"
+										+reserva.getHoraComienzo().getMinutes()+reserva.getHoraComienzo().getMinutes(),i,2);
+							}
+						
+						
+							//reserva.getHoraComienzo().getHours()
+							else if(getSocioID().equals(reserva.getSocioID())  && (reserva.getInstalacionID()== 3)){
+								
+								table.setValueAt("Pista de tenis",i,0);
+								table.setValueAt(reserva.getHoraComienzo().getDate(),i,1);
+								table.setValueAt(reserva.getHoraComienzo().getHours() +":"
+										+reserva.getHoraComienzo().getMinutes()+reserva.getHoraComienzo().getMinutes(),i,2);
+										}
+						i++;
+					}
+		}
+			}
+	
+	 public String getSocioID() {
+			return socioID;
+		}
+
+		public void setSocioID(String socioID) {
+			this.socioID = socioID;
+		}
+	private JLabel getLblNewLabel() {
+		if (lblNewLabel == null) {
+			lblNewLabel = new JLabel("Hora");
+			lblNewLabel.setBounds(226, 52, 46, 14);
+		}
+		return lblNewLabel;
+	}
+	private JLabel getLblInstalacin() {
+		if (lblInstalacin == null) {
+			lblInstalacin = new JLabel("Instalaci\u00F3n");
+			lblInstalacin.setBounds(342, 52, 66, 14);
+		}
+		return lblInstalacin;
+	}
+	private JLabel getLblNewLabel_1() {
+		if (lblNewLabel_1 == null) {
+			lblNewLabel_1 = new JLabel("Dia");
+			lblNewLabel_1.setBounds(476, 52, 46, 14);
+		}
+		return lblNewLabel_1;
+	}
+	
+	/**
+	 * Limpia los valores de la tabla en la columna de las reservas
+	 */
+	private void limpiarTabla() {
+		for (int i = 0; i < table.getRowCount(); i++) {
+			table.clearSelection();
+			table.setValueAt("", i, 0);
+			table.setValueAt("", i, 1);
+			table.setValueAt("", i, 2);
+
+		}
+	}
 }

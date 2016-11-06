@@ -23,7 +23,7 @@ public class VentanaPrincipal extends JFrame {
     private JPanel panelEscoger;
     private JButton btnSocio;
     private JButton btnAdmin;
-    public String IDSocio;
+    public String socioID;
     
 	private Parser Parser = new Parser();
 
@@ -76,8 +76,8 @@ public class VentanaPrincipal extends JFrame {
             btnSocio.addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent arg0) {
                 	
-                	IDSocio =JOptionPane.showInputDialog("Introduce tu ID de socio: ");
-                	VentanaCalendar VC = new VentanaCalendar(IDSocio);
+                	socioID =JOptionPane.showInputDialog("Introduce tu ID de socio: ");
+                	VentanaCalendar VC = new VentanaCalendar(socioID);
             		VC.setVisible(true);
             		
 //            		for (Reserva reserva : Parser.getReservas()) {
@@ -106,4 +106,12 @@ public class VentanaPrincipal extends JFrame {
         }
         return btnAdmin;
     }
+    
+    public String getSocioID() {
+		return socioID;
+	}
+
+	public void setSocioID(String socioID) {
+		this.socioID = socioID;
+	}
 }

@@ -63,7 +63,7 @@ public class VentanaCalendarAdmin extends JDialog {
 	private JButton btnSalida;
 	private JComboBox comboBoxInstalacion;
 	private DefaultComboBoxModel cmodel;
-	private String socioID = "adri";
+	private String socioID;
 	private String SocioTxB;
 
 
@@ -152,16 +152,16 @@ public class VentanaCalendarAdmin extends JDialog {
 	private JTable getTable() {
 		if (table == null) {
 			table = new JTable();
-			table.setBounds(175, 11, 375, 384);
+			table.setBounds(176, 37, 453, 384);
 
 			DataTableModel dm = new DataTableModel(
-					new Object[][] { { "00:00", null, null, null }, { "01:00", null, null, null }, { "02:00", null, null, null }, { "03:00", null, null, null },
-							{ "04:00", null, null, null }, { "05:00", null, null, null }, { "06:00", null, null, null }, { "07:00", null, null, null },
-							{ "08:00", null, null, null }, { "09:00", null, null, null }, { "10:00", null, null, null }, { "11:00", null, null, null },
-							{ "12:00", null, null, null }, { "13:00", null, null, null }, { "14:00", null, null, null }, { "15:00", null, null, null },
-							{ "16:00", null, null, null }, { "17:00", null, null, null }, { "18:00", null, null, null }, { "19:00", null, null, null },
-							{ "20:00", null, null, null }, { "21:00", null, null, null}, { "22:00", null, null, null }, { "23:00", null, null, null }, },
-					new String[] { "Horas", "Disponibilidad", "Llegada", "Salida" });
+					new Object[][] { { "00:00", null, null, null, null }, { "01:00", null, null, null, null }, { "02:00", null, null, null, null }, { "03:00", null, null, null, null },
+							{ "04:00", null, null, null, null }, { "05:00", null, null, null, null }, { "06:00", null, null, null, null }, { "07:00", null, null, null, null },
+							{ "08:00", null, null, null, null }, { "09:00", null, null, null, null }, { "10:00", null, null, null, null }, { "11:00", null, null, null, null },
+							{ "12:00", null, null, null, null }, { "13:00", null, null, null, null }, { "14:00", null, null, null, null }, { "15:00", null, null, null, null },
+							{ "16:00", null, null, null, null }, { "17:00", null, null, null, null }, { "18:00", null, null, null, null }, { "19:00", null, null, null, null },
+							{ "20:00", null, null, null, null }, { "21:00", null, null, null, null}, { "22:00", null, null, null, null }, { "23:00", null, null, null, null }, },
+					new String[] { "Horas", "Disponibilidad", "Llegada", "Salida","Socio" });
 			table.setModel(dm);
 			
 			//Listener para tomar los valores de las filas de la tabla
@@ -220,14 +220,14 @@ public class VentanaCalendarAdmin extends JDialog {
 	private JTextPane getTxPDescripcion() {
 		if (txPDescripcion == null) {
 			txPDescripcion = new JTextPane();
-			txPDescripcion.setBounds(580, 70, 270, 84);
+			txPDescripcion.setBounds(643, 107, 207, 47);
 		}
 		return txPDescripcion;
 	}
 	private JLabel getLblDescripcion() {
 		if (lblDescripcion == null) {
 			lblDescripcion = new JLabel("Descripcion:");
-			lblDescripcion.setBounds(583, 29, 130, 30);
+			lblDescripcion.setBounds(643, 66, 130, 30);
 		}
 		return lblDescripcion;
 	}
@@ -252,7 +252,7 @@ public class VentanaCalendarAdmin extends JDialog {
 			btnLlegada.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
 					//SACAR DE LA TABLA EL SOCIO DONDE SE ESTA SELECCIONANDO
-					String SocioID = (String) table.getModel().getValueAt(table.getSelectedRow(), 0);
+					String SocioID = (String) table.getModel().getValueAt(table.getSelectedRow(), 2);
 					//Se saca la hora de la columna seleccionada
 					String string = (String) table.getModel().getValueAt(table.getSelectedRow(),0);
 					String[] Hora1 = string.split(":");
@@ -261,7 +261,7 @@ public class VentanaCalendarAdmin extends JDialog {
 					//if(((int)table.getModel().getValueAt(1,table.getSelectedColumn())) == LocalDateTime.now().getHour()){
 					if(Hora.equals(String.valueOf(LocalDateTime.now().getHour()))){
 						JOptionPane.showMessageDialog(null, "Llegada a las: "+ LocalDateTime.now().getHour());
-						table.setValueAt(LocalDateTime.now().getHour()+":"+LocalDateTime.now().getMinute(), table.getSelectedRow(), 2);
+						table.setValueAt(LocalDateTime.now().getHour()+":"+LocalDateTime.now().getMinute(), table.getSelectedRow(), 3);
 
 						
 						
@@ -273,7 +273,7 @@ public class VentanaCalendarAdmin extends JDialog {
 						
 						Properties connectionProps = new Properties();
 						connectionProps.put("user", "SA");
-						String query  = "UPDATE RESERVA SET horaEntrada =? WHERE IDSOCIO = "+SocioID;
+						String query  = "UPDATE RESERVA SET horaEntrada ="+TimeStamp+" WHERE IDSOCIO = "+SocioID;
 						Connection conn = null;
 						try {
 							conn = DriverManager.getConnection("jdbc:h2:tcp://localhost/~/test", connectionProps);
@@ -299,7 +299,7 @@ public class VentanaCalendarAdmin extends JDialog {
 					
 				}
 			});
-			btnLlegada.setBounds(590, 180, 89, 23);
+			btnLlegada.setBounds(644, 180, 89, 23);
 		}
 		return btnLlegada;
 	}
@@ -308,6 +308,8 @@ public class VentanaCalendarAdmin extends JDialog {
 			btnSalida = new JButton("Salida");
 			btnSalida.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent arg0) {
+					//SACAR DE LA TABLA EL SOCIO DONDE SE ESTA SELECCIONANDO
+					String SocioID = "'"+(String) table.getModel().getValueAt(table.getSelectedRow(), 2)+"'";  
 					//Se saca la hora de la columna seleccionada
 					String string = (String) table.getModel().getValueAt(table.getSelectedRow(),0);
 					String[] Hora1 = string.split(":");
@@ -316,12 +318,44 @@ public class VentanaCalendarAdmin extends JDialog {
 					//if(((int)table.getModel().getValueAt(1,table.getSelectedColumn())) == LocalDateTime.now().getHour()){
 					if(Hora.equals(String.valueOf(LocalDateTime.now().getHour()))){
 						JOptionPane.showMessageDialog(null, "Salida las: "+ LocalDateTime.now().getHour());
-						table.setValueAt(LocalDateTime.now().getHour()+":"+LocalDateTime.now().getMinute(), table.getSelectedRow(), 3);
+						table.setValueAt(LocalDateTime.now().getHour()+":"+LocalDateTime.now().getMinute(), table.getSelectedRow(), 4);
 
+						
+//DB
+						
+						Calendar calendar = Calendar.getInstance();
+						java.sql.Timestamp TimeStamp = new java.sql.Timestamp(calendar.getTime().getTime());
+						
+						Properties connectionProps = new Properties();
+						connectionProps.put("user", "SA");
+						String query  = "UPDATE RESERVA SET horaEntrada =(?) WHERE IDSOCIO = (?)";
+						Connection conn = null;
+						try {
+							conn = DriverManager.getConnection("jdbc:h2:tcp://localhost/~/test", connectionProps);
+						} catch (SQLException e1) {
+							e1.printStackTrace();
+						}
+						
+						
+							PreparedStatement ps;
+							try {
+								ps = conn.prepareStatement(query);
+								ps.setTimestamp(1, TimeStamp);
+								ps.setString(2, SocioID);
+								ps.executeUpdate();
+							} catch (SQLException e1) {
+								e1.printStackTrace();
+							}
+							
+						
 					}
 					else{
 						JOptionPane.showMessageDialog(null, "Error. No es una hora correcta.");
 					}
+					
+				
+					
+					
 					
 				}
 			});
@@ -395,6 +429,7 @@ public class VentanaCalendarAdmin extends JDialog {
 		for (Reserva reserva : parser.getReservas()) {
 
 			Date a = getDateChooser().getDate();
+			String nombre = reserva.getSocioID();
 			String dia = sacarDia(a);
 			if (String.valueOf(getDia(reserva.getHoraComienzo())).equals(dia)) {
 				if (getInstalacionIDFromNombre(String.valueOf(getComboBoxInstalacion().getSelectedItem())) != -1)
@@ -402,6 +437,7 @@ public class VentanaCalendarAdmin extends JDialog {
 							String.valueOf(getComboBoxInstalacion().getSelectedItem())))) { // Piscina
 						table.setValueAt(String.valueOf(getComboBoxInstalacion().getSelectedItem()),
 								reserva.getHoraComienzo().getHours(), 1);
+						table.setValueAt(nombre,reserva.getHoraComienzo().getHours(), 2);
 						tcol = table.getColumnModel().getColumn(1);
 						if (reserva.getSocioID().equals(socioID))
 							

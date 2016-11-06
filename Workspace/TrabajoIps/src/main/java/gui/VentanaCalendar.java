@@ -55,7 +55,7 @@ public class VentanaCalendar extends JDialog {
 	private JLabel lbHora;
 	private JComboBox comboBoxInstalacion;
 	private DefaultComboBoxModel cmodel;
-	private String socioID;
+	String socioID;
 	private JButton btnMisReservas;
 	private JButton btnReservarEstaInstalacion;
 
@@ -344,7 +344,7 @@ public class VentanaCalendar extends JDialog {
 			btnMisReservas = new JButton("Mis reservas");
 			btnMisReservas.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent arg0) {
-					MisReservas ms = new MisReservas();
+					MisReservas ms = new MisReservas(getSocioID());
 					ms.setVisible(true);
 				}
 			});
@@ -370,4 +370,33 @@ public class VentanaCalendar extends JDialog {
 		}
 		return btnReservarEstaInstalacion;
 	}
+	
+	@SuppressWarnings("deprecation")
+	public void llenarTablaUsuario() {
+		TableColumn tcol;
+
+		for (Reserva reserva : parser.getReservas()) {
+			
+						int duracion = reserva.getHoraFinal().getHours() - reserva.getHoraComienzo().getHours();
+						if(duracion>1)
+							if(socioID.equals(reserva.getSocioID())  && (reserva.getInstalacionID()== 1)){
+							for(int i=0; i<duracion;i++)
+								table.setValueAt("Piscina",
+										reserva.getHoraComienzo().getHours()+i, 1);
+								
+							}
+							else if(socioID.equals(reserva.getSocioID())  && (reserva.getInstalacionID()== 2))
+								for(int i=0; i<duracion;i++)
+									table.setValueAt("Cancha de futbol",
+											reserva.getHoraComienzo().getHours()+i, 1);
+							
+							else if(socioID.equals(reserva.getSocioID())  && (reserva.getInstalacionID()== 3))
+								for(int i=0; i<duracion;i++)
+									table.setValueAt("Pista de tenis",
+											reserva.getHoraComienzo().getHours()+i, 1);
+					}
+			}
+	
+	
+
 }
