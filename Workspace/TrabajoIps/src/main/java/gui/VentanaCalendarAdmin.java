@@ -265,7 +265,7 @@ public class VentanaCalendarAdmin extends JDialog {
 
 						
 						
-						
+						/* ERROR COMILLAS SIMPLES
 						//DB
 						
 						Calendar calendar = Calendar.getInstance();
@@ -290,7 +290,7 @@ public class VentanaCalendarAdmin extends JDialog {
 							} catch (SQLException e1) {
 								e1.printStackTrace();
 							}
-							
+							*/
 						
 					}
 					else{
@@ -322,7 +322,7 @@ public class VentanaCalendarAdmin extends JDialog {
 
 						
 //DB
-						
+						/* ERROR COMILLAS SIMPLES 
 						Calendar calendar = Calendar.getInstance();
 						java.sql.Timestamp TimeStamp = new java.sql.Timestamp(calendar.getTime().getTime());
 						
@@ -346,7 +346,7 @@ public class VentanaCalendarAdmin extends JDialog {
 							} catch (SQLException e1) {
 								e1.printStackTrace();
 							}
-							
+							*/
 						
 					}
 					else{
