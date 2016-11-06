@@ -265,7 +265,7 @@ public class VentanaReserva extends JDialog {
 		
 		reserva = new Reserva(id, this.socioID, this.instalacionID, this.horaComienzo, this.horaFinal, nulo, nulo, this.modoPago, false, this.precio);
 		
-		reserva.hacerReserva(id, socioID, instalacionID, horaComienzo, horaFinal, nulo, nulo, modoPago,false, precio);
+		reserva.hacerReserva(socioID, instalacionID,  id, horaComienzo, horaFinal, nulo, nulo, modoPago,false, precio);
 		parser.fillArrays();
 		vc.llenarTabla(vc.getInstalacionFromNombre(String.valueOf(vc.getComboBoxInstalacion().getSelectedItem())));
 	}

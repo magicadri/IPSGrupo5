@@ -40,10 +40,6 @@ public class Reserva {
 		this.parser = new Parser();
 	}
 
-	public boolean getReciboGenerado() {
-		return reciboGenerado;
-	}
-
 	public int getReservaID(){
 		return this.reservaID;
 	}
@@ -74,6 +70,10 @@ public class Reserva {
 
 	public String getModoPago() {
 		return modoPago;
+	}
+
+	public boolean getReciboGenerado(){
+		return reciboGenerado;
 	}
 	
 	public int getPrecio() {
@@ -138,7 +138,7 @@ public class Reserva {
 	 * 
 	 * @author David
 	 */
-	public void hacerReserva(int reservaID, String socioID, int instalacionID, Timestamp horaComienzo, Timestamp horaFinal, Timestamp horaEntrada, Timestamp horaSalida, String modoPago,boolean reciboGenerado, int precio){
+	public void hacerReserva(String socioID,  int instalacionID, int reservaID,  Timestamp horaComienzo, Timestamp horaFinal, Timestamp horaEntrada, Timestamp horaSalida, String modoPago,boolean reciboGenerado, int precio){
 		//Nueva reserva
 		Reserva reserva = new Reserva(reservaID, socioID, instalacionID, horaComienzo, horaFinal, horaEntrada, horaSalida, modoPago, reciboGenerado, precio);
 		
@@ -245,11 +245,11 @@ public class Reserva {
 	private boolean addReservaABase(Reserva reserva){
 		try {
 			if(reserva.getHoraEntrada() != null)
-				Database.getInstance().getC().createStatement().execute("INSERT INTO Reserva (reservaID, socioID, instalacionID, horaComienzo, horaFinal, horaEntrada, horaSalida, modoPago, pagado, precio) VALUES (" 
+				Database.getInstance().getC().createStatement().execute("INSERT INTO Reserva (reservaID, socioID, instalacionID, horaComienzo, horaFinal, horaEntrada, horaSalida, modoPago, reciboGenerado, precio) VALUES (" 
 						+ reserva.getReservaID() + ",'" + reserva.getSocioID() + "'," + reserva.getInstalacionID() + ",'" + reserva.getHoraComienzo() + "','" + reserva.getHoraFinal() + "','" + reserva.getHoraEntrada() + "','" + reserva.getHoraSalida() + "','" + reserva.getModoPago()
 						+ "'," + reserva.getReciboGenerado() +"," + reserva.getPrecio() + ");");
 			else
-				Database.getInstance().getC().createStatement().execute("INSERT INTO Reserva (reservaID, socioID, instalacionID, horaComienzo, horaFinal, horaEntrada, horaSalida, modoPago, pagado, precio) VALUES (" 
+				Database.getInstance().getC().createStatement().execute("INSERT INTO Reserva (reservaID, socioID, instalacionID, horaComienzo, horaFinal, horaEntrada, horaSalida, modoPago, reciboGenerado, precio) VALUES (" 
 						+ reserva.getReservaID() + ",'" + reserva.getSocioID() + "'," + reserva.getInstalacionID() + ",'" + reserva.getHoraComienzo() + "','" + reserva.getHoraFinal() + "'," + reserva.getHoraEntrada() + "," + reserva.getHoraSalida() + ",'" + reserva.getModoPago()
 						+ "'," + reserva.getReciboGenerado() +"," + reserva.getPrecio() + ");");
 			return true;

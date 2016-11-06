@@ -23,22 +23,6 @@ public class VentanaAdminMenu extends JFrame {
 	private JButton btnQuitarRecibo;
 
 	/**
-	 * Launch the application.
-	 */
-	public static void main(String[] args) {
-		EventQueue.invokeLater(new Runnable() {
-			public void run() {
-				try {
-					VentanaAdminMenu frame = new VentanaAdminMenu();
-					frame.setVisible(true);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-		});
-	}
-
-	/**
 	 * Create the frame.
 	 */
 	public VentanaAdminMenu() {
@@ -82,14 +66,28 @@ public class VentanaAdminMenu extends JFrame {
 	private JButton getBtnHacerReserva() {
 		if (btnHacerReserva == null) {
 			btnHacerReserva = new JButton("Hacer reserva");
+			btnHacerReserva.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					
+				}
+			});
 		}
 		return btnHacerReserva;
 	}
+	
+	/**
+	 * (historia --> Como admin ver la ocupacion de instalaciones para conocer su disponibilidad)
+	 * (historia --> Como admin quiero ver la informacion de de una reserva)
+	 */
 	private JButton getBtnConsultarDisponibilidad() {
 		if (btnConsultarDisponibilidad == null) {
 			btnConsultarDisponibilidad = new JButton("Consultar disponibilidad");
 			btnConsultarDisponibilidad.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent arg0) {
+					// Abrimos la ventana para comprobar disponibilidad de instalaciones
+					VentanaComprobarOcupacionAdmin vcoa = new VentanaComprobarOcupacionAdmin();
+					vcoa.setVisible(true);
+					vcoa.setModal(true);
 				}
 			});
 		}
