@@ -4,6 +4,9 @@ DROP TABLE IF EXISTS INSTALACION;
 DROP TABLE IF EXISTS OBJETOCUOTA;
 DROP TABLE IF EXISTS CUOTA;
 DROP TABLE IF EXISTS RECIBO;
+DROP TABLE IF EXISTS ACTIVIDAD;
+DROP TABLE IF EXISTS RESERVAACTIVIDAD;
+DROP TABLE IF EXISTS SOCIOACTIVIDAD;
 
 CREATE TABLE socio (
 	socioID varchar(32) NOT NULL,
@@ -53,6 +56,26 @@ CREATE TABLE recibo (
 	socioID varchar(32) NOT NULL,
 	importe integer,
 	descripcion varchar(300)
+);
+
+CREATE TABLE actividad (
+	actividadID INTEGER NOT NULL,
+	actividad_nombre varchar(32) NOT NULL,
+	semanas integer NOT NULL
+);
+
+CREATE TABLE reservaactividad (
+	actividadID INTEGER NOT NULL,
+	reservaID INTEGER NOT NULL,
+	PRIMARY KEY (actividadID, reservaID)
+);
+
+CREATE TABLE socioactividad (
+	socioID varchar(32) not NULL,
+	actividadID INTEGER NOT NULL,
+	reservaID INTEGER NOT NULL,
+	presentado BOOLEAN
+	PRIMARY KEY(socioID, actividadID, reservaID)
 );
 
 INSERT INTO SOCIO VALUES ('adri');

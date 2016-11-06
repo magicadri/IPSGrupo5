@@ -19,7 +19,9 @@ import logic.Instalacion;
 import logic.ObjetoCuota;
 import logic.Recibo;
 import logic.Reserva;
+import logic.ReservaActividad;
 import logic.Socio;
+import logic.SocioActividad;
 
 public class Parser {
 	
@@ -28,11 +30,21 @@ public class Parser {
 	ArrayList<Reserva> reservas = new ArrayList<>();
 	ArrayList<ObjetoCuota> objetoscuota = new ArrayList<>();
 	ArrayList<Actividad> actividades = new ArrayList<>();
+	ArrayList<ReservaActividad> reservasactividad = new ArrayList<>();
+	ArrayList<SocioActividad> sociosactividad = new ArrayList<>();
+	public ArrayList<SocioActividad> getSociosactividad() {
+		return sociosactividad;
+	}
+
 	ArrayList<Cuota> cuotas = new ArrayList<>();
 	ArrayList<Recibo> recibos = new ArrayList<>();
 	
 	public ArrayList<Recibo> getRecibos() {
 		return recibos;
+	}
+
+	public ArrayList<ReservaActividad> getReservasactividad() {
+		return reservasactividad;
 	}
 
 	public ArrayList<Socio> getSocios() {
@@ -107,13 +119,27 @@ public class Parser {
 			cuotas.add(new Cuota(rs.getString("socioID"),rs.getInt("mes"), rs.getInt("importe")));
 		}
 		
-//		s = c.createStatement();
-//		rs = s.executeQuery("Select * From ACTIVIDAD");
-//		while(rs.next())
-//		{
-//			actividades.add(new Actividad(rs.getString("actividadID"), rs.getTimestamp("fechaComienzo"), rs.getTimestamp("fechaFinal")));
-//		}
-//		
+		s = c.createStatement();
+		rs = s.executeQuery("Select * From RESERVAACTIVIDAD");
+		while(rs.next())
+		{
+			sociosactividad.add(new SocioActividad(rs.getString("socioID"), rs.getInt("reservaID"), rs.getInt("actividadID"), rs.getBoolean("presentado")));
+		}
+		
+		s = c.createStatement();
+		rs = s.executeQuery("Select * From SOCIOACTIVIDAD");
+		while(rs.next())
+		{
+			reservasactividad.add(new ReservaActividad(rs.getInt("actividadID"), rs.getInt("reservaID")));
+		}
+		
+		s = c.createStatement();
+		rs = s.executeQuery("Select * From ACTIVIDAD");
+		while(rs.next())
+		{
+			actividades.add(new Actividad(rs.getInt("actividadID"), rs.getString("actividad_nombre"), rs.getInt("semanas")));
+		}
+		
 	}
 	
 	/**

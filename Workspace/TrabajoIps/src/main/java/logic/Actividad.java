@@ -4,27 +4,29 @@ import java.sql.Timestamp;
 
 public class Actividad {
 	
-	private Timestamp fechaComienzo;
-	private Timestamp fechaFinal;
-	private String actividadID;
+
+	private int actividadID;
+	private int semanas;
+	private String actividad_nombre;
 	
-	public Actividad(String actividadID, Timestamp fechaComienzo, Timestamp fechaFinal)
+	public Actividad(int actividadID, String actividad_nombre, int semanas)
 	{
 		this.actividadID=actividadID;
-		this.fechaComienzo=fechaComienzo;
-		this.fechaFinal=fechaFinal;
+		this.semanas=semanas;
+		this.actividad_nombre=actividad_nombre;
 	}
 
-	public Timestamp getFechaComienzo() {
-		return fechaComienzo;
-	}
-
-	public Timestamp getFechaFinal() {
-		return fechaFinal;
-	}
-
-	public String getActividadID() {
+	public int getActividadID() {
 		return actividadID;
 	}
+
+	public int getSemanas() {
+		return semanas;
+	}
+
+	public String getActividad_nombre() {
+		return actividad_nombre;
+	}
+
 
 }
