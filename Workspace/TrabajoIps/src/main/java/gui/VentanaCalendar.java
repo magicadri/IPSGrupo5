@@ -60,6 +60,7 @@ public class VentanaCalendar extends JDialog {
 	private JButton btnReservarEstaInstalacion;
 	private VentanaCalendar ref = this;
 	private JButton btnCancelarReserva;
+	private JButton btnMisActividades;
 
 	/**
 	 * Launch the application.
@@ -111,6 +112,7 @@ public class VentanaCalendar extends JDialog {
 		contentPanel.add(getBtnMisReservas());
 		contentPanel.add(getBtnReservarEstaInstalacion());
 		contentPanel.add(getBtnCancelarReserva());
+		contentPanel.add(getBtnMisActividades());
 	}
 
 	private JDateChooser getDateChooser() {
@@ -433,4 +435,17 @@ public class VentanaCalendar extends JDialog {
 		return btnCancelarReserva;
 	}
 
+	private JButton getBtnMisActividades() {
+		if (btnMisActividades == null) {
+			btnMisActividades = new JButton("Mis actividades");
+			btnMisActividades.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					MisActividades MA = new MisActividades(getSocioID());
+					MA.setVisible(true);
+				}
+			});
+			btnMisActividades.setBounds(30, 206, 109, 23);
+		}
+		return btnMisActividades;
+	}
 }

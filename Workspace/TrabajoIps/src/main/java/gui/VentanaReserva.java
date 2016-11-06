@@ -203,6 +203,7 @@ public class VentanaReserva extends JDialog {
 						boolean isPosible = hacerComprobaciones();
 						if(isPosible){
 							try {
+								vc.actualizar();
 								hacerReserva();
 							} catch (SQLException e) {
 								// TODO Auto-generated catch block
