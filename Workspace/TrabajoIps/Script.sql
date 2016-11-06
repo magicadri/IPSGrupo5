@@ -1,6 +1,8 @@
 DROP TABLE IF EXISTS SOCIO;
 DROP TABLE IF EXISTS RESERVA;
 DROP TABLE IF EXISTS INSTALACION;
+DROP TABLE IF EXISTS OBJETOCUOTA;
+DROP TABLE IF EXISTS CUOTA;
 DROP TABLE IF EXISTS RECIBO;
 
 CREATE TABLE socio (
@@ -23,7 +25,7 @@ CREATE TABLE reserva (
 	horaEntrada TIMESTAMP,
 	horaSalida TIMESTAMP,
 	modoPago varchar(32),
-	pagado BOOLEAN,
+	reciboGenerado BOOLEAN,
 	precio integer,
 	CONSTRAINT FK_SOCIO FOREIGN KEY (socioID) REFERENCES SOCIO(socioID),
 	CONSTRAINT FK_INSTALACION FOREIGN KEY (instalacionID) REFERENCES INSTALACION(instalacionID),
@@ -31,12 +33,46 @@ CREATE TABLE reserva (
 	PRIMARY KEY (socioID, instalacionID, horaComienzo)
 );
 
-CREATE TABLE recibo (
+CREATE TABLE objetocuota (
     reciboID INTEGER NOT NULL,
     socioID VARCHAR(32) NOT NULL,
+    pagado BOOLEAN,
     importe INTEGER NOT NULL,
     fecha TIMESTAMP NOT NULL,
     PRIMARY KEY (reciboID)
 );
 
+CREATE TABLE cuota (
+	socioID varchar(32) NOT NULL,
+	importe integer,
+	mes INTEGER not null,
+	CONSTRAINT FK_SOCIO_CUOTA FOREIGN KEY (socioID) REFERENCES SOCIO(socioID)
+);
 
+CREATE TABLE recibo (
+	socioID varchar(32) NOT NULL,
+	importe integer,
+	descripcion varchar(300)
+);
+
+INSERT INTO SOCIO VALUES ('adri');
+INSERT INTO SOCIO VALUES ('david');
+INSERT INTO SOCIO VALUES ('joni');
+INSERT INTO SOCIO VALUES ('jose');
+INSERT INTO SOCIO VALUES ('admin');
+INSERT INTO CUOTA VALUES('adri', 0, 10);
+INSERT INTO CUOTA VALUES('adri', 0, 11);
+INSERT INTO CUOTA VALUES('david', 0, 10);
+INSERT INTO CUOTA VALUES('david', 0, 11);
+INSERT INTO CUOTA VALUES('joni', 0, 10);
+INSERT INTO CUOTA VALUES('joni', 0, 11);
+INSERT INTO CUOTA VALUES('jose', 0, 10);
+INSERT INTO CUOTA VALUES('jose', 0, 11);
+INSERT INTO INSTALACION VALUES (1, 'Piscina');
+INSERT INTO INSTALACION VALUES (2, 'Cancha fútbol');
+INSERT INTO INSTALACION VALUES (3, 'Pista tenis');
+INSERT INTO RESERVA VALUES ('adri', 1, 1,  PARSEDATETIME('15-11-2016 10:00:00', 'dd-MM-yyyy HH:mm:ss'), PARSEDATETIME('15-11-2016 12:00:00', 'dd-MM-yyyy HH:mm:ss'), null, null, 'Efectivo' , FALSE, 2);
+INSERT INTO RESERVA VALUES ('adri', 1, 2,  PARSEDATETIME('16-11-2016 10:00:00', 'dd-MM-yyyy HH:mm:ss'), PARSEDATETIME('16-11-2016 12:00:00', 'dd-MM-yyyy HH:mm:ss'), null, null, 'Efectivo' , FALSE,  2);
+INSERT INTO RESERVA VALUES ('adri', 1, 3,  PARSEDATETIME('17-11-2016 10:00:00', 'dd-MM-yyyy HH:mm:ss'), PARSEDATETIME('17-11-2016 12:00:00', 'dd-MM-yyyy HH:mm:ss'), null, null, 'Efectivo' , FALSE, 2);
+INSERT INTO RESERVA VALUES ('joni', 2, 4,  PARSEDATETIME('13-11-2016 10:00:00', 'dd-MM-yyyy HH:mm:ss'), PARSEDATETIME('3-11-2016 11:00:00', 'dd-MM-yyyy HH:mm:ss'), null, null, 'Efectivo' , TRUE, 2);
+INSERT INTO RESERVA VALUES ('admin', 3, 5,  PARSEDATETIME('13-11-2016 14:00:00', 'dd-MM-yyyy HH:mm:ss'), PARSEDATETIME('13-11-2016 15:00:00', 'dd-MM-yyyy HH:mm:ss'), null, null, 'Efectivo' , TRUE, 2);

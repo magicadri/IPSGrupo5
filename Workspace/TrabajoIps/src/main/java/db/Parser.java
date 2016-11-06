@@ -11,7 +11,9 @@ import java.util.Date;
 import java.util.List;
 
 import logic.Actividad;
+import logic.Cuota;
 import logic.Instalacion;
+import logic.ObjetoCuota;
 import logic.Recibo;
 import logic.Reserva;
 import logic.Socio;
@@ -21,8 +23,15 @@ public class Parser {
 	ArrayList<Socio> socios = new ArrayList<>();
 	ArrayList<Instalacion> instalaciones = new ArrayList<>();
 	ArrayList<Reserva> reservas = new ArrayList<>();
-	ArrayList<Recibo> recibos = new ArrayList<>();
+	ArrayList<ObjetoCuota> objetoscuota = new ArrayList<>();
 	ArrayList<Actividad> actividades = new ArrayList<>();
+	ArrayList<Cuota> cuotas = new ArrayList<>();
+	ArrayList<Recibo> recibos = new ArrayList<>();
+	
+	public ArrayList<Recibo> getRecibos() {
+		return recibos;
+	}
+
 	public ArrayList<Socio> getSocios() {
 		return socios;
 	}
@@ -35,8 +44,8 @@ public class Parser {
 		return reservas;
 	}
 
-	public ArrayList<Recibo> getRecibos() {
-		return recibos;
+	public ArrayList<ObjetoCuota> getObjetosCuota() {
+		return objetoscuota;
 	}
 
 	public ArrayList<Actividad> getActividades() {
@@ -68,15 +77,31 @@ public class Parser {
 			reservas.add(new Reserva(rs.getInt("reservaID"),rs.getString("socioID"), rs.getInt("instalacionID"),
 					rs.getTimestamp("horaComienzo"), rs.getTimestamp("horaFinal"),
 					rs.getTimestamp("horaEntrada"), rs.getTimestamp("horaSalida"), 
-					rs.getString("modoPago"),rs.getBoolean("pagado"), rs.getInt("precio")));
+					rs.getString("modoPago"),rs.getBoolean("reciboGenerado"), rs.getInt("precio")));
+		}
+		
+		s = c.createStatement();
+		rs = s.executeQuery("Select * From OBJETOCUOTA");
+		while(rs.next())
+		{
+			objetoscuota.add(new ObjetoCuota(rs.getInt("reciboID"),rs.getString("socioID"),rs.getBoolean("pagado"), rs.getInt("importe"),
+					rs.getTimestamp("fecha")));
+		
 		}
 		
 		s = c.createStatement();
 		rs = s.executeQuery("Select * From RECIBO");
 		while(rs.next())
 		{
-			recibos.add(new Recibo(rs.getInt("reciboID"),rs.getString("socioID"), rs.getInt("importe"),
-					rs.getTimestamp("fecha")));
+			recibos.add(new Recibo(rs.getString("socioID"), rs.getInt("importe"),
+					rs.getString("descripcion")));
+		}
+		
+		s = c.createStatement();
+		rs = s.executeQuery("Select * From CUOTA");
+		while(rs.next())
+		{
+			cuotas.add(new Cuota(rs.getString("socioID"),rs.getInt("mes"), rs.getInt("importe")));
 		}
 		
 //		s = c.createStatement();
