@@ -1,33 +1,37 @@
 package gui;
 
 import java.awt.BorderLayout;
+import java.awt.EventQueue;
 import java.awt.FlowLayout;
-
-import javax.swing.JButton;
-import javax.swing.JDialog;
-import javax.swing.JPanel;
-import javax.swing.border.EmptyBorder;
-
-import logic.Reserva;
-import db.Parser;
-
-import java.awt.GridBagLayout;
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
-import javax.swing.SwingConstants;
 import java.awt.Font;
-import javax.swing.JSpinner;
-import javax.swing.JComboBox;
-import javax.swing.DefaultComboBoxModel;
 import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
 import java.awt.Insets;
-import javax.swing.SpinnerNumberModel;
+import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.sql.SQLException;
 import java.sql.Timestamp;
-import java.awt.event.ActionEvent;
 
-public class VentanaReserva extends JDialog {
+import javax.swing.DefaultComboBoxModel;
+import javax.swing.JButton;
+import javax.swing.JComboBox;
+import javax.swing.JDialog;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JSpinner;
+import javax.swing.SpinnerNumberModel;
+import javax.swing.SwingConstants;
+import javax.swing.border.EmptyBorder;
+
+import db.Parser;
+import logic.Reserva;
+import com.toedter.calendar.JDateChooser;
+import java.beans.PropertyChangeListener;
+import java.beans.PropertyChangeEvent;
+
+public class VentanaReservaAdmin extends JDialog {
 
 	private static final long serialVersionUID = -524388848704387421L;
 	private Reserva reserva;
@@ -36,7 +40,6 @@ public class VentanaReserva extends JDialog {
 	private JComboBox<String> cbInstalaciones;
 	private JSpinner spHoraComienzo;
 	private JSpinner spHoraSalida;
-	private JComboBox<String> cbModoPago;
 	private JLabel lblPrecioShow;
 	private String[] opcionesInstalacion;
 	private SpinnerNumberModel spnmHoraComienzo;
@@ -48,6 +51,7 @@ public class VentanaReserva extends JDialog {
 	private int instalacionID;
 	private Timestamp horaComienzo;
 	private Timestamp horaFinal;
+	private JDateChooser dateChooser;
 	private String modoPago;
 	private int precio;
 	private VentanaCalendar vc;
@@ -56,8 +60,7 @@ public class VentanaReserva extends JDialog {
 	/**
 	 * Create the dialog.
 	 */
-	public VentanaReserva(VentanaCalendar vc, String socioID, Timestamp fecha) {
-		super(vc,true);
+	public VentanaReservaAdmin() {
 		this.socioID = socioID;
 		this.fecha = fecha;
 		this.vc=vc;
@@ -79,8 +82,8 @@ public class VentanaReserva extends JDialog {
 			GridBagLayout gbl_pnCentral = new GridBagLayout();
 			gbl_pnCentral.columnWidths = new int[]{214, 214, 214, 214, 0};
 			gbl_pnCentral.rowHeights = new int[]{35, 35, 35, 35, 35, 35, 35, 35, 35, 35, 35, 35, 35, 0};
-			gbl_pnCentral.columnWeights = new double[]{0.0, 0.0, 0.0, 0.0, Double.MIN_VALUE};
-			gbl_pnCentral.rowWeights = new double[]{0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, Double.MIN_VALUE};
+			gbl_pnCentral.columnWeights = new double[]{0.0, 0.0, 1.0, 0.0, Double.MIN_VALUE};
+			gbl_pnCentral.rowWeights = new double[]{0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, Double.MIN_VALUE};
 			pnCentral.setLayout(gbl_pnCentral);
 			{
 				JLabel lblSeleccioneInstalacion = new JLabel("Seleccione instalacion: ");
@@ -150,35 +153,29 @@ public class VentanaReserva extends JDialog {
 				pnCentral.add(spHoraSalida, gbc_spHoraSalida);
 			}
 			{
-				JLabel lblModoDePago = new JLabel("Modo de pago:");
-				lblModoDePago.setFont(new Font("Tahoma", Font.PLAIN, 25));
-				GridBagConstraints gbc_lblModoDePago = new GridBagConstraints();
-				gbc_lblModoDePago.fill = GridBagConstraints.BOTH;
-				gbc_lblModoDePago.insets = new Insets(0, 0, 5, 5);
-				gbc_lblModoDePago.gridx = 1;
-				gbc_lblModoDePago.gridy = 9;
-				pnCentral.add(lblModoDePago, gbc_lblModoDePago);
+				JLabel lblFecha = new JLabel("Fecha");
+				lblFecha.setFont(new Font("Tahoma", Font.PLAIN, 25));
+				GridBagConstraints gbc_lblFecha = new GridBagConstraints();
+				gbc_lblFecha.anchor = GridBagConstraints.WEST;
+				gbc_lblFecha.insets = new Insets(0, 0, 5, 5);
+				gbc_lblFecha.gridx = 1;
+				gbc_lblFecha.gridy = 9;
+				pnCentral.add(lblFecha, gbc_lblFecha);
 			}
 			{
-				cbModoPago = new JComboBox<String>();
-				cbModoPago.setModel(new DefaultComboBoxModel<String>(new String[] {"", "Efectivo", "Cuota"}));
-				cbModoPago.setFont(new Font("Tahoma", Font.PLAIN, 25));
-				GridBagConstraints gbc_cbModoPago = new GridBagConstraints();
-				gbc_cbModoPago.fill = GridBagConstraints.BOTH;
-				gbc_cbModoPago.insets = new Insets(0, 0, 5, 5);
-				gbc_cbModoPago.gridx = 2;
-				gbc_cbModoPago.gridy = 9;
-				pnCentral.add(cbModoPago, gbc_cbModoPago);
-			}
-			{
-				JLabel lblPrecio = new JLabel("Precio:");
-				lblPrecio.setFont(new Font("Tahoma", Font.PLAIN, 25));
-				GridBagConstraints gbc_lblPrecio = new GridBagConstraints();
-				gbc_lblPrecio.fill = GridBagConstraints.BOTH;
-				gbc_lblPrecio.insets = new Insets(0, 0, 5, 5);
-				gbc_lblPrecio.gridx = 1;
-				gbc_lblPrecio.gridy = 11;
-				pnCentral.add(lblPrecio, gbc_lblPrecio);
+				dateChooser = new JDateChooser();
+				dateChooser.addPropertyChangeListener(new PropertyChangeListener() {
+					public void propertyChange(PropertyChangeEvent arg0) {
+						if(dateChooser.getDate()!=null)
+							fecha = new Timestamp(dateChooser.getDate().getTime());
+					}
+				});
+				GridBagConstraints gbc_dateChooser = new GridBagConstraints();
+				gbc_dateChooser.insets = new Insets(0, 0, 5, 5);
+				gbc_dateChooser.fill = GridBagConstraints.BOTH;
+				gbc_dateChooser.gridx = 2;
+				gbc_dateChooser.gridy = 9;
+				pnCentral.add(dateChooser, gbc_dateChooser);
 			}
 			{
 				lblPrecioShow = new JLabel("");
@@ -203,7 +200,6 @@ public class VentanaReserva extends JDialog {
 						boolean isPosible = hacerComprobaciones();
 						if(isPosible){
 							try {
-								vc.actualizar();
 								hacerReserva();
 							} catch (SQLException e) {
 								// TODO Auto-generated catch block
@@ -242,14 +238,20 @@ public class VentanaReserva extends JDialog {
 	private void hacerReserva() throws SQLException{
 		Timestamp tt = new Timestamp(fecha.getTime());
 		tt.setHours((int)spHoraComienzo.getValue());
+		tt.setMinutes(0);
+		tt.setSeconds(0);
+		fecha.setNanos(0);
 		horaComienzo = tt;
 		
 		fecha.setHours((int)spHoraSalida.getValue());
+		fecha.setMinutes(0);
+		fecha.setSeconds(0);
+		fecha.setNanos(0);
 		horaFinal = fecha;
 		
-		modoPago = (String) cbModoPago.getSelectedItem();
+		modoPago = "Cuota";
 		
-		precio = 5; //Precio?
+		precio = 0; //Precio?
 		
 		parser = new Parser();
 		try {
@@ -264,11 +266,10 @@ public class VentanaReserva extends JDialog {
 		
 		Timestamp nulo = null;
 		
-		reserva = new Reserva(id, this.socioID, this.instalacionID, this.horaComienzo, this.horaFinal, nulo, nulo, this.modoPago, false, this.precio);
+		reserva = new Reserva(id, "admin", instalacionID, horaComienzo, horaFinal, nulo, nulo, "Cuota", false, this.precio);
 		
-		reserva.hacerReserva(socioID, instalacionID,  id, horaComienzo, horaFinal, nulo, nulo, modoPago,false, precio);
+		reserva.hacerReservaAdmin("admin", instalacionID,  id, horaComienzo, horaFinal, nulo, nulo, "Cuota" ,false, precio);
 		parser.fillArrays();
-		vc.llenarTabla(vc.getInstalacionFromNombre(String.valueOf(vc.getComboBoxInstalacion().getSelectedItem())));
 	}
 	
 	
@@ -288,11 +289,11 @@ public class VentanaReserva extends JDialog {
 		}else if((Integer) spHoraSalida.getModel().getValue() - (Integer) spHoraComienzo.getModel().getValue() < 1){
 			JOptionPane.showMessageDialog(null, "La hora de salida no puede ser igual o inferior a la hora de entrada.");
 			return resultado;
-		}else if(cbModoPago.getSelectedIndex()==0){
-			JOptionPane.showMessageDialog(null, "El campo modo de pago no puede estar vacio.");
+		} else if (dateChooser.getDate()==null)
+		{
+			JOptionPane.showMessageDialog(null, "Por favor seleccione una fecha.");
 			return resultado;
 		}
-		
 		return !resultado;
 	}
 	
@@ -305,8 +306,7 @@ public class VentanaReserva extends JDialog {
 		cbInstalaciones.setSelectedItem(null);
 		spHoraComienzo.setValue(spnmHoraComienzo.getMinimum());
 		spHoraSalida.setValue(spnmHoraFinal.getMinimum());
-		cbModoPago.setSelectedItem(null);
 		lblPrecioShow.setText("");
 	}
-	
+
 }

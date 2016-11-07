@@ -71,6 +71,16 @@ public class Parser {
 	Connection c = Database.getInstance().getC();
 
 	public void fillArrays() throws SQLException {
+		reservas.clear();
+		socios.clear();
+		instalaciones.clear();
+		recibos.clear();
+		actividades.clear();
+		objetoscuota.clear();
+		cuotas.clear();
+		sociosactividad.clear();
+		reservasactividad.clear();
+		
 		Statement s = c.createStatement();
 		ResultSet rs = s.executeQuery("select * from SOCIO");
 		while (rs.next()) {
@@ -127,9 +137,9 @@ public class Parser {
 
 		s = c.createStatement();
 		rs = s.executeQuery("Select * From ACTIVIDAD");
-		while (rs.next()) {
-			actividades.add(
-					new Actividad(rs.getInt("actividadID"), rs.getString("actividad_nombre"), rs.getInt("semanas")));
+		while(rs.next())
+		{
+			actividades.add(new Actividad(rs.getInt("actividadID"),rs.getInt("instalacionID"), rs.getString("actividad_nombre"), rs.getInt("semanas")));
 		}
 
 	}
@@ -172,6 +182,20 @@ public class Parser {
 		return resultado;
 	}
 
+	public Reserva comprobarDisponibilidadPorInstalacionAdmin(int instalacionID, Date horaC, Date horaF) {
+		boolean resultado = true;
+		Reserva ret = null;
+		for (Reserva reserva : reservas) {
+			//if (getDia(reserva.getHoraComienzo()) == getDia(horaC) && getHora(reserva.getHoraComienzo())== getHora(horaC) && getHora(reserva.getHoraFinal())==getHora(horaF) && reserva.getInstalacionID()==instalacionID) {
+			if( horaC.before(reserva.getHoraFinal()) && reserva.getHoraComienzo().before(horaF) )
+			{
+				ret=reserva; 
+				break;
+			}
+		}
+		return ret;
+	}
+
 	/**
 	 * Comprueba si un socio tiene mas de una instalacion reservada
 	 * simultaneamente
@@ -193,6 +217,22 @@ public class Parser {
 			}
 		}
 		return resultado;
+	}
+
+	
+	@SuppressWarnings("deprecation")
+	public Reserva comprobarDisponibilidadPorSocioAdmin(String socioID, Date horaC, Date horaF) {
+		boolean resultado = false;
+		Reserva ret = null;
+		for (Reserva reserva : reservas) {
+			//if (getDia(reserva.getHoraComienzo())==getDia(horaC) && getHora(reserva.getHoraComienzo())==getHora(horaC) && getHora(reserva.getHoraFinal())==getHora(horaF) && reserva.getSocioID().equals(socioID)) {
+			if( horaC.before(reserva.getHoraFinal()) && reserva.getHoraComienzo().before(horaF) )	
+			{
+				reserva=ret; 
+				break;
+			}
+		}
+		return ret;
 	}
 
 	/**
@@ -234,10 +274,31 @@ public class Parser {
 			JOptionPane.showMessageDialog(null, "No se ha encontrado la reserva del socio: " + socioID);
 		return resultado;
 	}
+	
+	private int getHora(Timestamp t)
+	{
+		Calendar cal = Calendar.getInstance();
+		cal.setTimeInMillis(t.getTime());
+		return cal.get(Calendar.HOUR);
+	}
+	
+	private int getHora(Date d)
+	{
+		Calendar cal = Calendar.getInstance();
+		cal.setTimeInMillis(d.getTime());
+		return cal.get(Calendar.HOUR);
+	}
 
 	private int getDia(Timestamp t) {
 		Calendar cal = Calendar.getInstance();
 		cal.setTimeInMillis(t.getTime());
+		return cal.get(Calendar.DAY_OF_MONTH);
+	}
+	
+	private int getDia(Date d)
+	{
+		Calendar cal = Calendar.getInstance();
+		cal.setTimeInMillis(d.getTime());
 		return cal.get(Calendar.DAY_OF_MONTH);
 	}
 

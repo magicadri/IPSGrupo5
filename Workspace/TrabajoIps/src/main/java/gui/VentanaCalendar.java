@@ -173,9 +173,9 @@ public class VentanaCalendar extends JDialog {
 					Component comp = super.prepareRenderer(renderer, row, col);
 					String value = String.valueOf(getModel().getValueAt(row, col));
 					if (isItMe(row, value) == 0) {
-						comp.setBackground(Color.red);
+						comp.setBackground(Color.GREEN);
 					} else if (isItMe(row, value) == 1) {
-						comp.setBackground(Color.green);
+						comp.setBackground(Color.RED);
 					} else
 						comp.setBackground(Color.WHITE);
 

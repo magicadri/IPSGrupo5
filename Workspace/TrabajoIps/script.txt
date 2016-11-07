@@ -61,6 +61,7 @@ CREATE TABLE recibo (
 CREATE TABLE actividad (
 	actividadID INTEGER NOT NULL,
 	actividad_nombre varchar(32) NOT NULL,
+	instalacionID integer NOT NULL,
 	semanas integer NOT NULL
 );
 

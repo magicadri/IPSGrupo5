@@ -22,8 +22,10 @@ public class VentanaPrincipal extends JFrame {
 	private JPanel contentPane;
     private JPanel panelEscoger;
     private JButton btnSocio;
+    private VentanaPrincipal ref = this;
     private JButton btnAdmin;
-    public String socioID;
+    private String socioID;
+    private static Parser parser;
     
 	private Parser Parser = new Parser();
 
@@ -32,9 +34,11 @@ public class VentanaPrincipal extends JFrame {
      */
 	public static void main(String[] args) {
         try {
+        	parser= new Parser();
             Database.getInstance();
             VentanaPrincipal frame = new VentanaPrincipal();
             frame.setVisible(true);
+            parser.fillArrays();
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -75,17 +79,18 @@ public class VentanaPrincipal extends JFrame {
             btnSocio.setBounds(26, 168, 329, 138);
             btnSocio.addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent arg0) {
-                	
                 	socioID =JOptionPane.showInputDialog("Introduce tu ID de socio: ");
-                	VentanaCalendar VC = new VentanaCalendar(socioID);
-            		VC.setVisible(true);
-            		
-//            		for (Reserva reserva : Parser.getReservas()) {
-//            			if(IDSocio.equals(reserva.getSocioID())) { }
-//            			else {
-//            				JOptionPane.showMessageDialog(null, "No existe esa ID de socio");
-//            			}
-//            		}
+                	for (Reserva reserva : parser.getReservas()) {
+            			if(socioID.equals(reserva.getSocioID())) { 
+            				VentanaCalendar VC = new VentanaCalendar(socioID);
+                    		VC.setVisible(true);
+                    		break;
+            			}
+            			else {
+            				JOptionPane.showMessageDialog(ref, "No existe esa ID de socio");
+            				break;
+            			}
+            		}           		
                 }
             });
         }

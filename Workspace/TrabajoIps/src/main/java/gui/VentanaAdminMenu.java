@@ -23,6 +23,7 @@ public class VentanaAdminMenu extends JFrame {
 	private JButton btnQuitarRecibo;
 	private JButton btnAdministracion;
 	private JButton btnMonitor;
+	private JButton btnActividad;
 
 	/**
 	 * Create the frame.
@@ -59,6 +60,11 @@ public class VentanaAdminMenu extends JFrame {
 		gbc_btnConsultarDisponibilidad.ipadx = 5;
 		gbc_btnConsultarDisponibilidad.gridwidth = 10;
 		contentPane.add(getBtnConsultarDisponibilidad(), gbc_btnConsultarDisponibilidad);
+		GridBagConstraints gbc_btnActividad = new GridBagConstraints();
+		gbc_btnActividad.insets = new Insets(0, 0, 5, 5);
+		gbc_btnActividad.gridx = 3;
+		gbc_btnActividad.gridy = 5;
+		contentPane.add(getBtnActividad(), gbc_btnActividad);
 		GridBagConstraints gbc_btnPasarPago = new GridBagConstraints();
 		gbc_btnPasarPago.insets = new Insets(0, 0, 5, 0);
 		gbc_btnPasarPago.gridx = 7;
@@ -81,7 +87,8 @@ public class VentanaAdminMenu extends JFrame {
 			btnHacerReserva = new JButton("Hacer reserva");
 			btnHacerReserva.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
-					
+					VentanaReservaAdmin vra = new VentanaReservaAdmin();
+					vra.setVisible(true);
 				}
 			});
 		}
@@ -153,5 +160,17 @@ public class VentanaAdminMenu extends JFrame {
 			});
 		}
 		return btnMonitor;
+	}
+	private JButton getBtnActividad() {
+		if (btnActividad == null) {
+			btnActividad = new JButton("Crear actividad");
+			btnActividad.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent arg0) {
+					VentanaCrearActividad vca = new VentanaCrearActividad();
+					vca.setVisible(true);
+				}
+			});
+		}
+		return btnActividad;
 	}
 }
