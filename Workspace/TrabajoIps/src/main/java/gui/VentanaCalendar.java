@@ -61,6 +61,7 @@ public class VentanaCalendar extends JDialog {
 	private VentanaCalendar ref = this;
 	private JButton btnCancelarReserva;
 	private JButton btnMisActividades;
+	private JButton btnReservasFuturas;
 
 	/**
 	 * Launch the application.
@@ -113,6 +114,7 @@ public class VentanaCalendar extends JDialog {
 		contentPanel.add(getBtnReservarEstaInstalacion());
 		contentPanel.add(getBtnCancelarReserva());
 		contentPanel.add(getBtnMisActividades());
+		contentPanel.add(getBtnReservasFuturas());
 	}
 
 	private JDateChooser getDateChooser() {
@@ -335,7 +337,7 @@ public class VentanaCalendar extends JDialog {
 	}
 
 	JComboBox getComboBoxInstalacion() {
-		String[] modelItems = new String[] { "Elija instalacion:", "Piscina", "Cancha fútbol", "Pista tenis" };
+		String[] modelItems = new String[] { "Elija instalacion:", "Piscina", "Cancha fï¿½tbol", "Pista tenis" };
 		cmodel = new DefaultComboBoxModel(modelItems);
 		if (comboBoxInstalacion == null) {
 			comboBoxInstalacion = new JComboBox();
@@ -447,5 +449,19 @@ public class VentanaCalendar extends JDialog {
 			btnMisActividades.setBounds(30, 206, 109, 23);
 		}
 		return btnMisActividades;
+	}
+
+	private JButton getBtnReservasFuturas() {
+		if (btnReservasFuturas == null) {
+			btnReservasFuturas = new JButton("Reservas futuras");
+			btnReservasFuturas.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					VentanaReservasFuturas RF = new VentanaReservasFuturas(VentanaCalendar.this, getSocioID());
+					RF.setVisible(true);
+				}
+			});
+			btnReservasFuturas.setBounds(30, 256, 109, 23);
+		}
+		return btnReservasFuturas;
 	}
 }
