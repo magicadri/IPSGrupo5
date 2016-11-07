@@ -74,7 +74,7 @@ CREATE TABLE socioactividad (
 	socioID varchar(32) not NULL,
 	actividadID INTEGER NOT NULL,
 	reservaID INTEGER NOT NULL,
-	presentado BOOLEAN
+	presentado BOOLEAN,
 	PRIMARY KEY(socioID, actividadID, reservaID)
 );
 
