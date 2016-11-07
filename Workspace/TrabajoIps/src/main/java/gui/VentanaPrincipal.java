@@ -3,6 +3,7 @@ package gui;
 import db.Database;
 import db.Parser;
 import logic.Reserva;
+import logic.Socio;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
@@ -79,18 +80,22 @@ public class VentanaPrincipal extends JFrame {
             btnSocio.setBounds(26, 168, 329, 138);
             btnSocio.addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent arg0) {
+                	boolean valid = false;
                 	socioID =JOptionPane.showInputDialog("Introduce tu ID de socio: ");
-                	for (Reserva reserva : parser.getReservas()) {
-            			if(socioID.equals(reserva.getSocioID())) { 
+                	for (Socio socios : parser.getSocios()) {
+            			if(socioID.equals(socios.getSocioID())) { 
             				VentanaCalendar VC = new VentanaCalendar(socioID);
                     		VC.setVisible(true);
+                    		valid=true;
                     		break;
             			}
             			else {
-            				JOptionPane.showMessageDialog(ref, "No existe esa ID de socio");
-            				break;
+            				valid=false;
+            				continue;
             			}
-            		}           		
+            		}  
+                	if(!valid)
+                		JOptionPane.showMessageDialog(ref, "No existe esa ID de socio");
                 }
             });
         }
