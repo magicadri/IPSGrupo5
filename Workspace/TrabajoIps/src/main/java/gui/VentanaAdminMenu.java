@@ -105,9 +105,9 @@ public class VentanaAdminMenu extends JFrame {
 			btnConsultarDisponibilidad.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent arg0) {
 					// Abrimos la ventana para comprobar disponibilidad de instalaciones
-					VentanaComprobarOcupacionAdmin vcoa = new VentanaComprobarOcupacionAdmin();
-					vcoa.setVisible(true);
-					vcoa.setModal(true);
+					VentanaOcupacionAdminMejorada voam = new VentanaOcupacionAdminMejorada();
+					voam.setVisible(true);
+					voam.setModal(true);
 				}
 			});
 		}
