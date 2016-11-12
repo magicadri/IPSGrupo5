@@ -157,6 +157,25 @@ public class Parser {
 		if (reservas != null)
 			for (int i = reservas.size() - 1; i >= 0; i--)
 				reservas.remove(i);
+		if (objetoscuota != null)
+			for (int i = objetoscuota.size() - 1; i >= 0; i--)
+				objetoscuota.remove(i);
+		if (recibos != null)
+			for (int i = recibos.size() - 1; i >= 0; i--)
+				recibos.remove(i);
+		if (cuotas != null)
+			for (int i = cuotas.size() - 1; i >= 0; i--)
+				cuotas.remove(i);
+		if (sociosactividad != null)
+			for (int i = sociosactividad.size() - 1; i >= 0; i--)
+				sociosactividad.remove(i);
+		if (reservasactividad != null)
+			for (int i = reservasactividad.size() - 1; i >= 0; i--)
+				reservasactividad.remove(i);
+		if (actividades != null)
+			for (int i = actividades.size() - 1; i >= 0; i--)
+				actividades.remove(i);
+		
 	}
 
 	/**
@@ -173,10 +192,11 @@ public class Parser {
 		boolean resultado = true;
 
 		for (Reserva reserva : reservas) {
-			if (reserva.getHoraComienzo().getHours() == horaC.getHours()
-					&& reserva.getHoraFinal().getHours() == horaF.getHours()
-					&& reserva.getInstalacionID() == instalacionID) {
-				resultado = false;
+			if (getDia(reserva.getHoraComienzo()) == getDia(horaC)) {
+				if (reserva.getHoraComienzo().getHours() == horaC.getHours() && reserva.getHoraFinal().getHours() == horaF.getHours()
+						&& reserva.getInstalacionID() == instalacionID) {
+					resultado = false;
+				}
 			}
 		}
 		return resultado;
@@ -207,20 +227,22 @@ public class Parser {
 	 * @return true si la tiene, false si no la tiene
 	 */
 	@SuppressWarnings("deprecation")
-	public boolean comprobarDisponibilidadPorSocio(String socioID, Date horaC, Date horaF) {
+	public boolean comprobarDisponibilidadPorSocio(String socioID, int insID, Date horaC, Date horaF) {
 		boolean resultado = false;
 
 		for (Reserva reserva : reservas) {
-			if (reserva.getHoraComienzo().getHours() == horaC.getHours()
-					&& reserva.getHoraFinal().getHours() == horaF.getHours() && reserva.getSocioID().equals(socioID)) {
-				resultado = true;
+			if (getDia(reserva.getHoraComienzo()) == getDia(horaC)) {
+				if (insID == reserva.getInstalacionID()) {
+					if (reserva.getHoraComienzo().getHours() == horaC.getHours() && reserva.getHoraFinal().getHours() == horaF.getHours()
+							&& reserva.getSocioID().equals(socioID)) {
+						resultado = true;
+					}
+				}
 			}
 		}
 		return resultado;
 	}
 
-	
-	@SuppressWarnings("deprecation")
 	public Reserva comprobarDisponibilidadPorSocioAdmin(String socioID, Date horaC, Date horaF) {
 		boolean resultado = false;
 		Reserva ret = null;
@@ -318,6 +340,7 @@ public class Parser {
 
 		for (Reserva reserva : reservas) {
 			if (reserva.getHoraComienzo().getHours() == horaC.getHours()
+					&& getDia(reserva.getHoraComienzo()) == getDia(horaC)
 					&& reserva.getHoraFinal().getHours() == horaF.getHours() && reserva.getSocioID().equals(socioID)
 					&& reserva.getHoraComienzo().getMonth() == horaC.getMonth()
 					&& reserva.getHoraComienzo().getYear() == horaC.getYear()) {
@@ -345,4 +368,5 @@ public class Parser {
 		}
 
 	}
+
 }

@@ -84,12 +84,11 @@ public class VentanaPrincipal extends JFrame {
                 	socioID =JOptionPane.showInputDialog("Introduce tu ID de socio: ");
                 	for (Socio socios : parser.getSocios()) {
             			if(socioID.equals(socios.getSocioID())) { 
-            				VentanaCalendar VC = new VentanaCalendar(socioID);
-                    		VC.setVisible(true);
+            				VentanaCalendarMejorada vcm = new VentanaCalendarMejorada(socioID);
+                    		vcm.setVisible(true);
                     		valid=true;
                     		break;
-            			}
-            			else {
+            			} else {
             				valid=false;
             				continue;
             			}

@@ -54,7 +54,6 @@ public class VentanaReservaAdmin extends JDialog {
 	private JDateChooser dateChooser;
 	private String modoPago;
 	private int precio;
-	private VentanaCalendar vc;
 	//---------------------------------------
 	
 	/**
@@ -63,7 +62,6 @@ public class VentanaReservaAdmin extends JDialog {
 	public VentanaReservaAdmin() {
 		this.socioID = socioID;
 		this.fecha = fecha;
-		this.vc=vc;
 		setTitle("Ventana reserva");
 		setBounds(100, 100, 891, 620);
 		getContentPane().setLayout(new BorderLayout());

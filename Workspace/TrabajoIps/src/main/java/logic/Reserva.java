@@ -40,6 +40,8 @@ public class Reserva {
 		this.parser = new Parser();
 	}
 
+	public Reserva() {	this.parser = new Parser(); }
+
 	public int getReservaID() {
 		return this.reservaID;
 	}
@@ -93,7 +95,6 @@ public class Reserva {
 	public boolean cancelarReserva(String socioID, Timestamp horaComienzo, Timestamp horaFinal) {
 		boolean result = marcarReserva(socioID, horaComienzo, horaFinal);
 		if (marcarReserva(socioID, horaComienzo, horaFinal)) {
-			System.out.println("Reserva del socio " + socioID + " borrada.");
 			removeReservaDeBase(parser.borrarReserva(socioID, horaComienzo, horaFinal));
 			return result;
 		}
@@ -158,7 +159,7 @@ public class Reserva {
 				// Comprobar duracion
 				if (comprobarMaxHorasSeguidas(horaComienzo, horaFinal)) {
 					// Comprobar reservas simultaneas
-					if (!comprobarDisponibilidadPorSocio(socioID, horaComienzo, horaFinal)) {
+					if (!comprobarDisponibilidadPorSocio(socioID, instalacionID, horaComienzo, horaFinal)) { 
 						// Comprobar disponibilidad
 						if (comprobarDisponibilidadPorInstalacion(instalacionID, horaComienzo, horaFinal)) {
 							boolean aux = addReservaABase(reserva);
@@ -386,7 +387,7 @@ public class Reserva {
 	 * 
 	 * @author David
 	 */
-	private boolean comprobarDisponibilidadPorSocio(String socioID, Date horaComienzo, Date horaFinal) {
+	private boolean comprobarDisponibilidadPorSocio(String socioID, int insID, Date horaComienzo, Date horaFinal) {
 		try {
 			parser.removeArrays();
 			parser.fillArrays();
@@ -394,7 +395,7 @@ public class Reserva {
 			e.printStackTrace();
 			System.err.println("Error al comprobarDisponibilidadPorSocio con las reservas del socio: " + socioID);
 		}
-		return parser.comprobarDisponibilidadPorSocio(socioID, horaComienzo, horaFinal);
+		return parser.comprobarDisponibilidadPorSocio(socioID, insID, horaComienzo, horaFinal);
 	}
 
 	private Reserva comprobarDisponibilidadPorSocioAdmin(String socioID, Date horaComienzo, Date horaFinal) {

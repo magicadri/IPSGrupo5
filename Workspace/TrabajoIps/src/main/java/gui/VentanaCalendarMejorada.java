@@ -2,22 +2,21 @@ package gui;
 
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;
-import java.sql.SQLException;
-import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.Calendar;
 
+import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
+
+import java.awt.Font;
 import javax.swing.SwingConstants;
+import javax.swing.UIManager;
+
+import java.awt.Color;
 import javax.swing.border.TitledBorder;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
-import javax.swing.table.TableCellRenderer;
 import javax.swing.JComboBox;
 import com.toedter.calendar.JDateChooser;
 
@@ -25,22 +24,25 @@ import db.Parser;
 import logic.Instalacion;
 import logic.Reserva;
 
-import javax.swing.UIManager;
-import java.awt.Color;
-import java.awt.Component;
-
-import javax.swing.JTextArea;
 import javax.swing.JTable;
-import javax.swing.DefaultComboBoxModel;
-import java.awt.Font;
-import java.awt.event.ActionListener;
-import java.awt.event.ActionEvent;
+import javax.swing.ListSelectionModel;
 
-public class VentanaOcupacionAdminMejorada extends JDialog {
+import java.awt.Component;
+import javax.swing.table.TableCellRenderer;
+import java.awt.event.ActionListener;
+import java.sql.SQLException;
+import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.awt.event.ActionEvent;
+import java.awt.GridLayout;
+
+public class VentanaCalendarMejorada extends JDialog {
 
 	private static final long serialVersionUID = -4412349867500367960L;
 	private final JPanel contentPanel = new JPanel();
-	private JLabel lblOcupacionDeInstalaciones;
+	private JLabel lblCalendarioParaSocios;
 	private JLabel lblFecha;
 	private JLabel lblInstalacion;
 	private JPanel pnDatos;
@@ -49,17 +51,24 @@ public class VentanaOcupacionAdminMejorada extends JDialog {
 	private JDateChooser dateChooser;
 	private JButton btComprobar;
 	private JPanel pnTabla;
-	private JPanel pnDescripcion;
-	private JTextArea taDescripcion;
+	private JPanel pnAcciones;
 	private JTable table;
 	private Parser parser;
+	private JButton btnReservar;
+	private JButton btnCancelarReserva;
+	private JButton btnMisReservas;
+	private JButton btnMisActividades;
+	private JButton btnReservasFuturas;
+	private JPanel pnAccionesInterno;
+	private VentanaCalendarMejorada ref = this;
+	private String socioID;
 
 	/**
 	 * Launch the application.
 	 */
 	public static void main(String[] args) {
 		try {
-			VentanaOcupacionAdminMejorada dialog = new VentanaOcupacionAdminMejorada();
+			VentanaCalendarMejorada dialog = new VentanaCalendarMejorada("adri");
 			dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 			dialog.setVisible(true);
 		} catch (Exception e) {
@@ -70,21 +79,22 @@ public class VentanaOcupacionAdminMejorada extends JDialog {
 	/**
 	 * Create the dialog.
 	 */
-	public VentanaOcupacionAdminMejorada() {
+	public VentanaCalendarMejorada(String socioID) {
 		parser = new Parser();
+		setSocioID(socioID);
 		setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 		setResizable(false);
-		setTitle("Ventana de ocupacion");
+		setTitle("Calendario para solcios");
 		setBounds(100, 100, 1047, 901);
 		getContentPane().setLayout(new BorderLayout());
 		contentPanel.setBackground(Color.WHITE);
 		contentPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
 		getContentPane().add(contentPanel, BorderLayout.CENTER);
 		contentPanel.setLayout(null);
-		contentPanel.add(getLblOcupacionDeInstalaciones());
+		contentPanel.add(getLblCalendarioParaSocios());
 		contentPanel.add(getPnDatos());
 		contentPanel.add(getPnTabla());
-		contentPanel.add(getPnDescripcion());
+		contentPanel.add(getPnAcciones());
 		{
 			JPanel buttonPane = new JPanel();
 			buttonPane.setBackground(Color.WHITE);
@@ -104,14 +114,14 @@ public class VentanaOcupacionAdminMejorada extends JDialog {
 		}
 	}
 
-	private JLabel getLblOcupacionDeInstalaciones() {
-		if (lblOcupacionDeInstalaciones == null) {
-			lblOcupacionDeInstalaciones = new JLabel("Ocupaci\u00F3n de instalaciones:");
-			lblOcupacionDeInstalaciones.setFont(new Font("Rockwell", Font.PLAIN, 60));
-			lblOcupacionDeInstalaciones.setHorizontalAlignment(SwingConstants.CENTER);
-			lblOcupacionDeInstalaciones.setBounds(61, 16, 883, 118);
+	private JLabel getLblCalendarioParaSocios() {
+		if (lblCalendarioParaSocios == null) {
+			lblCalendarioParaSocios = new JLabel("Calendario para socios");
+			lblCalendarioParaSocios.setFont(new Font("Rockwell", Font.PLAIN, 60));
+			lblCalendarioParaSocios.setHorizontalAlignment(SwingConstants.CENTER);
+			lblCalendarioParaSocios.setBounds(61, 16, 883, 118);
 		}
-		return lblOcupacionDeInstalaciones;
+		return lblCalendarioParaSocios;
 	}
 
 	private JLabel getLblFecha() {
@@ -136,8 +146,7 @@ public class VentanaOcupacionAdminMejorada extends JDialog {
 		if (pnDatos == null) {
 			pnDatos = new JPanel();
 			pnDatos.setBackground(Color.WHITE);
-			pnDatos.setBorder(new TitledBorder(UIManager.getBorder("TitledBorder.border"), "Datos",
-					TitledBorder.LEADING, TitledBorder.TOP, null, new Color(0, 0, 0)));
+			pnDatos.setBorder(new TitledBorder(UIManager.getBorder("TitledBorder.border"), "Datos", TitledBorder.LEADING, TitledBorder.TOP, null, new Color(0, 0, 0)));
 			pnDatos.setBounds(31, 182, 280, 465);
 			pnDatos.setLayout(null);
 			pnDatos.add(getLblInstalacion());
@@ -179,7 +188,6 @@ public class VentanaOcupacionAdminMejorada extends JDialog {
 				public void actionPerformed(ActionEvent e) {
 					if(comprobarMinimos()){
 						limpiarTabla();
-						limpiarDescripcion();
 						try {
 							fillTabla();
 						} catch (SQLException e1) {
@@ -205,26 +213,16 @@ public class VentanaOcupacionAdminMejorada extends JDialog {
 		return pnTabla;
 	}
 
-	private JPanel getPnDescripcion() {
-		if (pnDescripcion == null) {
-			pnDescripcion = new JPanel();
-			pnDescripcion.setBackground(Color.WHITE);
-			pnDescripcion.setBorder(
-					new TitledBorder(null, "Descripci\u00F3n", TitledBorder.LEADING, TitledBorder.TOP, null, null));
-			pnDescripcion.setBounds(31, 680, 970, 118);
-			pnDescripcion.setLayout(null);
-			pnDescripcion.add(getTaDescripcion());
+	private JPanel getPnAcciones() {
+		if (pnAcciones == null) {
+			pnAcciones = new JPanel();
+			pnAcciones.setBackground(Color.WHITE);
+			pnAcciones.setBorder(new TitledBorder(UIManager.getBorder("TitledBorder.border"), "Acciones", TitledBorder.LEADING, TitledBorder.TOP, null, new Color(0, 0, 0)));
+			pnAcciones.setBounds(31, 680, 970, 98);
+			pnAcciones.setLayout(null);
+			pnAcciones.add(getPnAccionesInterno());
 		}
-		return pnDescripcion;
-	}
-
-	private JTextArea getTaDescripcion() {
-		if (taDescripcion == null) {
-			taDescripcion = new JTextArea();
-			taDescripcion.setEditable(false);
-			taDescripcion.setBounds(15, 27, 940, 75);
-		}
-		return taDescripcion;
+		return pnAcciones;
 	}
 
 	private JTable getTable() {
@@ -241,19 +239,21 @@ public class VentanaOcupacionAdminMejorada extends JDialog {
 					
 					String value = String.valueOf(getModel().getValueAt(row, col));
 					try {
-						if (itsAdmin(value,row,col) == 0) {
+						if (itsAdmin(value,row,col) == 1) {
 							comp.setBackground(Color.green);
-						} else if (itsAdmin(value,row,col) == 1) {
+						} else if (itsAdmin(value,row,col) == 0) {
 							comp.setBackground(Color.red);
 						} else
 							comp.setBackground(Color.WHITE);
 					} catch (SQLException e) {
 						System.err.println("[...ERROR AL PINTAR VALORES DE LA TABLA EN LA CLASE VENTANAOCUPACIONADMINMEJORADA...]");
 					}
-
+					
 					return comp;
 				}
 			};
+			table.setCellSelectionEnabled(true);
+			table.setSelectionMode(ListSelectionModel.SINGLE_INTERVAL_SELECTION);
 			Object[] nombreColumnas = new Object[2];
 			nombreColumnas[0] = "Hora";
 			nombreColumnas[1] = "Reserva";
@@ -265,31 +265,122 @@ public class VentanaOcupacionAdminMejorada extends JDialog {
 					{ "21:00", null }, { "22:00", null }, { "23:00", null }, },
 					new String[] { "Horas", "Disponibilidad" });
 			table.setModel(modeloTabla);
-			table.setBounds(15, 38, 620, 411);
-			table.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
-
-				@Override
-				public void valueChanged(ListSelectionEvent ev) {
-					if(table.getSelectedColumn()!=-1 && table.getSelectedRow()!=-1 && table.getModel().getValueAt(table.getSelectedRow(), table.getSelectedColumn())!="" && table.getSelectedRow()!=0
-							&& table.getSelectedColumn()!=0 && table.getModel().getValueAt(table.getSelectedRow(), table.getSelectedColumn())!=null){
-						// Pone en la descripcion el valor de la celda seleccionada
-						try {
-							taDescripcion.setText((String) table.getModel().getValueAt(table.getSelectedRow(), 0) + " - Reserva id: "
-								+ table.getModel().getValueAt(table.getSelectedRow(), table.getSelectedColumn()) + " - Usuario id: "
-								+ getSocioId((int) table.getModel().getValueAt(table.getSelectedRow(), table.getSelectedColumn())) + " - Modo de pago: "
-								+ getModoPago((int) table.getModel().getValueAt(table.getSelectedRow(), table.getSelectedColumn()))
-							);
-						} catch (SQLException e) {
-							System.err.println("[...ERROR AL ESCRIBIR DATOS DE LA DESCRIPCION EN LA CLASE VENTANAOCUPACIONADMINMEJORADA...]");
-						}
+			table.setBounds(15, 38, 620, 411);			
+		}
+		return table;
+	}
+	private JButton getBtnReservar() {
+		if (btnReservar == null) {
+			btnReservar = new JButton("Reservar");
+			btnReservar.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {	
+					//Coger metodo de pago
+					Object[] options = { "Cuota", "Efectivo"};
+					int n = JOptionPane.showOptionDialog(ref, "Seleccione un método de pago", "Modo de pago", JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE, null, options, options[1]);
+					int[] selecciones = table.getSelectedRows();
+					if(selecciones.length > 2){
+						JOptionPane.showMessageDialog(ref, "No puedes seleccionar más de dos horas para realizar una reserva", "Error", JOptionPane.ERROR_MESSAGE);
 					}
-					else{
-						limpiarDescripcion();
+					else if(selecciones.length == 2){
+						try {
+							hacerReserva(selecciones[0], selecciones[1], options[n]);
+						} catch (SQLException e1) {
+							
+						}
+					}else if(selecciones.length == 1){
+						try {
+							hacerReserva(selecciones[0], -1, options[n]);
+						} catch (SQLException e1) {
+							
+						}
+					}else{
+						JOptionPane.showMessageDialog(ref, "Proceso de reserva cancelado.", "Advertencia", JOptionPane.WARNING_MESSAGE);
 					}
 				}
 			});
 		}
-		return table;
+		return btnReservar;
+	}
+	private JButton getBtnCancelarReserva() {
+		if (btnCancelarReserva == null) {
+			btnCancelarReserva = new JButton("Cancelar reserva");
+			btnCancelarReserva.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					int[] selecciones = table.getSelectedRows();
+					boolean result = false;
+					if(selecciones.length > 2){
+						JOptionPane.showMessageDialog(ref, "No puedes seleccionar más de dos horas para realizar una reserva", "Error", JOptionPane.ERROR_MESSAGE);
+					}else if(selecciones.length == 2){
+						try {
+							result = cancelarReserva(selecciones[0], selecciones[1]);
+						} catch (SQLException e1) {
+							
+						}
+					}else if(selecciones.length == 1){
+						try {
+							result = cancelarReserva(selecciones[0], -1);
+						} catch (SQLException e1) {
+							
+						}
+					}else{
+						JOptionPane.showMessageDialog(ref, "Proceso de cancelacion erroneo.", "Advertencia", JOptionPane.WARNING_MESSAGE);
+					}
+					if(result){
+						JOptionPane.showMessageDialog(ref, "Reserva cancelada con exito", "Información", JOptionPane.INFORMATION_MESSAGE);
+					}
+				}
+			});
+		}
+		return btnCancelarReserva;
+	}
+	private JButton getBtnMisReservas() {
+		if (btnMisReservas == null) {
+			btnMisReservas = new JButton("Mis reservas");
+			btnMisReservas.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					MisReservas ms = new MisReservas(getSocioID());
+					ms.setVisible(true);
+				}
+			});
+		}
+		return btnMisReservas;
+	}
+	private JButton getBtnMisActividades() {
+		if (btnMisActividades == null) {
+			btnMisActividades = new JButton("Mis actividades");
+			btnMisActividades.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					MisActividades MA = new MisActividades(getSocioID());
+					MA.setVisible(true);
+				}
+			});
+		}
+		return btnMisActividades;
+	}
+	private JButton getBtnReservasFuturas() {
+		if (btnReservasFuturas == null) {
+			btnReservasFuturas = new JButton("Reservas futuras");
+			btnReservasFuturas.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					VentanaReservasFuturas RF = new VentanaReservasFuturas(ref, getSocioID());
+					RF.setVisible(true);
+				}
+			});
+		}
+		return btnReservasFuturas;
+	}
+	private JPanel getPnAccionesInterno() {
+		if (pnAccionesInterno == null) {
+			pnAccionesInterno = new JPanel();
+			pnAccionesInterno.setBounds(15, 39, 940, 29);
+			pnAccionesInterno.setLayout(new GridLayout(1, 0, 0, 0));
+			pnAccionesInterno.add(getBtnReservar());
+			pnAccionesInterno.add(getBtnCancelarReserva());
+			pnAccionesInterno.add(getBtnMisReservas());
+			pnAccionesInterno.add(getBtnMisActividades());
+			pnAccionesInterno.add(getBtnReservasFuturas());
+		}
+		return pnAccionesInterno;
 	}
 
 	/************************************************ SACAR VALORES DE TIMESTAMP ***********************************************/
@@ -319,6 +410,90 @@ public class VentanaOcupacionAdminMejorada extends JDialog {
 	}
 
 	/**************************************************** EXTRA ***************************************************/
+	/**
+	 * Hace la reserva seleccionada por el usuario
+	 * @throws SQLException 
+	 */
+	@SuppressWarnings("deprecation")
+	private boolean cancelarReserva(int horaComienzo, int horaFinal) throws SQLException{
+				
+		Reserva reserva = new Reserva();
+		Date date = dateChooser.getDate();
+		date.setHours(horaComienzo-1);
+		Date date2 = dateChooser.getDate();
+		date2.setHours(horaComienzo);
+		Date date3 = dateChooser.getDate();
+		date3.setHours(horaFinal);
+		
+		boolean result;
+		if(horaFinal != -1)
+			result = reserva.cancelarReserva(getSocioID(), new Timestamp(date.getTime()), new Timestamp(date2.getTime()));
+		else
+			result = reserva.cancelarReserva(getSocioID(), new Timestamp(date.getTime()), new Timestamp(date2.getTime()));
+		parser.removeArrays();
+		parser.fillArrays();
+		
+		limpiarTabla();
+		fillTabla();
+		
+		return result;
+	}
+	
+	/**
+	 * Saca el dia de un Date
+	 * 
+	 * @param date
+	 * @return String con el dia
+	 */
+	private String sacarDia(Date date) {
+		String[] var = date.toString().split(" ");
+		return var[2];
+	}
+	
+	/**
+	 * Hace la reserva seleccionada por el usuario
+	 * @throws SQLException 
+	 */
+	@SuppressWarnings("deprecation")
+	private void hacerReserva(int horaComienzo, int horaComienzo2, Object modoPago) throws SQLException{
+		// Actualizar datos de la base
+		parser.removeArrays();
+		parser.fillArrays();
+		
+
+		Date date = dateChooser.getDate();
+		date.setHours(horaComienzo-1);
+		Date date2 = dateChooser.getDate();
+		date2.setHours(horaComienzo);
+		Date date3 = dateChooser.getDate();
+		date3.setHours(horaComienzo2);
+
+		// Crear y guardar la reserva
+		Reserva reserva = new Reserva();
+		if(horaComienzo2 != -1)
+			reserva.hacerReserva(getSocioID(), getInstalacionIDFromNombre((String) cbInstalacion.getSelectedItem()), parser.getReservas().size()+1,
+				new Timestamp(date.getTime()), new Timestamp(date3.getTime()), null, null, getModoPago(getInstalacionIDFromNombre((String) cbInstalacion.getSelectedItem())),
+				false, getPrecioFromNombre((String) cbInstalacion.getSelectedItem()));
+		else
+			reserva.hacerReserva(getSocioID(), getInstalacionIDFromNombre((String) cbInstalacion.getSelectedItem()), parser.getReservas().size()+1,
+					new Timestamp(date.getTime()), new Timestamp(date2.getTime()), null, null, getModoPago(getInstalacionIDFromNombre((String) cbInstalacion.getSelectedItem())),
+					false, getPrecioFromNombre((String) cbInstalacion.getSelectedItem()));
+		// Actualizar datos de la base
+		parser.removeArrays();
+		parser.fillArrays();
+		
+		// Rellenar la tabla		
+		limpiarTabla();
+		fillTabla();
+	}
+	
+	public String getSocioID() {
+		return socioID;
+	}
+
+	public void setSocioID(String socioID) {
+		this.socioID = socioID;
+	}
 	
 	/**
 	 * Comprueba que no haya campos vacios
@@ -379,13 +554,6 @@ public class VentanaOcupacionAdminMejorada extends JDialog {
 		}
 		
 		return "";
-	}
-	
-	/**
-	 * Limpia los valores de la tabla en la columna de las reservas
-	 */
-	private void limpiarDescripcion() {
-		taDescripcion.setText("");
 	}
 	
 	/**
@@ -504,9 +672,30 @@ public class VentanaOcupacionAdminMejorada extends JDialog {
 		// Ver si es admin
 		for(Reserva res : r){
 			if(String.valueOf(res.getReservaID()).equals(value))
-				if(res.getSocioID().equals("admin"))
+				if(res.getSocioID().equals("admin") || !res.getSocioID().equals(getSocioID()))
 					return 0;
 		}
 		return 1;
+	}
+	
+	/**
+	 * Da el precio de una reserva dado el nombre de una instalacion
+	 * @param nombre
+	 * @return
+	 * @throws SQLException
+	 */
+	private int getPrecioFromNombre(String nombre) throws SQLException{ 
+		int id = getInstalacionIDFromNombre(nombre);
+		
+		// Pasarlos a la clase actual
+		ArrayList<Reserva> r = new ArrayList<Reserva>();
+		r = parser.getReservas();
+
+		// Ver si es admin
+		for (Reserva res : r) {
+			if (res.getInstalacionID() == id)
+				return res.getPrecio();
+		}
+		return -1;
 	}
 }
