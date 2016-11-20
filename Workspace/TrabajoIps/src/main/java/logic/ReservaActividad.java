@@ -21,7 +21,5 @@ public class ReservaActividad {
 	public int getReservaID() {
 		return reservaID;
 	}
-	
-	
 
 }

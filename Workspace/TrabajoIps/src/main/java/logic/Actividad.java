@@ -1,10 +1,7 @@
 package logic;
 
-import java.sql.Timestamp;
-
 public class Actividad {
 	
-
 	private int actividadID;
 	private int instalacionID;
 	private int semanas;
@@ -33,6 +30,5 @@ public class Actividad {
 	public String getActividad_nombre() {
 		return actividad_nombre;
 	}
-
 
 }

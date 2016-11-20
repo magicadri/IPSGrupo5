@@ -351,14 +351,31 @@ public class Parser {
 		return resultado;
 	}
 
-	public void actualizaRegistro(String elementAt, int actividadId) {
+	public void actualizaRegistroT(String elementAt, int actividadId) {
 		SocioActividad sa = null;
 		for (SocioActividad s : sociosactividad) {
 			// Poner if() de 5 min antes si no lo hace el monitor [preguntar]
-			if(s.getSocioID().equals(elementAt) && s.getActividadID() == actividadId)
+			if(s.getSocioID().equals(elementAt) && s.getActividadID() == actividadId && s.getPresentado()==false)
 			try {
 				Statement s1 = c.createStatement();
 				s1.executeUpdate("UPDATE socioActividad SET presentado = true where socioId = '" + elementAt
+						+ "' and actividadId = " + actividadId);
+				JOptionPane.showMessageDialog(null, "cliente "+ elementAt + " actualizado");
+
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+	}
+	
+	public void actualizaRegistroF(String elementAt, int actividadId) {
+		SocioActividad sa = null;
+		for (SocioActividad s : sociosactividad) {
+			// Poner if() de 5 min antes si no lo hace el monitor [preguntar]
+			if(s.getSocioID().equals(elementAt) && s.getActividadID() == actividadId && s.getPresentado()==true)
+			try {
+				Statement s1 = c.createStatement();
+				s1.executeUpdate("UPDATE socioActividad SET presentado = false where socioId = '" + elementAt
 						+ "' and actividadId = " + actividadId);
 				JOptionPane.showMessageDialog(null, "cliente "+ elementAt + " actualizado");
 

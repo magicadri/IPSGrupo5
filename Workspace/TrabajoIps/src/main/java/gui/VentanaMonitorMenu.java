@@ -61,9 +61,9 @@ public class VentanaMonitorMenu extends JFrame {
 			btnRegistrarAsistencia = new JButton("Registrar asistencia");
 			btnRegistrarAsistencia.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent arg0) {
-					VentanaRegistrarAsistencia vra = new VentanaRegistrarAsistencia();
-					vra.setVisible(true);
-					vra.setModal(true);
+					VentanaRegistrarAsistenciaMejorada vram = new VentanaRegistrarAsistenciaMejorada();
+					vram.setVisible(true);
+					vram.setModal(true);
 				}
 			});
 		}
