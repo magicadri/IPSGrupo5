@@ -40,7 +40,7 @@ import javax.swing.SpinnerNumberModel;
 public class VentanaRegistrarAsistenciaMejorada extends JDialog {
 	public VentanaRegistrarAsistenciaMejorada() {
 		parser = new Parser();
-		setBounds(100, 100, 802, 579);
+		setBounds(100, 100, 589, 527);
 		getContentPane().setBackground(Color.WHITE);
 		setTitle("Ventana para registrar asistencia");
 		getContentPane().setLayout(null);
@@ -82,7 +82,7 @@ public class VentanaRegistrarAsistenciaMejorada extends JDialog {
 		if (lblActividad == null) {
 			lblActividad = new JLabel("Actividad:");
 			lblActividad.setHorizontalAlignment(SwingConstants.TRAILING);
-			lblActividad.setBounds(15, 16, 101, 32);
+			lblActividad.setBounds(20, 16, 57, 32);
 		}
 		return lblActividad;
 	}
@@ -95,7 +95,7 @@ public class VentanaRegistrarAsistenciaMejorada extends JDialog {
 					fillPorRegistrar();
 				}
 			});
-			comboBox.setBounds(131, 18, 145, 29);
+			comboBox.setBounds(87, 18, 125, 29);
 			String[] actividades = fillActividades();
 			DefaultComboBoxModel<String> dcbm = new DefaultComboBoxModel<String>(actividades);
 			comboBox.setModel(dcbm);
@@ -127,7 +127,7 @@ public class VentanaRegistrarAsistenciaMejorada extends JDialog {
 	private JScrollPane getScrollIzq() {
 		if (scrollIzq == null) {
 			scrollIzq = new JScrollPane();
-			scrollIzq.setBounds(29, 125, 247, 337);
+			scrollIzq.setBounds(20, 100, 192, 337);
 			scrollIzq.setViewportView(getListaPorRegistrar());
 		}
 		return scrollIzq;
@@ -136,7 +136,7 @@ public class VentanaRegistrarAsistenciaMejorada extends JDialog {
 	private JScrollPane getScrollDch() {
 		if (scrollDch == null) {
 			scrollDch = new JScrollPane();
-			scrollDch.setBounds(500, 125, 247, 337);
+			scrollDch.setBounds(346, 100, 205, 337);
 			scrollDch.setViewportView(getListaRegistrados());
 		}
 		return scrollDch;
@@ -171,7 +171,7 @@ public class VentanaRegistrarAsistenciaMejorada extends JDialog {
 			btDch.setBorderPainted(false);
 			btDch.setFont(new Font("Tahoma", Font.PLAIN, 43));
 			btDch.setBackground(Color.WHITE);
-			btDch.setBounds(328, 188, 115, 41);
+			btDch.setBounds(235, 203, 101, 41);
 		}
 		return btDch;
 	}
@@ -206,7 +206,7 @@ public class VentanaRegistrarAsistenciaMejorada extends JDialog {
 			button.setBorderPainted(false);
 			button.setFont(new Font("Tahoma", Font.PLAIN, 43));
 			button.setBackground(Color.WHITE);
-			button.setBounds(328, 255, 115, 41);
+			button.setBounds(235, 255, 101, 41);
 		}
 		return button;
 	}
@@ -239,7 +239,7 @@ public class VentanaRegistrarAsistenciaMejorada extends JDialog {
 					dispose();
 				}
 			});
-			btnSalir.setBounds(630, 478, 115, 29);
+			btnSalir.setBounds(463, 451, 88, 29);
 		}
 		return btnSalir;
 	}
@@ -252,7 +252,7 @@ public class VentanaRegistrarAsistenciaMejorada extends JDialog {
 					cambiarEstado();
 				}
 			});
-			btnRegistrar.setBounds(500, 478, 115, 29);
+			btnRegistrar.setBounds(356, 451, 88, 29);
 		}
 		return btnRegistrar;
 	}
@@ -274,7 +274,7 @@ public class VentanaRegistrarAsistenciaMejorada extends JDialog {
 	private JLabel getLblNoPresentados() {
 		if (lblNoPresentados == null) {
 			lblNoPresentados = new JLabel("No presentados:");
-			lblNoPresentados.setBounds(29, 89, 125, 20);
+			lblNoPresentados.setBounds(20, 69, 125, 20);
 		}
 		return lblNoPresentados;
 	}
@@ -282,7 +282,7 @@ public class VentanaRegistrarAsistenciaMejorada extends JDialog {
 	private JLabel getLblPresentados() {
 		if (lblPresentados == null) {
 			lblPresentados = new JLabel("Presentados:");
-			lblPresentados.setBounds(500, 96, 115, 20);
+			lblPresentados.setBounds(353, 69, 115, 20);
 		}
 		return lblPresentados;
 	}
@@ -296,7 +296,7 @@ public class VentanaRegistrarAsistenciaMejorada extends JDialog {
 					fillPorRegistrar();
 				}
 			});
-			spDesde.setBounds(92, 31, 84, 26);
+			spDesde.setBounds(85, 21, 58, 26);
 		}
 		return spDesde;
 	}
@@ -306,7 +306,7 @@ public class VentanaRegistrarAsistenciaMejorada extends JDialog {
 			pnHorario = new JPanel();
 			pnHorario.setBorder(new TitledBorder(null, "Horario", TitledBorder.LEADING, TitledBorder.TOP, null, null));
 			pnHorario.setBackground(Color.WHITE);
-			pnHorario.setBounds(342, 16, 405, 73);
+			pnHorario.setBounds(265, 11, 286, 58);
 			pnHorario.setLayout(null);
 			pnHorario.add(getSpDesde());
 			pnHorario.add(getLblDesde());
@@ -320,7 +320,7 @@ public class VentanaRegistrarAsistenciaMejorada extends JDialog {
 		if (lblDesde == null) {
 			lblDesde = new JLabel("Desde:");
 			lblDesde.setHorizontalAlignment(SwingConstants.TRAILING);
-			lblDesde.setBounds(15, 34, 69, 20);
+			lblDesde.setBounds(23, 24, 52, 20);
 		}
 		return lblDesde;
 	}
@@ -329,7 +329,7 @@ public class VentanaRegistrarAsistenciaMejorada extends JDialog {
 		if (lblHasta == null) {
 			lblHasta = new JLabel("hasta:");
 			lblHasta.setHorizontalAlignment(SwingConstants.TRAILING);
-			lblHasta.setBounds(206, 34, 58, 20);
+			lblHasta.setBounds(153, 24, 44, 20);
 		}
 		return lblHasta;
 	}
@@ -343,7 +343,7 @@ public class VentanaRegistrarAsistenciaMejorada extends JDialog {
 					fillPorRegistrar();
 				}
 			});
-			spHasta.setBounds(273, 31, 84, 26);
+			spHasta.setBounds(207, 21, 58, 26);
 		}
 		return spHasta;
 	}

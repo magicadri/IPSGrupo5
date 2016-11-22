@@ -17,6 +17,8 @@ import javax.swing.UIManager;
 
 import java.awt.Color;
 import javax.swing.border.TitledBorder;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 import javax.swing.JComboBox;
 import com.toedter.calendar.JDateChooser;
 
@@ -84,8 +86,8 @@ public class VentanaCalendarMejorada extends JDialog {
 		setSocioID(socioID);
 		setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 		setResizable(false);
-		setTitle("Calendario para solcios");
-		setBounds(100, 100, 1047, 901);
+		setTitle("Calendario para socios");
+		setBounds(100, 100, 803, 672);
 		getContentPane().setLayout(new BorderLayout());
 		contentPanel.setBackground(Color.WHITE);
 		contentPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
@@ -117,9 +119,9 @@ public class VentanaCalendarMejorada extends JDialog {
 	private JLabel getLblCalendarioParaSocios() {
 		if (lblCalendarioParaSocios == null) {
 			lblCalendarioParaSocios = new JLabel("Calendario para socios");
-			lblCalendarioParaSocios.setFont(new Font("Rockwell", Font.PLAIN, 60));
+			lblCalendarioParaSocios.setFont(new Font("Rockwell", Font.PLAIN, 46));
 			lblCalendarioParaSocios.setHorizontalAlignment(SwingConstants.CENTER);
-			lblCalendarioParaSocios.setBounds(61, 16, 883, 118);
+			lblCalendarioParaSocios.setBounds(10, 11, 742, 57);
 		}
 		return lblCalendarioParaSocios;
 	}
@@ -127,7 +129,7 @@ public class VentanaCalendarMejorada extends JDialog {
 	private JLabel getLblFecha() {
 		if (lblFecha == null) {
 			lblFecha = new JLabel("Fecha:");
-			lblFecha.setBounds(27, 132, 70, 31);
+			lblFecha.setBounds(12, 98, 70, 31);
 			lblFecha.setHorizontalAlignment(SwingConstants.TRAILING);
 		}
 		return lblFecha;
@@ -136,7 +138,7 @@ public class VentanaCalendarMejorada extends JDialog {
 	private JLabel getLblInstalacion() {
 		if (lblInstalacion == null) {
 			lblInstalacion = new JLabel("Instalaci\u00F3n:");
-			lblInstalacion.setBounds(15, 42, 82, 20);
+			lblInstalacion.setBounds(0, 42, 82, 20);
 			lblInstalacion.setHorizontalAlignment(SwingConstants.TRAILING);
 		}
 		return lblInstalacion;
@@ -147,7 +149,7 @@ public class VentanaCalendarMejorada extends JDialog {
 			pnDatos = new JPanel();
 			pnDatos.setBackground(Color.WHITE);
 			pnDatos.setBorder(new TitledBorder(UIManager.getBorder("TitledBorder.border"), "Datos", TitledBorder.LEADING, TitledBorder.TOP, null, new Color(0, 0, 0)));
-			pnDatos.setBounds(31, 182, 280, 465);
+			pnDatos.setBounds(28, 72, 232, 390);
 			pnDatos.setLayout(null);
 			pnDatos.add(getLblInstalacion());
 			pnDatos.add(getLblFecha());
@@ -168,7 +170,7 @@ public class VentanaCalendarMejorada extends JDialog {
 			}
 			DefaultComboBoxModel<String> modeloCB = new DefaultComboBoxModel<String>(instalaciones);
 			cbInstalacion.setModel(modeloCB);
-			cbInstalacion.setBounds(112, 37, 153, 31);
+			cbInstalacion.setBounds(92, 37, 123, 31);
 		}
 		return cbInstalacion;
 	}
@@ -176,7 +178,7 @@ public class VentanaCalendarMejorada extends JDialog {
 	private JDateChooser getDateChooser() {
 		if (dateChooser == null) {
 			dateChooser = new JDateChooser();
-			dateChooser.setBounds(112, 132, 153, 31);
+			dateChooser.setBounds(92, 98, 123, 31);
 		}
 		return dateChooser;
 	}
@@ -196,7 +198,7 @@ public class VentanaCalendarMejorada extends JDialog {
 					}
 				}
 			});
-			btComprobar.setBounds(150, 420, 115, 29);
+			btComprobar.setBounds(100, 348, 115, 29);
 		}
 		return btComprobar;
 	}
@@ -206,7 +208,7 @@ public class VentanaCalendarMejorada extends JDialog {
 			pnTabla = new JPanel();
 			pnTabla.setBackground(Color.WHITE);
 			pnTabla.setBorder(new TitledBorder(null, "Tabla", TitledBorder.LEADING, TitledBorder.TOP, null, null));
-			pnTabla.setBounds(348, 182, 650, 465);
+			pnTabla.setBounds(292, 72, 484, 448);
 			pnTabla.setLayout(null);
 			pnTabla.add(getTable());
 		}
@@ -218,29 +220,50 @@ public class VentanaCalendarMejorada extends JDialog {
 			pnAcciones = new JPanel();
 			pnAcciones.setBackground(Color.WHITE);
 			pnAcciones.setBorder(new TitledBorder(UIManager.getBorder("TitledBorder.border"), "Acciones", TitledBorder.LEADING, TitledBorder.TOP, null, new Color(0, 0, 0)));
-			pnAcciones.setBounds(31, 680, 970, 98);
-			pnAcciones.setLayout(null);
+			pnAcciones.setBounds(28, 538, 753, 57);
+			pnAcciones.setLayout(new GridLayout(0, 1, 0, 0));
 			pnAcciones.add(getPnAccionesInterno());
 		}
 		return pnAcciones;
 	}
-
+	
+	class SharedListSelectionHandler implements ListSelectionListener {
+	    public void valueChanged(ListSelectionEvent e) {
+	        ListSelectionModel lsm = (ListSelectionModel)e.getSource();
+	        lsm.setSelectionMode(1);
+	       
+	    }
+	}
+	
 	private JTable getTable() {
 		if (table == null) {
 			table = new JTable(){
 				
 				private static final long serialVersionUID = -2655951525426742341L;
-
+				
+				/**
+				 * Necesario para los colores
+				 */
 				@Override
 				public Component prepareRenderer(TableCellRenderer renderer, int row, int col) {
 					Component comp = super.prepareRenderer(renderer, row, col);
+					
 					if(dateChooser.getDate()==null)
 						return comp;
 					
+					//Permite seleccionar mas de una linea
+					if(isCellSelected(row, col)){           
+			            comp.setBackground(Color.lightGray);
+			            return comp;             
+			        }
+					
+					//Verde propias, Rojo ajenas
 					String value = String.valueOf(getModel().getValueAt(row, col));
 					try {
+						
 						if (itsAdmin(value,row,col) == 1) {
 							comp.setBackground(Color.green);
+							
 						} else if (itsAdmin(value,row,col) == 0) {
 							comp.setBackground(Color.red);
 						} else
@@ -253,7 +276,6 @@ public class VentanaCalendarMejorada extends JDialog {
 				}
 			};
 			table.setCellSelectionEnabled(true);
-			table.setSelectionMode(ListSelectionModel.SINGLE_INTERVAL_SELECTION);
 			Object[] nombreColumnas = new Object[2];
 			nombreColumnas[0] = "Hora";
 			nombreColumnas[1] = "Reserva";
@@ -265,7 +287,7 @@ public class VentanaCalendarMejorada extends JDialog {
 					{ "21:00", null }, { "22:00", null }, { "23:00", null }, },
 					new String[] { "Horas", "Disponibilidad" });
 			table.setModel(modeloTabla);
-			table.setBounds(15, 38, 620, 411);			
+			table.setBounds(23, 22, 433, 415);			
 		}
 		return table;
 	}
@@ -278,6 +300,9 @@ public class VentanaCalendarMejorada extends JDialog {
 					Object[] options = { "Cuota", "Efectivo"};
 					int n = JOptionPane.showOptionDialog(ref, "Seleccione un método de pago", "Modo de pago", JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE, null, options, options[1]);
 					int[] selecciones = table.getSelectedRows();
+					if(ocupado()){
+						return;
+					}
 					if(selecciones.length > 2){
 						JOptionPane.showMessageDialog(ref, "No puedes seleccionar más de dos horas para realizar una reserva", "Error", JOptionPane.ERROR_MESSAGE);
 					}
@@ -296,6 +321,20 @@ public class VentanaCalendarMejorada extends JDialog {
 					}else{
 						JOptionPane.showMessageDialog(ref, "Proceso de reserva cancelado.", "Advertencia", JOptionPane.WARNING_MESSAGE);
 					}
+				}
+
+				/**
+				 * Si ya está pintada la tabla, no se puede poner nada encima
+				 * @return true si está ocupada, false si no
+				 */
+				private boolean ocupado() {
+					for(int i : table.getSelectedRows()){
+						if(table.getValueAt(i, 1) !=""){
+							JOptionPane.showMessageDialog(ref, "No puede reservar encima de otra reserva");
+							return true;
+						}
+					}
+					return false;
 				}
 			});
 		}
@@ -372,7 +411,6 @@ public class VentanaCalendarMejorada extends JDialog {
 	private JPanel getPnAccionesInterno() {
 		if (pnAccionesInterno == null) {
 			pnAccionesInterno = new JPanel();
-			pnAccionesInterno.setBounds(15, 39, 940, 29);
 			pnAccionesInterno.setLayout(new GridLayout(1, 0, 0, 0));
 			pnAccionesInterno.add(getBtnReservar());
 			pnAccionesInterno.add(getBtnCancelarReserva());
@@ -427,7 +465,7 @@ public class VentanaCalendarMejorada extends JDialog {
 		
 		boolean result;
 		if(horaFinal != -1)
-			result = reserva.cancelarReserva(getSocioID(), new Timestamp(date.getTime()), new Timestamp(date2.getTime()));
+			result = reserva.cancelarReserva(getSocioID(), new Timestamp(date.getTime()), new Timestamp(date3.getTime()));
 		else
 			result = reserva.cancelarReserva(getSocioID(), new Timestamp(date.getTime()), new Timestamp(date2.getTime()));
 		parser.removeArrays();
@@ -437,17 +475,6 @@ public class VentanaCalendarMejorada extends JDialog {
 		fillTabla();
 		
 		return result;
-	}
-	
-	/**
-	 * Saca el dia de un Date
-	 * 
-	 * @param date
-	 * @return String con el dia
-	 */
-	private String sacarDia(Date date) {
-		String[] var = date.toString().split(" ");
-		return var[2];
 	}
 	
 	/**
@@ -472,11 +499,11 @@ public class VentanaCalendarMejorada extends JDialog {
 		Reserva reserva = new Reserva();
 		if(horaComienzo2 != -1)
 			reserva.hacerReserva(getSocioID(), getInstalacionIDFromNombre((String) cbInstalacion.getSelectedItem()), parser.getReservas().size()+1,
-				new Timestamp(date.getTime()), new Timestamp(date3.getTime()), null, null, getModoPago(getInstalacionIDFromNombre((String) cbInstalacion.getSelectedItem())),
+				new Timestamp(date.getTime()), new Timestamp(date3.getTime()), null, null, (String) modoPago,
 				false, getPrecioFromNombre((String) cbInstalacion.getSelectedItem()));
 		else
 			reserva.hacerReserva(getSocioID(), getInstalacionIDFromNombre((String) cbInstalacion.getSelectedItem()), parser.getReservas().size()+1,
-					new Timestamp(date.getTime()), new Timestamp(date2.getTime()), null, null, getModoPago(getInstalacionIDFromNombre((String) cbInstalacion.getSelectedItem())),
+					new Timestamp(date.getTime()), new Timestamp(date2.getTime()), null, null, (String) modoPago,
 					false, getPrecioFromNombre((String) cbInstalacion.getSelectedItem()));
 		// Actualizar datos de la base
 		parser.removeArrays();
@@ -507,55 +534,7 @@ public class VentanaCalendarMejorada extends JDialog {
 		
 		return true;
 	}
-	
-	/**
-	 * Consigue la id del socio dada su reserva id 
-	 * @param reservaID
-	 * @return
-	 * @throws SQLException
-	 */
-	private String getSocioId(int reservaID) throws SQLException{
-		// Actualizar datos de la base
-		parser.removeArrays();
-		parser.fillArrays();
-
-		// Pasarlos a la clase actual
-		ArrayList<Reserva> r = new ArrayList<Reserva>();
-		r = parser.getReservas();
 		
-		for(Reserva res : r){
-			if(res.getReservaID() == reservaID){
-				return res.getSocioID();
-			}
-		}
-		
-		return "";
-	}
-	
-	/**
-	 * Consigue el modo de pago dada una reserva id
-	 * @param reservaID
-	 * @return
-	 * @throws SQLException
-	 */
-	private String getModoPago(int reservaID) throws SQLException{
-		// Actualizar datos de la base
-		parser.removeArrays();
-		parser.fillArrays();
-
-		// Pasarlos a la clase actual
-		ArrayList<Reserva> r = new ArrayList<Reserva>();
-		r = parser.getReservas();
-		
-		for(Reserva res : r){
-			if(res.getReservaID() == reservaID){
-				return res.getModoPago();
-			}
-		}
-		
-		return "";
-	}
-	
 	/**
 	 * Completa la lista de instalaciones introducidas en la comboBox
 	 * 
@@ -589,6 +568,7 @@ public class VentanaCalendarMejorada extends JDialog {
 			table.clearSelection();
 			table.setValueAt("", i, 1);
 		}
+		
 	}
 
 	/**

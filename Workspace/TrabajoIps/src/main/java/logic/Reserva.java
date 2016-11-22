@@ -40,7 +40,9 @@ public class Reserva {
 		this.parser = new Parser();
 	}
 
-	public Reserva() {	this.parser = new Parser(); }
+	public Reserva() {
+		this.parser = new Parser();
+	}
 
 	public int getReservaID() {
 		return this.reservaID;
@@ -94,7 +96,7 @@ public class Reserva {
 	// Cancelar reservas por el centro para que queden libres para socios
 	public boolean cancelarReserva(String socioID, Timestamp horaComienzo, Timestamp horaFinal) {
 		boolean result = marcarReserva(socioID, horaComienzo, horaFinal);
-		if (marcarReserva(socioID, horaComienzo, horaFinal)) {
+		if (result) {
 			removeReservaDeBase(parser.borrarReserva(socioID, horaComienzo, horaFinal));
 			return result;
 		}
@@ -156,31 +158,25 @@ public class Reserva {
 		if (comprobarMaxHorasSeguidas(horaComienzo, horaFinal)) {
 			// Comprobar antelacion
 			if (comprobarAntelacion(horaComienzo)) {
-				// Comprobar duracion
-				if (comprobarMaxHorasSeguidas(horaComienzo, horaFinal)) {
-					// Comprobar reservas simultaneas
-					if (!comprobarDisponibilidadPorSocio(socioID, instalacionID, horaComienzo, horaFinal)) { 
-						// Comprobar disponibilidad
-						if (comprobarDisponibilidadPorInstalacion(instalacionID, horaComienzo, horaFinal)) {
-							boolean aux = addReservaABase(reserva);
-							if (aux) {
-								JOptionPane.showMessageDialog(null,
-										"Reserva " + reservaID + " añadida a la base de datos.");
-							} else {
-								JOptionPane.showMessageDialog(null,
-										"Reserva " + reservaID + " no ha podido ser añadida a la base de datos.");
-							}
+				// Comprobar reservas simultaneas
+				if (!comprobarDisponibilidadPorSocio(socioID, instalacionID, horaComienzo, horaFinal)) {
+					// Comprobar disponibilidad
+					if (comprobarDisponibilidadPorInstalacion(instalacionID, horaComienzo, horaFinal)) {
+						boolean aux = addReservaABase(reserva);
+						if (aux) {
+							JOptionPane.showMessageDialog(null,
+									"Reserva " + reservaID + " añadida a la base de datos.");
 						} else {
 							JOptionPane.showMessageDialog(null,
-									"Reserva " + reservaID + " tiene un problema de colision de horarios.");
+									"Reserva " + reservaID + " no ha podido ser añadida a la base de datos.");
 						}
 					} else {
 						JOptionPane.showMessageDialog(null,
-								"El socio " + socioID + " tiene mas de una reserva simultanea.");
+								"Reserva " + reservaID + " tiene un problema de colision de horarios.");
 					}
 				} else {
 					JOptionPane.showMessageDialog(null,
-							"Los horarios de la reserva " + reservaID + "no pueden durar mas de 2 horas");
+							"El socio " + socioID + " tiene mas de una reserva simultanea.");
 				}
 			} else {
 				JOptionPane.showMessageDialog(null,

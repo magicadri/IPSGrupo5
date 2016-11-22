@@ -75,7 +75,7 @@ public class VentanaOcupacionAdminMejorada extends JDialog {
 		setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 		setResizable(false);
 		setTitle("Ventana de ocupacion");
-		setBounds(100, 100, 1047, 901);
+		setBounds(100, 100, 804, 730);
 		getContentPane().setLayout(new BorderLayout());
 		contentPanel.setBackground(Color.WHITE);
 		contentPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
@@ -107,9 +107,9 @@ public class VentanaOcupacionAdminMejorada extends JDialog {
 	private JLabel getLblOcupacionDeInstalaciones() {
 		if (lblOcupacionDeInstalaciones == null) {
 			lblOcupacionDeInstalaciones = new JLabel("Ocupaci\u00F3n de instalaciones:");
-			lblOcupacionDeInstalaciones.setFont(new Font("Rockwell", Font.PLAIN, 60));
+			lblOcupacionDeInstalaciones.setFont(new Font("Rockwell", Font.PLAIN, 46));
 			lblOcupacionDeInstalaciones.setHorizontalAlignment(SwingConstants.CENTER);
-			lblOcupacionDeInstalaciones.setBounds(61, 16, 883, 118);
+			lblOcupacionDeInstalaciones.setBounds(81, 11, 621, 60);
 		}
 		return lblOcupacionDeInstalaciones;
 	}
@@ -117,7 +117,7 @@ public class VentanaOcupacionAdminMejorada extends JDialog {
 	private JLabel getLblFecha() {
 		if (lblFecha == null) {
 			lblFecha = new JLabel("Fecha:");
-			lblFecha.setBounds(27, 132, 70, 31);
+			lblFecha.setBounds(20, 75, 70, 31);
 			lblFecha.setHorizontalAlignment(SwingConstants.TRAILING);
 		}
 		return lblFecha;
@@ -126,7 +126,7 @@ public class VentanaOcupacionAdminMejorada extends JDialog {
 	private JLabel getLblInstalacion() {
 		if (lblInstalacion == null) {
 			lblInstalacion = new JLabel("Instalaci\u00F3n:");
-			lblInstalacion.setBounds(15, 42, 82, 20);
+			lblInstalacion.setBounds(10, 37, 82, 20);
 			lblInstalacion.setHorizontalAlignment(SwingConstants.TRAILING);
 		}
 		return lblInstalacion;
@@ -138,7 +138,7 @@ public class VentanaOcupacionAdminMejorada extends JDialog {
 			pnDatos.setBackground(Color.WHITE);
 			pnDatos.setBorder(new TitledBorder(UIManager.getBorder("TitledBorder.border"), "Datos",
 					TitledBorder.LEADING, TitledBorder.TOP, null, new Color(0, 0, 0)));
-			pnDatos.setBounds(31, 182, 280, 465);
+			pnDatos.setBounds(10, 82, 250, 339);
 			pnDatos.setLayout(null);
 			pnDatos.add(getLblInstalacion());
 			pnDatos.add(getLblFecha());
@@ -159,7 +159,7 @@ public class VentanaOcupacionAdminMejorada extends JDialog {
 			}
 			DefaultComboBoxModel<String> modeloCB = new DefaultComboBoxModel<String>(instalaciones);
 			cbInstalacion.setModel(modeloCB);
-			cbInstalacion.setBounds(112, 37, 153, 31);
+			cbInstalacion.setBounds(102, 32, 134, 31);
 		}
 		return cbInstalacion;
 	}
@@ -167,7 +167,7 @@ public class VentanaOcupacionAdminMejorada extends JDialog {
 	private JDateChooser getDateChooser() {
 		if (dateChooser == null) {
 			dateChooser = new JDateChooser();
-			dateChooser.setBounds(112, 132, 153, 31);
+			dateChooser.setBounds(100, 75, 136, 31);
 		}
 		return dateChooser;
 	}
@@ -188,7 +188,7 @@ public class VentanaOcupacionAdminMejorada extends JDialog {
 					}
 				}
 			});
-			btComprobar.setBounds(150, 420, 115, 29);
+			btComprobar.setBounds(121, 299, 115, 29);
 		}
 		return btComprobar;
 	}
@@ -198,7 +198,7 @@ public class VentanaOcupacionAdminMejorada extends JDialog {
 			pnTabla = new JPanel();
 			pnTabla.setBackground(Color.WHITE);
 			pnTabla.setBorder(new TitledBorder(null, "Tabla", TitledBorder.LEADING, TitledBorder.TOP, null, null));
-			pnTabla.setBounds(348, 182, 650, 465);
+			pnTabla.setBounds(270, 82, 514, 441);
 			pnTabla.setLayout(null);
 			pnTabla.add(getTable());
 		}
@@ -211,7 +211,7 @@ public class VentanaOcupacionAdminMejorada extends JDialog {
 			pnDescripcion.setBackground(Color.WHITE);
 			pnDescripcion.setBorder(
 					new TitledBorder(null, "Descripci\u00F3n", TitledBorder.LEADING, TitledBorder.TOP, null, null));
-			pnDescripcion.setBounds(31, 680, 970, 118);
+			pnDescripcion.setBounds(10, 545, 774, 78);
 			pnDescripcion.setLayout(null);
 			pnDescripcion.add(getTaDescripcion());
 		}
@@ -222,7 +222,7 @@ public class VentanaOcupacionAdminMejorada extends JDialog {
 		if (taDescripcion == null) {
 			taDescripcion = new JTextArea();
 			taDescripcion.setEditable(false);
-			taDescripcion.setBounds(15, 27, 940, 75);
+			taDescripcion.setBounds(15, 27, 749, 40);
 		}
 		return taDescripcion;
 	}
@@ -265,7 +265,7 @@ public class VentanaOcupacionAdminMejorada extends JDialog {
 					{ "21:00", null }, { "22:00", null }, { "23:00", null }, },
 					new String[] { "Horas", "Disponibilidad" });
 			table.setModel(modeloTabla);
-			table.setBounds(15, 38, 620, 411);
+			table.setBounds(20, 21, 475, 411);
 			table.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
 
 				@Override
