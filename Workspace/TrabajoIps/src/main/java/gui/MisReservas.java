@@ -20,11 +20,14 @@ import db.Parser;
 
 import javax.swing.JLabel;
 import javax.swing.JList;
+import javax.swing.JOptionPane;
 import javax.swing.JSpinner;
 import javax.swing.SpinnerNumberModel;
 import logic.Reserva;
 import java.awt.GridLayout;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 
@@ -34,6 +37,7 @@ import java.awt.event.ActionListener;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.awt.event.ActionEvent;
+import com.toedter.calendar.JDateChooser;
 
 
 public class MisReservas extends JFrame {
@@ -56,6 +60,9 @@ public class MisReservas extends JFrame {
 	private JLabel lblNewLabel;
 	private JLabel lblInstalacin;
 	private JLabel lblNewLabel_1;
+	private JDateChooser dcDesde;
+	private JDateChooser dcHasta;
+	private JButton btnOk;
 
 
 	
@@ -110,6 +117,9 @@ public class MisReservas extends JFrame {
 		contentPane.add(getLblNewLabel());
 		contentPane.add(getLblInstalacin());
 		contentPane.add(getLblNewLabel_1());
+		contentPane.add(getDcDesde());
+		contentPane.add(getDcHasta());
+		contentPane.add(getBtnOk());
 		parser = new Parser();
 		try {
 			parser.fillArrays();
@@ -117,39 +127,39 @@ public class MisReservas extends JFrame {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
-		
-	
-		
-		//RellenarTabla();
-				
+						
 	}
 	
 	
 	private JTable getTable() {
 		if (table == null) {
 			table = new JTable(){
-				/* OJO
+				
 				@Override
 				public Component prepareRenderer(TableCellRenderer renderer, int row, int col) {
 					Component comp = super.prepareRenderer(renderer, row, col);
-					
-					if((Integer)spinnerDesde.getValue() == 0)
+					if(dcDesde.getDate() == null || dcHasta.getDate() == null)
 						return comp;
 					
-					for(int i=0;i<=table.getRowCount(); i++)
-						
-					if ((Integer)table.getModel().getValueAt(i, 1) < LocalDate.now().getDayOfMonth()) {
-						comp.setBackground(Color.red);
-					} else 
-						comp.setBackground(Color.GREEN);
-					
+					String value = String.valueOf(getModel().getValueAt(row, col));
+					try {
+						if (itsOver(value,row,col) == 0) {
+							comp.setBackground(Color.green);
+						} else if (itsOver(value,row,col) == 1) {
+							comp.setBackground(Color.red);
+						} else
+							comp.setBackground(Color.WHITE);
+					} catch (SQLException e) {
+						System.err.println("[...ERROR AL PINTAR VALORES DE LA TABLA...]");
+					}
 
 					return comp;
-				}
-			
-			*/
+				} 
+				
+				
 			};
+			table.setToolTipText("Las reservas se mostrar\u00E1n ordenadas en funci\u00F3n de la fecha cuando se hayan realizado.");
+			
 			
 			table.setBounds(177, 68, 378, 384);
 
@@ -162,94 +172,9 @@ public class MisReservas extends JFrame {
 							{  null, null,null }, {  null, null,null }, {  null, null,null }, {  null, null,null }, },
 					new String[] { "Horas", "Instalación", "Día" });
 			table.setModel(dm);
-
-			/*// Listener para tomar los valores de las filas de la tabla
-			table.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
-				@Override
-				public void valueChanged(ListSelectionEvent ev) {
-					// Pone en la descripcion el valor de la columna
-					// fila/columna
-					txPDescripcion.setText((String) table.getModel().getValueAt(table.getSelectedRow(), 0) + " "
-							+ table.getModel().getValueAt(table.getSelectedRow(), 1));
-				}
-
-			});*/
 		}
 		return table;
 	}
-	
-	/*
-	
-	private JTable getTable() {
-		if (table == null) {
-			table = new JTable();
-			table.setBounds(175, 11, 375, 384);
-
-			DataTableModel dm = new DataTableModel(
-					new Object[][] { { null, null, null, null, null }, { null, null, null, null,null }, { null, null, null, null,null },
-							{ null, null, null, null,null }, { null, null, null, null,null }, { null, null, null, null,null },
-							{ null, null, null, null,null }, { null, null, null, null,null }, { null, null, null, null,null },
-							{ null, null, null, null,null }, { null, null, null, null,null }, { null, null, null, null,null },
-							{ null, null, null, null,null }, { null, null, null, null,null }, { null, null, null, null,null },
-							{ null, null, null, null,null }, { null, null, null, null,null }, { null, null, null, null,null },
-							{ null, null, null, null,null }, { null, null, null, null,null }, { null, null, null, null,null },
-							{ null, null, null, null ,null}, { null, null, null, null ,null}, { null, null, null, null,null }, },
-					new String[] { "ReservaID","InstalacionID", "SocioID", "Hora comienzo", "Hora salida" });
-			
-			
-			VentanaPrincipal VP = new VentanaPrincipal();
-			
-			//Por cada iteracion del bucle sobre las reservas que hay, comprueba si hay alguna que coincida con el IDSocio
-			//Que es un string compuesto por el input el cual es necesario para acceder a la ventana socio
-			for(Reserva reserva : Parser.getReservas()){
-			 if(reserva.getSocioID().equals(VP.IDSocio)){
-				 Object[] row = new Object[4];
-					//Para el tamaño del vector reservas (cantidad de reservas hechas) 
-					//Se añade una fila por cada reserva hecha
-					for(int i=0;i<Parser.getReservas().size(); i++){
-						
-						row[0] = Parser.getReservas().get(i).getReservaID();
-						row[1] = Parser.getReservas().get(i).getInstalacionID();
-						row[2] = Parser.getReservas().get(i).getSocioID();
-						row[3] = Parser.getReservas().get(i).getHoraComienzo();
-						row[4] = Parser.getReservas().get(i).getHoraFinal();
-							dm.addRow(row);
-
-					} 
-			 }
-
-			}
-			
-			
-			
-			
-			table.setModel(dm);
-			
-			
-
-			// Listener para tomar los valores de las filas de la tabla
-			table.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
-
-				// No editable NO FUNCIONA DE MOMENTO
-				public boolean isCellEditable(int row, int column) {
-					return false;
-				}
-
-				@Override
-				public void valueChanged(ListSelectionEvent e) {
-					// TODO Auto-generated method stub
-
-				}
-
-			});
-			
-			
-		
-		}
-		return table;
-	}
-	*/
-	
 	
 	
 	
@@ -307,10 +232,22 @@ public class MisReservas extends JFrame {
 			btnActualizar.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent arg0) {
 					limpiarTabla();
-					llenarTablaUsuario();
+					if(dcDesde.getDate()== null || dcHasta.getDate() == null){
+						JOptionPane.showMessageDialog(null, "Por favor seleccione una fecha.");
+					}
+					else{
+						if(dcDesde.getDate().getDate()>dcHasta.getDate().getDate() || dcDesde.getDate().getMonth()+1 > dcHasta.getDate().getMonth()+1){
+							JOptionPane.showMessageDialog(null, "Por favor seleccione una fecha correcta.");
+						}
+						else{
+							limpiarTabla();
+							llenarTablaUsuario();
+						}
+			
+					}
 				}
 			});
-			btnActualizar.setBounds(34, 206, 89, 23);
+			btnActualizar.setBounds(26, 206, 120, 23);
 		}
 		return btnActualizar;
 	}
@@ -319,53 +256,101 @@ public class MisReservas extends JFrame {
 	
 	@SuppressWarnings("deprecation")
 	public void llenarTablaUsuario() {
-		ColorCellRed ccr = new ColorCellRed();
-		ColorCellGreen ccg = new ColorCellGreen();
-		TableColumn tcol = null;
+	
+
 		int i = 0;
 		for (Reserva reserva : parser.getReservas()) {
-			int Desde = (Integer) spinnerDesde.getValue();
+			Date Desde = dcDesde.getDate();
 			int Hasta = (Integer) spinnerHasta.getValue();
 			
-			if(reserva.getHoraComienzo().getDate() >= Desde  && reserva.getHoraComienzo().getDate() <= Hasta){
 						int duracion = reserva.getHoraFinal().getHours() - reserva.getHoraComienzo().getHours();
 						
 						if(duracion>=1)
 							if(getSocioID().equals(reserva.getSocioID())  && (reserva.getInstalacionID() == 1)){
 							
 								table.setValueAt("Piscina",i,0);
-								table.setValueAt(reserva.getHoraComienzo().getDate(),i,1);
+								table.setValueAt(reserva.getHoraComienzo().getDate() + " Mes:"
+										+(reserva.getHoraComienzo().getMonth()+1),i,1);
 								table.setValueAt(reserva.getHoraComienzo().getHours() +":"
-										+reserva.getHoraComienzo().getMinutes()+reserva.getHoraComienzo().getMinutes(),i,2);
+										+reserva.getHoraComienzo().getMinutes()+reserva.getHoraComienzo().getMinutes()+
+										"-"+reserva.getHoraFinal().getHours() +":"
+										+reserva.getHoraFinal().getMinutes()+reserva.getHoraComienzo().getMinutes(),i,2)
+								;
+								i++;
 								
-								//No funciona porque no muestra las reservas que ya han pasado
-								if(reserva.getHoraComienzo().getDate()< Desde){
-									tcol = table.getColumnModel().getColumn(1);
-									tcol.setCellRenderer(ccr);
-
+								//Comprueba si ya ha pasado el mes
+								if(reserva.getHoraComienzo().getMonth()+1< dcDesde.getDate().getMonth()+1){ //Localtime
+									//Comprueba si ya ha pasado el dia
+									if(reserva.getHoraComienzo().getDate() < dcDesde.getDate().getDate()){
+									//Entonces lo pinta de rojo porque ya ha pasado
+									
+									}
+									else{
+										
+										
+									}
+								}
+								else{
+									
 								}
 							}
 							
 							else if(getSocioID().equals(reserva.getSocioID())  && (reserva.getInstalacionID()== 2)){
 								table.setValueAt("Cancha de futbol",i,0);
-								table.setValueAt(reserva.getHoraComienzo().getDate(),i,1);
+								table.setValueAt(reserva.getHoraComienzo().getDate() + " Mes:"
+										+(reserva.getHoraComienzo().getMonth()+1),i,1);
 								table.setValueAt(reserva.getHoraComienzo().getHours() +":"
-										+reserva.getHoraComienzo().getMinutes()+reserva.getHoraComienzo().getMinutes(),i,2);
+										+reserva.getHoraComienzo().getMinutes()+reserva.getHoraComienzo().getMinutes()+
+										"-"+reserva.getHoraFinal().getHours() +":"
+										+reserva.getHoraFinal().getMinutes()+reserva.getHoraComienzo().getMinutes(),i,2);
+								i++;
+								//Comprueba si ya ha pasado el mes
+								if(reserva.getHoraComienzo().getMonth()+1< dcDesde.getDate().getMonth()+1){ //Localtime
+									//Comprueba si ya ha pasado el dia
+									if(reserva.getHoraComienzo().getDate() < dcDesde.getDate().getDate()){
+									
+									}
+									else{
+										
+									}
+								}
+								else{
+									
+								}
 							}
 						
 						
-							//reserva.getHoraComienzo().getHours()
 							else if(getSocioID().equals(reserva.getSocioID())  && (reserva.getInstalacionID()== 3)){
 								
 								table.setValueAt("Pista de tenis",i,0);
-								table.setValueAt(reserva.getHoraComienzo().getDate(),i,1);
+								table.setValueAt(reserva.getHoraComienzo().getDate() + " Mes:"
+										+(reserva.getHoraComienzo().getMonth()+1),i,1);
 								table.setValueAt(reserva.getHoraComienzo().getHours() +":"
-										+reserva.getHoraComienzo().getMinutes()+reserva.getHoraComienzo().getMinutes(),i,2);
+										+reserva.getHoraComienzo().getMinutes()+reserva.getHoraComienzo().getMinutes()+
+										"-"+reserva.getHoraFinal().getHours() +":"
+										+reserva.getHoraFinal().getMinutes()+reserva.getHoraComienzo().getMinutes(),i,2);
+								i++;
+								//Comprueba si ya ha pasado el mes
+								if(reserva.getHoraComienzo().getMonth()+1< dcDesde.getDate().getMonth()+1){ //Localtime
+									//Comprueba si ya ha pasado el dia
+									if(reserva.getHoraComienzo().getDate() < dcDesde.getDate().getDate()){
+									//Entonces lo pinta de rojo porque ya ha pasado
+									
+									}
+									else{
+										//Sino lo pinta de verde
+										
+									}
+								}
+								else{
+									//Sino lo pinta de blanco
+									
+								}
 										}
-						i++;
+						
 					}
 		}
-			}
+			
 	
 	 public String getSocioID() {
 			return socioID;
@@ -407,5 +392,71 @@ public class MisReservas extends JFrame {
 			table.setValueAt("", i, 2);
 
 		}
+	}
+//	0 verde 1 rojo
+	private int itsOver(String value, int row, int col) throws SQLException {
+		Date today = new Date();
+		Calendar cal = Calendar.getInstance();
+		
+		// Actualizar datos de la base
+		parser.removeArrays();
+		parser.fillArrays();
+		
+		
+		
+		if(row==0 || col == 0 || value == null || value.contains(":") || value.equals(""))
+			return 2;
+		
+		
+		// Pasarlos a la clase actual
+		ArrayList<Reserva> r = new ArrayList<Reserva>();
+		r = parser.getReservas();
+		
+		// Ver si ha pasado la fecha
+		for(Reserva res : r){
+			//Si el nombre del input es igual al socio
+			if(res.getSocioID().equals(socioID)){
+				//Comprueba si ha pasado el mes
+				if(res.getHoraComienzo().getMonth()+1 < (cal.get(Calendar.MONTH)+1)){ 
+					//Comprueba si ya ha pasado el dia
+					if(res.getHoraComienzo().getDate() < cal.get(Calendar.DAY_OF_MONTH)){
+					//Entonces lo pinta de rojo porque ya ha pasado
+						return 1;
+					}
+					else{
+						//Sino lo pinta de verde
+						return 0;
+					}
+				}
+			}				
+		}
+		return 2;
+	}
+	private JDateChooser getDcDesde() {
+		if (dcDesde == null) {
+			dcDesde = new JDateChooser();
+			dcDesde.setBounds(72, 67, 95, 20);
+			
+		}
+		return dcDesde;
+	}
+	private JDateChooser getDcHasta() {
+		if (dcHasta == null) {
+			dcHasta = new JDateChooser();
+			dcHasta.setBounds(75, 146, 95, 20);
+		}
+		return dcHasta;
+	}
+	private JButton getBtnOk() {
+		if (btnOk == null) {
+			btnOk = new JButton("OK");
+			btnOk.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent arg0) {
+					dispose();
+				}
+			});
+			btnOk.setBounds(641, 443, 89, 23);
+		}
+		return btnOk;
 	}
 }

@@ -59,32 +59,8 @@ public class MisActividades extends JFrame {
 
 	
 
-	/**
-	 * Launch the application.
-	 */
-	
-	/*
-	public static void main(String[] args) {
-		EventQueue.invokeLater(new Runnable() {
-			public void run() {
-				try {
-					MisReservas frame = new MisReservas();
-					frame.setVisible(true);
-
-					
-					
-
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-		});
-	}
-	
 
 	
-	
-	*/ 
 	
 	
 	
@@ -113,10 +89,6 @@ public class MisActividades extends JFrame {
 			e.printStackTrace();
 		}
 		
-		
-	
-		
-		//RellenarTabla();
 				
 	}
 	
@@ -124,26 +96,6 @@ public class MisActividades extends JFrame {
 	private JTable getTable() {
 		if (table == null) {
 			table = new JTable(){
-				/* OJO
-				@Override
-				public Component prepareRenderer(TableCellRenderer renderer, int row, int col) {
-					Component comp = super.prepareRenderer(renderer, row, col);
-					
-					if((Integer)spinnerDesde.getValue() == 0)
-						return comp;
-					
-					for(int i=0;i<=table.getRowCount(); i++)
-						
-					if ((Integer)table.getModel().getValueAt(i, 1) < LocalDate.now().getDayOfMonth()) {
-						comp.setBackground(Color.red);
-					} else 
-						comp.setBackground(Color.GREEN);
-					
-
-					return comp;
-				}
-			
-			*/
 			};
 			
 			table.setBounds(177, 68, 378, 384);
@@ -158,17 +110,6 @@ public class MisActividades extends JFrame {
 					new String[] { "Horas", "Instalación", "Día" });
 			table.setModel(dm);
 
-			/*// Listener para tomar los valores de las filas de la tabla
-			table.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
-				@Override
-				public void valueChanged(ListSelectionEvent ev) {
-					// Pone en la descripcion el valor de la columna
-					// fila/columna
-					txPDescripcion.setText((String) table.getModel().getValueAt(table.getSelectedRow(), 0) + " "
-							+ table.getModel().getValueAt(table.getSelectedRow(), 1));
-				}
-
-			});*/
 		}
 		return table;
 	}
@@ -190,65 +131,9 @@ public class MisActividades extends JFrame {
 	}
 	
 	
-	/*
-	@SuppressWarnings("deprecation")
-	public void llenarTablaUsuario() {
-		ColorCellRed ccr = new ColorCellRed();
-		ColorCellGreen ccg = new ColorCellGreen();
-		TableColumn tcol = null;
-		int i = 0;
-		for (Actividad actividad : parser.getActividades()) {
-			int Desde = (Integer) spinnerDesde.getValue();
-			int Hasta = (Integer) spinnerHasta.getValue();
-			
-			if(actividad.getHoraComienzo().getDate() >= Desde  && actividad.getHoraComienzo().getDate() <= Hasta){
-						int duracion = actividad.getHoraFinal().getHours() - actividad.getHoraComienzo().getHours();
-						
-						if(duracion>=1)
-							if(getSocioID().equals(actividad.getSocioID())  && (actividad.getInstalacionID() == 1)){
-							
-								table.setValueAt("Piscina",i,0);
-								table.setValueAt(actividad.getHoraComienzo().getDate(),i,1);
-								table.setValueAt(actividad.getHoraComienzo().getHours() +":"
-										+actividad.getHoraComienzo().getMinutes()+actividad.getHoraComienzo().getMinutes(),i,2);
-								
-								//No funciona porque no muestra las reservas que ya han pasado
-								if(actividad.getHoraComienzo().getDate()< Desde){
-									tcol = table.getColumnModel().getColumn(1);
-									tcol.setCellRenderer(ccr);
-
-								}
-							}
-							
-							else if(getSocioID().equals(actividad.getSocioID())  && (actividad.getInstalacionID()== 2)){
-								table.setValueAt("Cancha de futbol",i,0);
-								table.setValueAt(actividad.getHoraComienzo().getDate(),i,1);
-								table.setValueAt(actividad.getHoraComienzo().getHours() +":"
-										+actividad.getHoraComienzo().getMinutes()+actividad.getHoraComienzo().getMinutes(),i,2);
-							}
-						
-						
-							//actividad.getHoraComienzo().getHours()
-							else if(getSocioID().equals(actividad.getSocioID())  && (actividad.getInstalacionID()== 3)){
-								
-								table.setValueAt("Pista de tenis",i,0);
-								table.setValueAt(actividad.getHoraComienzo().getDate(),i,1);
-								table.setValueAt(actividad.getHoraComienzo().getHours() +":"
-										+actividad.getHoraComienzo().getMinutes()+actividad.getHoraComienzo().getMinutes(),i,2);
-										}
-						i++;
-					}
-		}
-			}
-			
-			*/
-	
 	
 	@SuppressWarnings("deprecation")
 	public void llenarTablaUsuario() {
-		ColorCellRed ccr = new ColorCellRed();
-		ColorCellGreen ccg = new ColorCellGreen();
-		TableColumn tcol = null;
 		int i = 0;
 		for (Actividad actividad : parser.getActividades()) {
 			for(SocioActividad sactividad: parser.getSociosactividad()){

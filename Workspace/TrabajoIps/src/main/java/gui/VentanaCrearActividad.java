@@ -198,12 +198,13 @@ public class VentanaCrearActividad extends JFrame {
 			panelBotones.setLayout(gbl_panelBotones);
 			GridBagConstraints gbc_btnCrear = new GridBagConstraints();
 			gbc_btnCrear.insets = new Insets(0, 0, 0, 5);
-			gbc_btnCrear.anchor = GridBagConstraints.NORTHWEST;
-			gbc_btnCrear.gridx = 1;
+			gbc_btnCrear.anchor = GridBagConstraints.NORTH;
+			gbc_btnCrear.gridx = 0;
 			gbc_btnCrear.gridy = 0;
 			panelBotones.add(getBtnCrear(), gbc_btnCrear);
 			GridBagConstraints gbc_btnCancelar = new GridBagConstraints();
-			gbc_btnCancelar.gridx = 2;
+			gbc_btnCancelar.insets = new Insets(0, 0, 0, 5);
+			gbc_btnCancelar.gridx = 1;
 			gbc_btnCancelar.gridy = 0;
 			panelBotones.add(getBtnCancelar(), gbc_btnCancelar);
 		}

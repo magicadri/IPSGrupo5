@@ -74,7 +74,7 @@ public class VentanaAdminMenu extends JFrame {
 		contentPane.add(getBtnPasarPago(), gbc_btnPasarPago);
 		GridBagConstraints gbc_btnQuitarRecibo = new GridBagConstraints();
 		gbc_btnQuitarRecibo.gridx = 7;
-		gbc_btnQuitarRecibo.gridy = 7;
+		gbc_btnQuitarRecibo.gridy = 8;
 		gbc_btnQuitarRecibo.ipadx = 70;
 		gbc_btnQuitarRecibo.gridwidth = 10;
 		contentPane.add(getBtnQuitarRecibo(), gbc_btnQuitarRecibo);
@@ -163,11 +163,11 @@ public class VentanaAdminMenu extends JFrame {
 	}
 	private JButton getBtnActividad() {
 		if (btnActividad == null) {
-			btnActividad = new JButton("Crear actividad");
+			btnActividad = new JButton("Actividades");
 			btnActividad.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent arg0) {
-					VentanaCrearActividad vca = new VentanaCrearActividad();
-					vca.setVisible(true);
+					VentanaActividades VA = new VentanaActividades();
+					VA.setVisible(true);
 				}
 			});
 		}

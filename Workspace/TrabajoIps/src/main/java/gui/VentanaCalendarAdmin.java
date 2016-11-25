@@ -54,8 +54,6 @@ public class VentanaCalendarAdmin extends JDialog {
 	private JDateChooser dateChooser;
 	private JTextField tf;
 	private JTable table;
-	private JTextPane txPDescripcion;
-	private JLabel lblDescripcion;
 	private JLabel lblHora;
 	private Parser parser;
 	private JLabel lbHora;
@@ -65,8 +63,10 @@ public class VentanaCalendarAdmin extends JDialog {
 	private DefaultComboBoxModel cmodel;
 	private String socioID;
 	private String SocioTxB;
-	private JButton btnCancelarReserva;
 	private VentanaCalendarAdmin ref = this;
+	private JButton btnCancelarReserva;
+	private JButton btnReservar;
+	private JButton btnTodoElDia;
 
 
 	/**
@@ -77,7 +77,7 @@ public class VentanaCalendarAdmin extends JDialog {
 		try {
 			parser.fillArrays();
 		} catch (SQLException e) {
-			// TODO Auto-generated catch block
+			
 			e.printStackTrace();
 		}
 		setBounds(100, 100, 887, 470);
@@ -89,14 +89,14 @@ public class VentanaCalendarAdmin extends JDialog {
 		contentPanel.add(getTable());
 		// Pone el dia actual en el dateChooser
 		dateChooser.setDate((new Date()));
-		contentPanel.add(getTxPDescripcion());
-		contentPanel.add(getLblDescripcion());
 		contentPanel.add(getLblHora());
 		contentPanel.add(getLbHora());
 		contentPanel.add(getBtnLlegada());
 		contentPanel.add(getBtnSalida());
 		contentPanel.add(getComboBoxInstalacion());
 		contentPanel.add(getBtnCancelarReserva());
+		contentPanel.add(getBtnReservar());
+		contentPanel.add(getBtnTodoElDia());
 
 	}
 
@@ -104,12 +104,24 @@ public class VentanaCalendarAdmin extends JDialog {
 	private JDateChooser getDateChooser() {
 		if (dateChooser == null) {
 			dateChooser = new JDateChooser();
+			dateChooser.addPropertyChangeListener(new PropertyChangeListener() {
+				 public void propertyChange(PropertyChangeEvent evt) {
+					 limpiarTabla();
+					 try {
+						if (getInstalacionFromNombre(String.valueOf(getComboBoxInstalacion().getSelectedItem())) != null)
+								llenarTabla(getInstalacionFromNombre(String.valueOf(getComboBoxInstalacion().getSelectedItem())));
+					} catch (SQLException e) {
+						e.printStackTrace();
+					}
+				 }
+		});
 		}
+	
 		dateChooser.setBounds(44, 30, 95, 20);
 		return dateChooser;
 	}
 
-	// TODO
+	
 	// Cambiar por el metodo que reconozca lo seleccionado en la combobox y
 	// actualice correspondientemente
 
@@ -148,8 +160,10 @@ public class VentanaCalendarAdmin extends JDialog {
 				public void valueChanged(ListSelectionEvent ev) {
 					// Pone en la descripcion el valor de la columna
 					// fila/columna
+					/* Añade la descripcion
 					txPDescripcion.setText((String) table.getModel().getValueAt(table.getSelectedRow(), 0) + " "
 							+ table.getModel().getValueAt(table.getSelectedRow(), 1));
+							*/
 				}
 
 				// No editable NO FUNCIONA DE MOMENTO
@@ -169,6 +183,8 @@ public class VentanaCalendarAdmin extends JDialog {
 		for (int i = 0; i < table.getRowCount(); i++) {
 			table.clearSelection();
 			table.setValueAt("", i, 1);
+			table.setValueAt("", i, 2);
+			table.setValueAt("", i, 3);
 		}
 	}
 
@@ -191,22 +207,6 @@ public class VentanaCalendarAdmin extends JDialog {
 	private String sacarDia(Date date) {
 		String[] var = date.toString().split(" ");
 		return var[2];
-	}
-
-	private JTextPane getTxPDescripcion() {
-		if (txPDescripcion == null) {
-			txPDescripcion = new JTextPane();
-			txPDescripcion.setBounds(643, 107, 207, 47);
-		}
-		return txPDescripcion;
-	}
-
-	private JLabel getLblDescripcion() {
-		if (lblDescripcion == null) {
-			lblDescripcion = new JLabel("Descripcion:");
-			lblDescripcion.setBounds(643, 66, 130, 30);
-		}
-		return lblDescripcion;
 	}
 
 	private JLabel getLblHora() {
@@ -241,7 +241,7 @@ public class VentanaCalendarAdmin extends JDialog {
 					String Hora = Hora1[0];
 					//Set hora de llegada
 					//if(((int)table.getModel().getValueAt(1,table.getSelectedColumn())) == LocalDateTime.now().getHour()){
-					if(Hora.equals(String.valueOf(LocalDateTime.now().getHour()))){
+					if(Hora.equals(String.valueOf(LocalDateTime.now().getHour())) && SocioID != "admin"){
 						JOptionPane.showMessageDialog(null, "Llegada a las: "+ LocalDateTime.now().getHour());
 						table.setValueAt(LocalDateTime.now().getHour()+":"+LocalDateTime.now().getMinute(), table.getSelectedRow(), 3);
 
@@ -278,12 +278,12 @@ public class VentanaCalendarAdmin extends JDialog {
 					}
 					else{
 
-						JOptionPane.showMessageDialog(null, "Error. No es una hora correcta.");
+						JOptionPane.showMessageDialog(null, "Error. No es una hora correcta o no es un socio.");
 					}
 
 				}
 			});
-			btnLlegada.setBounds(644, 180, 89, 23);
+			btnLlegada.setBounds(639, 73, 89, 23);
 		}
 		return btnLlegada;
 	}
@@ -336,13 +336,13 @@ public class VentanaCalendarAdmin extends JDialog {
 						
 					}
 					else{
-						JOptionPane.showMessageDialog(null, "Error. No es una hora correcta.");
+						JOptionPane.showMessageDialog(null, "Error. No es una hora correcta o no es un socio.");
 					}
 					
 				
 				}
 			});
-			btnSalida.setBounds(772, 180, 89, 23);
+			btnSalida.setBounds(754, 73, 89, 23);
 		}
 		return btnSalida;
 	}
@@ -369,7 +369,7 @@ public class VentanaCalendarAdmin extends JDialog {
 						llenarTabla(
 								getInstalacionFromNombre(String.valueOf(getComboBoxInstalacion().getSelectedItem())));
 				} catch (SQLException e) {
-					// TODO Auto-generated catch block
+				
 					e.printStackTrace();
 				}
 			}
@@ -387,7 +387,7 @@ public class VentanaCalendarAdmin extends JDialog {
 	}
 	
 
-	@SuppressWarnings("deprecation") public void llenarTabla(Instalacion ins) {
+	@SuppressWarnings("deprecation") public void llenarTabla(Instalacion ins) throws SQLException{
 		TableColumn tcol;
 		ColorCellRed ccr = new ColorCellRed();
 		ColorCellGreen ccg = new ColorCellGreen();
@@ -422,20 +422,314 @@ public class VentanaCalendarAdmin extends JDialog {
 				return i.getInstalacionID();
 		return -1;
 	}
+
+	
+	
+	@SuppressWarnings("deprecation")
+	private boolean cancelarReserva(int horaComienzo, int horaFinal) throws SQLException{
+				
+		Reserva reserva = new Reserva();
+		Date date = dateChooser.getDate();
+		date.setHours(horaComienzo);
+		Date date2 = dateChooser.getDate();
+		date2.setHours(horaComienzo+1);
+		Date date3 = dateChooser.getDate();
+		date3.setHours(horaFinal+1);
+		
+		boolean result;
+		if(horaFinal != -1)
+			result = reserva.cancelarReserva(getSocioID(), new Timestamp(date.getTime()), new Timestamp(date3.getTime()));
+		else
+			result = reserva.cancelarReserva(getSocioID(), new Timestamp(date.getTime()), new Timestamp(date2.getTime()));
+		parser.removeArrays();
+		parser.fillArrays();
+		
+		
+		limpiarTabla();
+		if(comboBoxInstalacion != null)
+		llenarTabla(getInstalacionFromNombre(String.valueOf(getComboBoxInstalacion().getSelectedItem())));
+		else
+			llenarTabla(getInstalacionFromNombre("Piscina"));
+			comboBoxInstalacion.setSelectedIndex(1);
+		return result;
+	}
+	
 	private JButton getBtnCancelarReserva() {
 		if (btnCancelarReserva == null) {
 			btnCancelarReserva = new JButton("Cancelar reserva");
 			btnCancelarReserva.addActionListener(new ActionListener() {
-				public void actionPerformed(ActionEvent arg0) {
-					VentanaCancelarReservaAdmin vcr = new VentanaCancelarReservaAdmin(ref, "admin",
-							new Timestamp(dateChooser.getDate().getTime()));
-					vcr.setVisible(true);
+				public void actionPerformed(ActionEvent e) {
+					int[] selecciones = table.getSelectedRows();
+					boolean result = false;
+					if(selecciones.length > 2){
+						JOptionPane.showMessageDialog(ref, "No puedes seleccionar más de dos horas para realizar una reserva", "Error", JOptionPane.ERROR_MESSAGE);
+					}else if(selecciones.length == 2){
+						try {
+							result = cancelarReserva(selecciones[0], selecciones[1]);
+							limpiarTabla();
+							if(comboBoxInstalacion != null)
+								llenarTabla(getInstalacionFromNombre(String.valueOf(getComboBoxInstalacion().getSelectedItem())));
+								else{
+									llenarTabla(getInstalacionFromNombre("Piscina"));
+									comboBoxInstalacion.setSelectedIndex(1);
+								}
+						} catch (SQLException e1) {
+							
+						}
+					}else if(selecciones.length == 1){
+						try {
+							result = cancelarReserva(selecciones[0], -1);
+							limpiarTabla();
+							if(comboBoxInstalacion != null)
+								llenarTabla(getInstalacionFromNombre(String.valueOf(getComboBoxInstalacion().getSelectedItem())));
+								else
+									llenarTabla(getInstalacionFromNombre("Piscina"));
+									comboBoxInstalacion.setSelectedIndex(1);
+						} catch (SQLException e1) {
+							
+						}
+					}else{
+						JOptionPane.showMessageDialog(ref, "Proceso de cancelacion erroneo.", "Advertencia", JOptionPane.WARNING_MESSAGE);
+					}
+					if(result){
+						JOptionPane.showMessageDialog(ref, "Reserva cancelada con exito", "Información", JOptionPane.INFORMATION_MESSAGE);
+					}
+					
+					
 				}
 			});
-			btnCancelarReserva.setBounds(644, 230, 217, 23);
+			btnCancelarReserva.setBounds(659, 295, 177, 23);
+
 		}
 		return btnCancelarReserva;
 	}
+	
+	
+	
+	public String getSocioID() {
+		
+		return (String) table.getModel().getValueAt(table.getSelectedRow(), 2);
+	}
+	
+	
+	
+	
+	private JButton getBtnReservar() {
+		if (btnReservar == null) {
+			btnReservar = new JButton("Reservar");
+			btnReservar.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {	
+					//Coger metodo de pago
+					Object[] options = { "Cuota", "Efectivo"};
+					int[] selecciones = table.getSelectedRows();
+					if(selecciones.length > 2){
+						JOptionPane.showMessageDialog(ref, "No puedes seleccionar más de dos horas para realizar una reserva", "Error", JOptionPane.ERROR_MESSAGE);
+					}
+					else if(selecciones.length == 2){
+						try {
+							hacerReserva(selecciones[0], selecciones[1], options[1]);
+						} catch (SQLException e1) {
+							
+						}
+					}else if(selecciones.length == 1){
+						try {
+							hacerReserva(selecciones[0], -1, options[1]);
+						} catch (SQLException e1) {
+							
+						}
+					}else{
+						JOptionPane.showMessageDialog(ref, "Proceso de reserva cancelado.", "Advertencia", JOptionPane.WARNING_MESSAGE);
+					}
+				}
+			});
+			btnReservar.setBounds(659, 267, 177, 20);
+		}
+		return btnReservar;
+	}
+	
+	
+	
+	
+	
+	private void hacerReserva(int horaComienzo, int horaComienzo2, Object modoPago) throws SQLException{
+		// Actualizar datos de la base
+		parser.removeArrays();
+		parser.fillArrays();
+		
+
+		Date date = dateChooser.getDate();
+		date.setHours(horaComienzo);
+		Date date2 = dateChooser.getDate();
+		date2.setHours(horaComienzo+1);
+		Date date3 = dateChooser.getDate();
+		date3.setHours(horaComienzo2);
+
+		// Crear y guardar la reserva
+		Reserva reserva = new Reserva();
+		if(horaComienzo2 != -1)
+			reserva.hacerReserva("admin", getInstalacionIDFromNombre((String) comboBoxInstalacion.getSelectedItem()), parser.getReservas().size()+1,
+				new Timestamp(date.getTime()), new Timestamp(date3.getTime()), null, null, getModoPago(getInstalacionIDFromNombre((String) comboBoxInstalacion.getSelectedItem())),
+				false, getPrecioFromNombre((String) comboBoxInstalacion.getSelectedItem()));
+		else
+			reserva.hacerReserva("admin", getInstalacionIDFromNombre((String) comboBoxInstalacion.getSelectedItem()), parser.getReservas().size()+1,
+					new Timestamp(date.getTime()), new Timestamp(date2.getTime()), null, null, getModoPago(getInstalacionIDFromNombre((String) comboBoxInstalacion.getSelectedItem())),
+					false, getPrecioFromNombre((String) comboBoxInstalacion.getSelectedItem()));
+		// Actualizar datos de la base
+		parser.removeArrays();
+		parser.fillArrays();
+		
+		// Rellenar la tabla		
+		limpiarTabla();
+		if(comboBoxInstalacion != null)
+		llenarTabla(getInstalacionFromNombre(String.valueOf(getComboBoxInstalacion().getSelectedItem())));
+		else
+			llenarTabla(getInstalacionFromNombre("Piscina"));
+			comboBoxInstalacion.setSelectedIndex(1);
+	}
+	
+	private void hacerReservaTodoElDia(int horaComienzo, int horaComienzo2, Object modoPago) throws SQLException{
+		// Actualizar datos de la base
+		parser.removeArrays();
+		parser.fillArrays();
+		
+
+		Date date = dateChooser.getDate();
+		date.setHours(horaComienzo);
+		Date date2 = dateChooser.getDate();
+		date2.setHours(horaComienzo+1);
+		Date date3 = dateChooser.getDate();
+		date3.setHours(horaComienzo2);
+
+		// Crear y guardar la reserva
+		Reserva reserva = new Reserva();
+		if(horaComienzo2 != -1)
+			reserva.hacerReservaTodoElDia("admin", getInstalacionIDFromNombre((String) comboBoxInstalacion.getSelectedItem()), parser.getReservas().size()+1,
+				new Timestamp(date.getTime()), new Timestamp(date3.getTime()), null, null, getModoPago(getInstalacionIDFromNombre((String) comboBoxInstalacion.getSelectedItem())),
+				false, getPrecioFromNombre((String) comboBoxInstalacion.getSelectedItem()));
+		else
+			reserva.hacerReservaTodoElDia("admin", getInstalacionIDFromNombre((String) comboBoxInstalacion.getSelectedItem()), parser.getReservas().size()+1,
+					new Timestamp(date.getTime()), new Timestamp(date2.getTime()), null, null, getModoPago(getInstalacionIDFromNombre((String) comboBoxInstalacion.getSelectedItem())),
+					false, getPrecioFromNombre((String) comboBoxInstalacion.getSelectedItem()));
+		// Actualizar datos de la base
+		parser.removeArrays();
+		parser.fillArrays();
+		
+		// Rellenar la tabla		
+		limpiarTabla();
+		if(comboBoxInstalacion != null)
+		llenarTabla(getInstalacionFromNombre(String.valueOf(getComboBoxInstalacion().getSelectedItem())));
+		else
+			llenarTabla(getInstalacionFromNombre("Piscina"));
+			comboBoxInstalacion.setSelectedIndex(1);
+	}
+	
+	
+	
+	private int getPrecioFromNombre(String nombre) throws SQLException{ 
+		int id = getInstalacionIDFromNombre(nombre);
+		
+		// Pasarlos a la clase actual
+		ArrayList<Reserva> r = new ArrayList<Reserva>();
+		r = parser.getReservas();
+
+		// Ver si es admin
+		for (Reserva res : r) {
+			if (res.getInstalacionID() == id)
+				return res.getPrecio();
+		}
+		return -1;
+	}
+	
+	
+	private String getModoPago(int reservaID) throws SQLException{
+		// Actualizar datos de la base
+		parser.removeArrays();
+		parser.fillArrays();
+
+		// Pasarlos a la clase actual
+		ArrayList<Reserva> r = new ArrayList<Reserva>();
+		r = parser.getReservas();
+		
+		for(Reserva res : r){
+			if(res.getReservaID() == reservaID){
+				return res.getModoPago();
+			}
+		}
+		
+		return "";
+	}
+	private JButton getBtnTodoElDia() {
+		if (btnTodoElDia == null) {
+			btnTodoElDia = new JButton("Todo el dia");
+			btnTodoElDia.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent arg0) {
+					//Comprobar que no haya reservas en el mismo dia, hay que cancelarlas antes
+					
+					//Fila 1º seleccionada
+					table.getSelectionModel().setSelectionInterval(0, 1);
+					int seleccion = table.getSelectedRow();
+					for(int i=0; i<table.getRowCount(); i++){
+						
+						
+						try {
+							hacerReservaTodoElDia(seleccion, -1, "Efectivo");
+						} catch (SQLException e) {
+							e.printStackTrace();
+						}
+						seleccion++;
+					}
+					
+					// Pasarlos a la clase actual
+					ArrayList<Reserva> r = new ArrayList<Reserva>();
+					r = parser.getReservas();
+					/*
+					for(Reserva res : r){
+						if(res.getHoraComienzo().getDate() == dateChooser.getDate().getDate()){
+							JOptionPane.showMessageDialog(null, "Cancele las reservas antes de reservar el dia entero.");
+						}
+						else{
+						if(res.getHoraComienzo().getDate() == dateChooser.getDate().getDate() && res.getSocioID().equals("admin")){
+							JOptionPane.showMessageDialog(null,
+									"Se han reservado el dia entero con exito.");
+						}
+						
+						else{
+							JOptionPane.showMessageDialog(null,
+									"No se ha podido reservar el dia entero, compruebe que no haya reservas existentes ");
+						}
+						
+						
+						
+					
+						}
+					}
+					*/
+				}
+			});
+			btnTodoElDia.setBounds(660, 233, 176, 23);
+		}
+		return btnTodoElDia;
+	}
+	
+	/* int isItMe(int hour, String inst) {
+		int id = 0;
+		int duracion = 0;
+		for (Instalacion i : parser.getInstalaciones())
+			if (i.getInstalacion_nombre().equals(inst)) {
+				id = i.getInstalacionID();
+			}
+		for (Reserva res : parser.getReservas()) {
+			duracion = getHora(res.getHoraFinal()) - getHora(res.getHoraComienzo());
+			for (int i = 0; i < duracion; i++)
+				if (getHora(res.getHoraComienzo()) + i == hour)
+					if (res.getInstalacionID() == id && res.getSocioID().equals(socioID))
+						return 0;
+		}
+		if (id != 0)
+			return 1;
+		return -1;
+	}
+	*/
 	
 	
 	
