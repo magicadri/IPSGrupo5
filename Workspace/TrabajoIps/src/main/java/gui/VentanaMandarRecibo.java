@@ -20,6 +20,7 @@ import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.awt.event.ActionEvent;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -176,7 +177,7 @@ public class VentanaMandarRecibo extends JDialog {
 		if (buscarSocio(textFieldSocio.getText()) && !sociosBuscados.contains(getTextFieldSocio().getText())) {
 			sociosBuscados.add(textFieldSocio.getText());
 			for (Reserva each : parser.getReservas()) {
-				if (!each.getReciboGenerado() && each.getSocioID().equals(textFieldSocio.getText())
+				if (!each.getReciboGenerado() && each.getSocioID().equals(textFieldSocio.getText()) && each.getHoraFinal().after( new Timestamp(new Date().getTime()))
 						&& !(reservasMarcadas.contains(each))) {
 					row[0] = each.getSocioID();
 					row[1] = each.getHoraComienzo();

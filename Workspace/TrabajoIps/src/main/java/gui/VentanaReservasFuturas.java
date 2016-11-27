@@ -10,15 +10,17 @@ import java.awt.BorderLayout;
 import java.sql.SQLException;
 import java.util.Date;
 
-/**
- * Created by jorge on 07/11/2016.
- */
+
 public class VentanaReservasFuturas extends JDialog {
 
   private DefaultTableModel modelTable;
   private JTable table;
   private Parser parser = new Parser();
   private String socioId;
+  private int precio;
+  private JPanel panel;
+  private JTextField textFieldPrecio;
+  private JLabel lblPrecio;
 
   public VentanaReservasFuturas(JDialog owner, String socioId) {
     super(owner, true);
@@ -34,6 +36,7 @@ public class VentanaReservasFuturas extends JDialog {
     }
 
     content.add(new JScrollPane(getTable()), BorderLayout.CENTER);
+    content.add(getPanel(), BorderLayout.SOUTH);
     llenarTabla();
 
     pack();
@@ -49,9 +52,10 @@ public class VentanaReservasFuturas extends JDialog {
           return false;
         }
       };
-      modelTable.addColumn("Instalaciï¿½n");
+      modelTable.addColumn("Instalación");
       modelTable.addColumn("Fecha comienzo");
       modelTable.addColumn("Fecha final");
+      modelTable.addColumn("Precio");
       table.setModel(modelTable);
     }
     return table;
@@ -59,15 +63,18 @@ public class VentanaReservasFuturas extends JDialog {
 
   private void llenarTabla() {
     limpiarTabla();
-    String row[] = new String[3];
+    String row[] = new String[4];
     for (Reserva each : parser.getReservas()) {
       if (each.getSocioID().equals(socioId) && each.getHoraComienzo().after(new Date())) {
         row[0] = getInstalacionNombre(each.getInstalacionID());
         row[1] = each.getHoraComienzo().toString();
         row[2] = each.getHoraFinal().toString();
+        row[3] = String.valueOf(each.getPrecio());
+        precio+=each.getPrecio();
         modelTable.addRow(row);
       }
     }
+    textFieldPrecio.setText(String.valueOf(precio));
   }
 
   private void limpiarTabla() {
@@ -82,4 +89,26 @@ public class VentanaReservasFuturas extends JDialog {
         return each.getInstalacion_nombre();
     return "";
   }
+	private JPanel getPanel() {
+		if (panel == null) {
+			panel = new JPanel();
+			panel.add(getLblPrecio());
+			panel.add(getTextFieldPrecio());
+		}
+		return panel;
+	}
+	private JTextField getTextFieldPrecio() {
+		if (textFieldPrecio == null) {
+			textFieldPrecio = new JTextField();
+			textFieldPrecio.setEditable(false);
+			textFieldPrecio.setColumns(10);
+		}
+		return textFieldPrecio;
+	}
+	private JLabel getLblPrecio() {
+		if (lblPrecio == null) {
+			lblPrecio = new JLabel("Precio total :");
+		}
+		return lblPrecio;
+	}
 }

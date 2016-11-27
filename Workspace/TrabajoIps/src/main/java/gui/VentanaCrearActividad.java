@@ -281,7 +281,7 @@ public class VentanaCrearActividad extends JFrame {
 	}
 	private JLabel getLblInstalacion() {
 		if (lblInstalacion == null) {
-			lblInstalacion = new JLabel("Instalaci\u00F3n");
+			lblInstalacion = new JLabel("Instalación");
 		}
 		return lblInstalacion;
 	}

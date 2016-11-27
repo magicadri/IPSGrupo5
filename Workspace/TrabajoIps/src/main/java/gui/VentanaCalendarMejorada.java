@@ -398,7 +398,7 @@ public class VentanaCalendarMejorada extends JDialog {
 	}
 	private JButton getBtnReservasFuturas() {
 		if (btnReservasFuturas == null) {
-			btnReservasFuturas = new JButton("Reservas futuras");
+			btnReservasFuturas = new JButton("Controlar gastos");
 			btnReservasFuturas.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
 					VentanaReservasFuturas RF = new VentanaReservasFuturas(ref, getSocioID());

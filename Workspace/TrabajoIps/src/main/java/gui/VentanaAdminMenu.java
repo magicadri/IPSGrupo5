@@ -115,7 +115,7 @@ public class VentanaAdminMenu extends JFrame {
 	}
 	private JButton getBtnPasarPago() {
 		if (btnPasarPago == null) {
-			btnPasarPago = new JButton("Pasar pago");
+			btnPasarPago = new JButton("Pasar pagos");
 			btnPasarPago.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
 						VentanaMandarRecibo vmr = new VentanaMandarRecibo();
