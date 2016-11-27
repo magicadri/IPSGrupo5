@@ -310,6 +310,31 @@ public class Parser {
 			JOptionPane.showMessageDialog(null, "No se ha encontrado la reserva del socio: " + socioID);
 		return resultado;
 	}
+	
+	
+	public boolean marcarReservaActividad(int actividadID, int reservaID) {
+		for(ReservaActividad reserva: reservasactividad ){
+			if(actividadID == reserva.getActividadID() && reservaID == reserva.getReservaID())
+				return true;
+		}
+		JOptionPane.showMessageDialog(null, "No se ha encontrado la reserva: " + reservaID);
+
+		return false;
+	}
+	
+	public ReservaActividad borrarReservaActividad(int actividadID, int reservaID) {
+		ReservaActividad resultado = null;
+
+		for (ReservaActividad reserva : reservasactividad) {
+			if(actividadID == reserva.getActividadID() && reservaID == reserva.getReservaID())
+
+				resultado = reserva;
+			}
+		reservas.remove(resultado);
+		return resultado;
+		}
+		
+	
 
 	/************************************************
 	 * SACAR VALORES DE TIMESTAMP
@@ -407,6 +432,11 @@ public class Parser {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+	}
+
+	public boolean marcarReserva(int actividadID, int reservaID) {
+
+		return false;
 	}
 
 }

@@ -64,37 +64,6 @@ public class MisReservas extends JFrame {
 	private JDateChooser dcHasta;
 	private JButton btnOk;
 
-
-	
-
-	/**
-	 * Launch the application.
-	 */
-	
-	/*
-	public static void main(String[] args) {
-		EventQueue.invokeLater(new Runnable() {
-			public void run() {
-				try {
-					MisReservas frame = new MisReservas();
-					frame.setVisible(true);
-
-					
-					
-
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-		});
-	}
-	
-
-	
-	
-	*/ 
-	
-	
 	
 	
 	/**
@@ -236,7 +205,8 @@ public class MisReservas extends JFrame {
 						JOptionPane.showMessageDialog(null, "Por favor seleccione una fecha.");
 					}
 					else{
-						if(dcDesde.getDate().getDate()>dcHasta.getDate().getDate() || dcDesde.getDate().getMonth()+1 > dcHasta.getDate().getMonth()+1){
+						if((dcDesde.getDate().getDate()>dcHasta.getDate().getDate() && dcDesde.getDate().getMonth()+1 > dcHasta.getDate().getMonth()+1 ) || 
+								dcDesde.getDate().getMonth()+1 > dcHasta.getDate().getMonth()+1){
 							JOptionPane.showMessageDialog(null, "Por favor seleccione una fecha correcta.");
 						}
 						else{
@@ -261,27 +231,40 @@ public class MisReservas extends JFrame {
 		int i = 0;
 		for (Reserva reserva : parser.getReservas()) {
 			Date Desde = dcDesde.getDate();
-			int Hasta = (Integer) spinnerHasta.getValue();
+			Date Hasta = dcHasta.getDate();
 			
 						int duracion = reserva.getHoraFinal().getHours() - reserva.getHoraComienzo().getHours();
 						
 						if(duracion>=1)
-							if(getSocioID().equals(reserva.getSocioID())  && (reserva.getInstalacionID() == 1)){
+							if((getSocioID().equals(reserva.getSocioID())  && (reserva.getInstalacionID() == 1) && 
+									reserva.getHoraComienzo().getMonth()+1 >= dcDesde.getDate().getMonth()+1 &&
+									reserva.getHoraComienzo().getMonth()+1 <= dcHasta.getDate().getMonth()+1 &&
+									reserva.getHoraComienzo().getDate() >= dcDesde.getDate().getDate() &&
+									reserva.getHoraComienzo().getDate() <= dcHasta.getDate().getDate()) ||
+											(getSocioID().equals(reserva.getSocioID())  && (reserva.getInstalacionID() == 1) && 
+											reserva.getHoraComienzo().getMonth()+1 >= dcDesde.getDate().getMonth()+1 &&
+											reserva.getHoraComienzo().getMonth()+1 <= dcHasta.getDate().getMonth()+1 &&
+											reserva.getHoraComienzo().getDate() >= dcDesde.getDate().getDate() &&
+											reserva.getHoraComienzo().getDate() <= dcHasta.getDate().getDate() &&
+									(dcDesde.getDate().getMonth()+1 <= dcHasta.getDate().getMonth()+1 &&
+											dcDesde.getDate().getDate() >= dcHasta.getDate().getDate()))){
+								
 							
 								table.setValueAt("Piscina",i,0);
 								table.setValueAt(reserva.getHoraComienzo().getDate() + " Mes:"
 										+(reserva.getHoraComienzo().getMonth()+1),i,1);
 								table.setValueAt(reserva.getHoraComienzo().getHours() +":"
-										+reserva.getHoraComienzo().getMinutes()+reserva.getHoraComienzo().getMinutes()+
+										+"00"+
 										"-"+reserva.getHoraFinal().getHours() +":"
-										+reserva.getHoraFinal().getMinutes()+reserva.getHoraComienzo().getMinutes(),i,2)
+										+"00",i,2)
 								;
 								i++;
 								
+								
 								//Comprueba si ya ha pasado el mes
-								if(reserva.getHoraComienzo().getMonth()+1< dcDesde.getDate().getMonth()+1){ //Localtime
+								if(reserva.getHoraComienzo().getMonth()+1< (Calendar.getInstance().get(Calendar.MONTH)+1)){ //Localtime
 									//Comprueba si ya ha pasado el dia
-									if(reserva.getHoraComienzo().getDate() < dcDesde.getDate().getDate()){
+									if(reserva.getHoraComienzo().getDate() < Calendar.getInstance().get(Calendar.DAY_OF_MONTH)){
 									//Entonces lo pinta de rojo porque ya ha pasado
 									
 									}
@@ -295,19 +278,25 @@ public class MisReservas extends JFrame {
 								}
 							}
 							
-							else if(getSocioID().equals(reserva.getSocioID())  && (reserva.getInstalacionID()== 2)){
+						if(getSocioID().equals(reserva.getSocioID())  && (reserva.getInstalacionID() == 1) && 
+									reserva.getHoraComienzo().getMonth()+1 >= dcDesde.getDate().getMonth()+1 &&
+									reserva.getHoraComienzo().getMonth()+1 <= dcHasta.getDate().getMonth()+1 &&
+									reserva.getHoraComienzo().getDate() >= dcDesde.getDate().getDate() &&
+									reserva.getHoraComienzo().getDate() <= dcHasta.getDate().getDate()){
+								
 								table.setValueAt("Cancha de futbol",i,0);
 								table.setValueAt(reserva.getHoraComienzo().getDate() + " Mes:"
 										+(reserva.getHoraComienzo().getMonth()+1),i,1);
 								table.setValueAt(reserva.getHoraComienzo().getHours() +":"
-										+reserva.getHoraComienzo().getMinutes()+reserva.getHoraComienzo().getMinutes()+
+										+"00"+
 										"-"+reserva.getHoraFinal().getHours() +":"
-										+reserva.getHoraFinal().getMinutes()+reserva.getHoraComienzo().getMinutes(),i,2);
+										+"00",i,2);
 								i++;
+								
 								//Comprueba si ya ha pasado el mes
-								if(reserva.getHoraComienzo().getMonth()+1< dcDesde.getDate().getMonth()+1){ //Localtime
+								if(reserva.getHoraComienzo().getMonth()+1< (Calendar.getInstance().get(Calendar.MONTH)+1)){ //Localtime
 									//Comprueba si ya ha pasado el dia
-									if(reserva.getHoraComienzo().getDate() < dcDesde.getDate().getDate()){
+									if(reserva.getHoraComienzo().getDate() < Calendar.getInstance().get(Calendar.DAY_OF_MONTH)){
 									
 									}
 									else{
@@ -320,20 +309,27 @@ public class MisReservas extends JFrame {
 							}
 						
 						
-							else if(getSocioID().equals(reserva.getSocioID())  && (reserva.getInstalacionID()== 3)){
+						if(getSocioID().equals(reserva.getSocioID())  && (reserva.getInstalacionID() == 1) && 
+									reserva.getHoraComienzo().getMonth()+1 >= dcDesde.getDate().getMonth()+1 &&
+									reserva.getHoraComienzo().getMonth()+1 <= dcHasta.getDate().getMonth()+1 &&
+									reserva.getHoraComienzo().getDate() >= dcDesde.getDate().getDate() &&
+									reserva.getHoraComienzo().getDate() <= dcHasta.getDate().getDate()){
+								
 								
 								table.setValueAt("Pista de tenis",i,0);
 								table.setValueAt(reserva.getHoraComienzo().getDate() + " Mes:"
 										+(reserva.getHoraComienzo().getMonth()+1),i,1);
 								table.setValueAt(reserva.getHoraComienzo().getHours() +":"
-										+reserva.getHoraComienzo().getMinutes()+reserva.getHoraComienzo().getMinutes()+
+										+"00"+
 										"-"+reserva.getHoraFinal().getHours() +":"
-										+reserva.getHoraFinal().getMinutes()+reserva.getHoraComienzo().getMinutes(),i,2);
+										+"00",i,2);
 								i++;
+								
+								
 								//Comprueba si ya ha pasado el mes
-								if(reserva.getHoraComienzo().getMonth()+1< dcDesde.getDate().getMonth()+1){ //Localtime
+								if(reserva.getHoraComienzo().getMonth()+1< (Calendar.getInstance().get(Calendar.MONTH)+1)){ //Localtime
 									//Comprueba si ya ha pasado el dia
-									if(reserva.getHoraComienzo().getDate() < dcDesde.getDate().getDate()){
+									if(reserva.getHoraComienzo().getDate() < Calendar.getInstance().get(Calendar.DAY_OF_MONTH)){
 									//Entonces lo pinta de rojo porque ya ha pasado
 									
 									}
@@ -404,7 +400,7 @@ public class MisReservas extends JFrame {
 		
 		
 		
-		if(row==0 || col == 0 || value == null || value.contains(":") || value.equals(""))
+		if(value == null || value.contains(":") || value.equals(""))
 			return 2;
 		
 		

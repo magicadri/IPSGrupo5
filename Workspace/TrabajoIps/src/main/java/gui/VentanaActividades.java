@@ -19,6 +19,7 @@ import logic.ReservaActividad;
 import java.awt.GridLayout;
 import javax.swing.JTextField;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JButton;
 import java.awt.event.ActionListener;
 import java.sql.SQLException;
@@ -39,6 +40,8 @@ public class VentanaActividades extends JFrame {
 	private Parser parser;
 	int ReservaID;
 	private JTable table;
+	private JButton btnCancelarActividad;
+	private JButton btnActualizar;
 
 	/**
 	 * Launch the application.
@@ -74,6 +77,8 @@ public class VentanaActividades extends JFrame {
 		contentPane.add(getBtnOk());
 		contentPane.add(getBtnCancelar());
 		contentPane.add(getTable());
+		contentPane.add(getBtnCancelarActividad());
+		contentPane.add(getBtnActualizar());
 		llenarTabla();
 
 	}
@@ -131,7 +136,7 @@ public class VentanaActividades extends JFrame {
 					try {
 						Database.getInstance().getC().createStatement().execute(
 								"INSERT INTO SOCIOACTIVIDAD (socioID, actividadID, reservaID, presentado) VALUES ("
-										+ SocioID + "," + ActividadID + "," + ReservaID + "," + false + ");");
+										+ SocioID + "," + ActividadID + "," + ReservaID + "," +null + ");");
 					} catch (SQLException e) {
 						e.printStackTrace();
 					}
@@ -177,6 +182,12 @@ public class VentanaActividades extends JFrame {
 	}
 
 	public void llenarTabla() {
+		parser.removeArrays();
+		try {
+			parser.fillArrays();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
 		int i = 0;
 		for (Actividad actividad : parser.getActividades()) {
 			
@@ -189,4 +200,89 @@ public class VentanaActividades extends JFrame {
 		}
 	}
 
+	
+	private boolean cancelarReservaActividad(int actividadID, int reservaID){
+		ReservaActividad reservaActividad = new ReservaActividad();
+		
+		boolean result;
+		
+			result = reservaActividad.cancelarReservaActividad(actividadID, reservaID);
+		parser.removeArrays();
+		try {
+			parser.fillArrays();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		
+		limpiarTabla();
+		llenarTabla();
+		
+		return result;
+	}
+	
+	
+	private void limpiarTabla() {
+		for (int i = 0; i < table.getRowCount(); i++) {
+			table.clearSelection();
+			table.setValueAt("", i, 0);
+			table.setValueAt("", i, 1);
+			table.setValueAt("", i, 2);
+
+		}
+	}
+	private JButton getBtnCancelarActividad() {
+		if (btnCancelarActividad == null) {
+			btnCancelarActividad = new JButton("Cancelar actividad");
+			btnCancelarActividad.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent arg0) {
+					int actividadID= 0;
+					int ReservaID= 0;
+					int[] selecciones = table.getSelectedRows();
+					//Nombre de la actividad seleccionada
+					String Nombre = (String) table.getModel().getValueAt(table.getSelectedRow(), 0);
+					
+					for(Actividad actividad: parser.getActividades()){
+					for(ReservaActividad reserva : parser.getReservasactividad()){
+						if(Nombre.equals(actividad.getActividad_nombre()) && actividad.getActividadID() == reserva.getActividadID()){
+							actividadID = actividad.getActividadID();
+							ReservaID = reserva.getReservaID();
+						}
+					}
+				}
+					
+
+					boolean result = false;
+					if(selecciones.length > 2){
+						JOptionPane.showMessageDialog(null, "No puedes seleccionar más de dos horas para realizar una reserva", "Error", JOptionPane.ERROR_MESSAGE);
+					}
+					else if(selecciones.length == 1){
+						result = cancelarReservaActividad(actividadID, ReservaID);
+					}else{
+						JOptionPane.showMessageDialog(null, "Proceso de cancelacion erroneo.", "Advertencia", JOptionPane.WARNING_MESSAGE);
+					}
+					if(result){
+						JOptionPane.showMessageDialog(null, "Reserva cancelada con exito", "Información", JOptionPane.INFORMATION_MESSAGE);
+					}
+					
+					
+					
+				}
+			});
+			btnCancelarActividad.setBounds(415, 152, 202, 23);
+		}
+		return btnCancelarActividad;
+	}
+	private JButton getBtnActualizar() {
+		if (btnActualizar == null) {
+			btnActualizar = new JButton("Actualizar");
+			btnActualizar.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					limpiarTabla();
+					llenarTabla();
+				}
+			});
+			btnActualizar.setBounds(22, 81, 60, 23);
+		}
+		return btnActualizar;
+	}
 }

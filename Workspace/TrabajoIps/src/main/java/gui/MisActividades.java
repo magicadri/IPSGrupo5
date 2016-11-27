@@ -20,11 +20,13 @@ import db.Parser;
 
 import javax.swing.JLabel;
 import javax.swing.JList;
+import javax.swing.JOptionPane;
 import javax.swing.JSpinner;
 import javax.swing.SpinnerNumberModel;
 
 import logic.Actividad;
 import logic.Reserva;
+import logic.ReservaActividad;
 import logic.SocioActividad;
 
 import java.awt.GridLayout;
@@ -36,6 +38,7 @@ import javax.swing.JTable;
 import javax.swing.JButton;
 import java.awt.event.ActionListener;
 import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.awt.event.ActionEvent;
 
@@ -52,9 +55,9 @@ public class MisActividades extends JFrame {
 	private JTable table;
 	private JButton btnActualizar;
 	String socioID;
-	private JLabel lblNewLabel;
 	private JLabel lblInstalacin;
 	private JLabel lblNewLabel_1;
+	private JButton btnCancelar;
 
 
 	
@@ -78,9 +81,9 @@ public class MisActividades extends JFrame {
 		contentPane.setLayout(null);
 		contentPane.add(getTable());
 		contentPane.add(getBtnActualizar());
-		contentPane.add(getLblNewLabel());
 		contentPane.add(getLblInstalacin());
 		contentPane.add(getLblNewLabel_1());
+		contentPane.add(getBtnCancelar());
 		parser = new Parser();
 		try {
 			parser.fillArrays();
@@ -101,13 +104,13 @@ public class MisActividades extends JFrame {
 			table.setBounds(177, 68, 378, 384);
 
 			DataTableModel dm = new DataTableModel(
-					new Object[][] { { null, null,null }, {  null, null,null }, {  null, null,null }, { null, null,null },
-							{  null,null,null }, {  null,null,null }, {  null, null,null }, {  null, null,null },
-							{  null, null,null }, {  null, null,null }, {  null, null,null }, {  null, null,null },
-							{  null, null,null }, {  null, null,null }, { null, null,null }, {  null, null,null },
-							{  null, null,null }, {  null, null,null }, {  null, null,null }, {  null, null,null },
-							{  null, null,null }, {  null, null,null }, {  null, null,null }, {  null, null,null }, },
-					new String[] { "Horas", "Instalación", "Día" });
+					new Object[][] { { null, null }, {  null, null}, {  null, null}, { null, null},
+							{  null,null}, {  null,null}, {  null, null}, {  null, null},
+							{  null, null }, {  null, null}, {  null, null}, {  null, null},
+							{  null, null }, {  null, null}, { null, null}, {  null, null},
+							{  null, null}, {  null, null}, {  null, null}, {  null, null},
+							{  null, null }, {  null, null}, {  null, null}, {  null, null}, },
+					new String[] { "Horas", "Instalación"});
 			table.setModel(dm);
 
 		}
@@ -142,6 +145,7 @@ public class MisActividades extends JFrame {
 							
 								table.setValueAt(actividad.getActividad_nombre(),i,0);
 								table.setValueAt(actividad.getSemanas(),i,1);
+								
 			}
 							}
 			
@@ -157,13 +161,6 @@ public class MisActividades extends JFrame {
 		public void setSocioID(String socioID) {
 			this.socioID = socioID;
 		}
-	private JLabel getLblNewLabel() {
-		if (lblNewLabel == null) {
-			lblNewLabel = new JLabel("Hora");
-			lblNewLabel.setBounds(469, 52, 46, 14);
-		}
-		return lblNewLabel;
-	}
 	private JLabel getLblInstalacin() {
 		if (lblInstalacin == null) {
 			lblInstalacin = new JLabel("Instalaci\u00F3n");
@@ -174,7 +171,7 @@ public class MisActividades extends JFrame {
 	private JLabel getLblNewLabel_1() {
 		if (lblNewLabel_1 == null) {
 			lblNewLabel_1 = new JLabel("Dia");
-			lblNewLabel_1.setBounds(348, 52, 46, 14);
+			lblNewLabel_1.setBounds(453, 52, 46, 14);
 		}
 		return lblNewLabel_1;
 	}
@@ -187,8 +184,50 @@ public class MisActividades extends JFrame {
 			table.clearSelection();
 			table.setValueAt("", i, 0);
 			table.setValueAt("", i, 1);
-			table.setValueAt("", i, 2);
 
 		}
 	}
+	private JButton getBtnCancelar() {
+		if (btnCancelar == null) {
+			btnCancelar = new JButton("Cancelar");
+			btnCancelar.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent arg0) {
+					/*
+					int actividadID= 0;
+					int ReservaID= 0;
+					int[] selecciones = table.getSelectedRows();
+					//Nombre de la actividad seleccionada
+					String Nombre = (String) table.getModel().getValueAt(table.getSelectedRow(), 0);
+					
+					for(Actividad actividad: parser.getActividades()){
+					for(ReservaActividad reserva : parser.getReservasactividad()){
+						if(Nombre.equals(actividad.getActividad_nombre()) && actividad.getActividadID() == reserva.getActividadID()){
+							actividadID = actividad.getActividadID();
+							ReservaID = reserva.getReservaID();
+						}
+					}
+				}
+					
+
+					boolean result = false;
+					if(selecciones.length > 2){
+						JOptionPane.showMessageDialog(null, "No puedes seleccionar más de dos horas para realizar una reserva", "Error", JOptionPane.ERROR_MESSAGE);
+					}
+					else if(selecciones.length == 1){
+						result = cancelarReservaActividad(actividadID, ReservaID);
+					}else{
+						JOptionPane.showMessageDialog(null, "Proceso de cancelacion erroneo.", "Advertencia", JOptionPane.WARNING_MESSAGE);
+					}
+					if(result){
+						JOptionPane.showMessageDialog(null, "Reserva cancelada con exito", "Información", JOptionPane.INFORMATION_MESSAGE);
+					}*/
+				}
+			});
+			btnCancelar.setBounds(600, 78, 89, 23);
+		}
+		return btnCancelar;
+	}
+	
+	
+	
 }

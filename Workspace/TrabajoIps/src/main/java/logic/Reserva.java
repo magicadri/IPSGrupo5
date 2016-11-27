@@ -40,7 +40,9 @@ public class Reserva {
 		this.parser = new Parser();
 	}
 
-	public Reserva() {	this.parser = new Parser(); }
+	public Reserva() {	
+		this.parser = new Parser();
+		}
 
 	public int getReservaID() {
 		return this.reservaID;

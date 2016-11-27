@@ -17,6 +17,7 @@ import javax.swing.event.ListSelectionListener;
 
 import com.toedter.calendar.JDateChooser;
 
+import db.Database;
 import db.Parser;
 import logic.Instalacion;
 import logic.Reserva;
@@ -67,6 +68,12 @@ public class VentanaCalendarAdmin extends JDialog {
 	private JButton btnCancelarReserva;
 	private JButton btnReservar;
 	private JButton btnTodoElDia;
+	private JLabel lblHora_1;
+	private JLabel lblInstalacion;
+	private JLabel lblSocio;
+	private JLabel lblHoraEntrada;
+	private JLabel lblHoraSalida;
+	private JLabel lblReservaId;
 
 
 	/**
@@ -80,7 +87,7 @@ public class VentanaCalendarAdmin extends JDialog {
 			
 			e.printStackTrace();
 		}
-		setBounds(100, 100, 887, 470);
+		setBounds(100, 100, 1146, 494);
 		getContentPane().setLayout(new BorderLayout());
 		contentPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
 		getContentPane().add(contentPanel, BorderLayout.CENTER);
@@ -97,6 +104,12 @@ public class VentanaCalendarAdmin extends JDialog {
 		contentPanel.add(getBtnCancelarReserva());
 		contentPanel.add(getBtnReservar());
 		contentPanel.add(getBtnTodoElDia());
+		contentPanel.add(getLblHora_1());
+		contentPanel.add(getLblInstalacion());
+		contentPanel.add(getLblSocio());
+		contentPanel.add(getLblHoraEntrada());
+		contentPanel.add(getLblHoraSalida());
+		contentPanel.add(getLblReservaId());
 
 	}
 
@@ -140,17 +153,38 @@ public class VentanaCalendarAdmin extends JDialog {
 	private JTable getTable() {
 		if (table == null) {
 			table = new JTable();
-			table.setBounds(176, 37, 453, 384);
+			table.setBounds(197, 37, 692, 384);
 
 			DataTableModel dm = new DataTableModel(
 
-					new Object[][] { { "00:00", null, null, null, null }, { "01:00", null, null, null, null }, { "02:00", null, null, null, null }, { "03:00", null, null, null, null },
-							{ "04:00", null, null, null, null }, { "05:00", null, null, null, null }, { "06:00", null, null, null, null }, { "07:00", null, null, null, null },
-							{ "08:00", null, null, null, null }, { "09:00", null, null, null, null }, { "10:00", null, null, null, null }, { "11:00", null, null, null, null },
-							{ "12:00", null, null, null, null }, { "13:00", null, null, null, null }, { "14:00", null, null, null, null }, { "15:00", null, null, null, null },
-							{ "16:00", null, null, null, null }, { "17:00", null, null, null, null }, { "18:00", null, null, null, null }, { "19:00", null, null, null, null },
-							{ "20:00", null, null, null, null }, { "21:00", null, null, null, null}, { "22:00", null, null, null, null }, { "23:00", null, null, null, null }, },
-					new String[] { "Horas", "Disponibilidad", "Llegada", "Salida","Socio" });
+					new Object[][] {
+						{"00:00", null, null, null, null, null},
+						{"01:00", null, null, null, null, null},
+						{"02:00", null, null, null, null, null},
+						{"03:00", null, null, null, null, null},
+						{"04:00", null, null, null, null, null},
+						{"05:00", null, null, null, null, null},
+						{"06:00", null, null, null, null, null},
+						{"07:00", null, null, null, null, null},
+						{"08:00", null, null, null, null, null},
+						{"09:00", null, null, null, null, null},
+						{"10:00", null, null, null, null, null},
+						{"11:00", null, null, null, null, null},
+						{"12:00", null, null, null, null, null},
+						{"13:00", null, null, null, null, null},
+						{"14:00", null, null, null, null, null},
+						{"15:00", null, null, null, null, null},
+						{"16:00", null, null, null, null, null},
+						{"17:00", null, null, null, null, null},
+						{"18:00", null, null, null, null, null},
+						{"19:00", null, null, null, null, null},
+						{"20:00", null, null, null, null, null},
+						{"21:00", null, null, null, null, null},
+						{"22:00", null, null, null, null, null},
+						{"23:00", null, null, null, null, null},
+					},
+					new String[] {
+						"Horas", "Disponibilidad", "Llegada", "Salida", "Socio", "ReservaID" });
 
 			table.setModel(dm);
 
@@ -185,6 +219,8 @@ public class VentanaCalendarAdmin extends JDialog {
 			table.setValueAt("", i, 1);
 			table.setValueAt("", i, 2);
 			table.setValueAt("", i, 3);
+			table.setValueAt("", i, 4);
+			table.setValueAt("", i, 5);
 		}
 	}
 
@@ -239,42 +275,24 @@ public class VentanaCalendarAdmin extends JDialog {
 					String string = (String) table.getModel().getValueAt(table.getSelectedRow(),0);
 					String[] Hora1 = string.split(":");
 					String Hora = Hora1[0];
+					int ReservaID = (int) table.getModel().getValueAt(table.getSelectedRow(), 5);
 					//Set hora de llegada
 					//if(((int)table.getModel().getValueAt(1,table.getSelectedColumn())) == LocalDateTime.now().getHour()){
 					if(Hora.equals(String.valueOf(LocalDateTime.now().getHour())) && SocioID != "admin"){
 						JOptionPane.showMessageDialog(null, "Llegada a las: "+ LocalDateTime.now().getHour());
 						table.setValueAt(LocalDateTime.now().getHour()+":"+LocalDateTime.now().getMinute(), table.getSelectedRow(), 3);
-
-						
-						
-
-
-						//DB
-						/* ERROR COMILLAS SIMPLES 
 						Calendar calendar = Calendar.getInstance();
 						java.sql.Timestamp TimeStamp = new java.sql.Timestamp(calendar.getTime().getTime());
 						
-						Properties connectionProps = new Properties();
-						connectionProps.put("user", "SA");
-						String query  = "UPDATE RESERVA SET horaSalida =(?) WHERE IDSOCIO = (?)";
-						Connection conn = null;
 						try {
-							conn = DriverManager.getConnection("jdbc:h2:tcp://localhost/~/test", connectionProps);
-						} catch (SQLException e1) {
-							e1.printStackTrace();
-						}
-						
-						
-							PreparedStatement ps;
-							try {
-								ps = conn.prepareStatement(query);
-								ps.setTimestamp(1, TimeStamp);
-								ps.setString(2, SocioID);
-								ps.executeUpdate();
-							} catch (SQLException e1) {
-								e1.printStackTrace();
+							Database.getInstance().getC().createStatement().execute("UPDATE RESERVA SET horaEntrada ='"+TimeStamp+"' where RESERVAID = '" + ReservaID+"'");
+							} catch (SQLException i) {
+								i.printStackTrace();
 							}
-							*/
+						
+
+
+						
 					}
 					else{
 
@@ -283,7 +301,7 @@ public class VentanaCalendarAdmin extends JDialog {
 
 				}
 			});
-			btnLlegada.setBounds(639, 73, 89, 23);
+			btnLlegada.setBounds(919, 73, 89, 23);
 		}
 		return btnLlegada;
 	}
@@ -300,39 +318,23 @@ public class VentanaCalendarAdmin extends JDialog {
 					String string = (String) table.getModel().getValueAt(table.getSelectedRow(),0);
 					String[] Hora1 = string.split(":");
 					String Hora = Hora1[0];
+					int ReservaID = (int) table.getModel().getValueAt(table.getSelectedRow(), 5);
+
 					//Set hora de salida
 					//if(((int)table.getModel().getValueAt(1,table.getSelectedColumn())) == LocalDateTime.now().getHour()){
 					if(Hora.equals(String.valueOf(LocalDateTime.now().getHour()))){
 						JOptionPane.showMessageDialog(null, "Salida las: "+ LocalDateTime.now().getHour());
 						table.setValueAt(LocalDateTime.now().getHour()+":"+LocalDateTime.now().getMinute(), table.getSelectedRow(), 4);
-
-						
-//DB
-						/* ERROR COMILLAS SIMPLES 
 						Calendar calendar = Calendar.getInstance();
 						java.sql.Timestamp TimeStamp = new java.sql.Timestamp(calendar.getTime().getTime());
 						
-						Properties connectionProps = new Properties();
-						connectionProps.put("user", "SA");
-						String query  = "UPDATE RESERVA SET horaEntrada =(?) WHERE IDSOCIO = (?)";
-						Connection conn = null;
+						
+						
 						try {
-							conn = DriverManager.getConnection("jdbc:h2:tcp://localhost/~/test", connectionProps);
-						} catch (SQLException e1) {
-							e1.printStackTrace();
-						}
-						
-						
-							PreparedStatement ps;
-							try {
-								ps = conn.prepareStatement(query);
-								ps.setTimestamp(1, TimeStamp);
-								ps.setString(2, SocioID);
-								ps.executeUpdate();
-							} catch (SQLException e1) {
-								e1.printStackTrace();
+							Database.getInstance().getC().createStatement().execute("UPDATE RESERVA SET horaSalida= '"+TimeStamp+"' where RESERVAID = '" + ReservaID+"'");
+							} catch (SQLException e) {
+								e.printStackTrace();
 							}
-							*/
 						
 					}
 					else{
@@ -342,7 +344,7 @@ public class VentanaCalendarAdmin extends JDialog {
 				
 				}
 			});
-			btnSalida.setBounds(754, 73, 89, 23);
+			btnSalida.setBounds(1018, 73, 89, 23);
 		}
 		return btnSalida;
 	}
@@ -388,10 +390,7 @@ public class VentanaCalendarAdmin extends JDialog {
 	
 
 	@SuppressWarnings("deprecation") public void llenarTabla(Instalacion ins) throws SQLException{
-		TableColumn tcol;
-		ColorCellRed ccr = new ColorCellRed();
-		ColorCellGreen ccg = new ColorCellGreen();
-
+		
 		for (Reserva reserva : parser.getReservas()) {
 
 			Date a = getDateChooser().getDate();
@@ -404,13 +403,8 @@ public class VentanaCalendarAdmin extends JDialog {
 						table.setValueAt(String.valueOf(getComboBoxInstalacion().getSelectedItem()),
 								reserva.getHoraComienzo().getHours(), 1);
 						table.setValueAt(nombre,reserva.getHoraComienzo().getHours(), 2);
-						tcol = table.getColumnModel().getColumn(1);
-						if (reserva.getSocioID().equals(socioID))
-
-							tcol.setCellRenderer(ccr);
-
-						else
-							tcol.setCellRenderer(ccg);
+						table.setValueAt(reserva.getReservaID(), reserva.getHoraComienzo().getHours(), 5);
+					
 					}
 			}
 		}
@@ -498,7 +492,7 @@ public class VentanaCalendarAdmin extends JDialog {
 					
 				}
 			});
-			btnCancelarReserva.setBounds(659, 295, 177, 23);
+			btnCancelarReserva.setBounds(914, 238, 193, 23);
 
 		}
 		return btnCancelarReserva;
@@ -542,7 +536,7 @@ public class VentanaCalendarAdmin extends JDialog {
 					}
 				}
 			});
-			btnReservar.setBounds(659, 267, 177, 20);
+			btnReservar.setBounds(914, 194, 193, 20);
 		}
 		return btnReservar;
 	}
@@ -706,31 +700,50 @@ public class VentanaCalendarAdmin extends JDialog {
 					*/
 				}
 			});
-			btnTodoElDia.setBounds(660, 233, 176, 23);
+			btnTodoElDia.setBounds(919, 147, 193, 23);
 		}
 		return btnTodoElDia;
 	}
-	
-	/* int isItMe(int hour, String inst) {
-		int id = 0;
-		int duracion = 0;
-		for (Instalacion i : parser.getInstalaciones())
-			if (i.getInstalacion_nombre().equals(inst)) {
-				id = i.getInstalacionID();
-			}
-		for (Reserva res : parser.getReservas()) {
-			duracion = getHora(res.getHoraFinal()) - getHora(res.getHoraComienzo());
-			for (int i = 0; i < duracion; i++)
-				if (getHora(res.getHoraComienzo()) + i == hour)
-					if (res.getInstalacionID() == id && res.getSocioID().equals(socioID))
-						return 0;
+	private JLabel getLblHora_1() {
+		if (lblHora_1 == null) {
+			lblHora_1 = new JLabel("Hora:");
+			lblHora_1.setBounds(220, 22, 46, 14);
 		}
-		if (id != 0)
-			return 1;
-		return -1;
+		return lblHora_1;
 	}
-	*/
-	
-	
-	
+	private JLabel getLblInstalacion() {
+		if (lblInstalacion == null) {
+			lblInstalacion = new JLabel("Instalacion: ");
+			lblInstalacion.setBounds(328, 22, 89, 14);
+		}
+		return lblInstalacion;
+	}
+	private JLabel getLblSocio() {
+		if (lblSocio == null) {
+			lblSocio = new JLabel("Socio:");
+			lblSocio.setBounds(460, 22, 55, 14);
+		}
+		return lblSocio;
+	}
+	private JLabel getLblHoraEntrada() {
+		if (lblHoraEntrada == null) {
+			lblHoraEntrada = new JLabel("Hora entrada:");
+			lblHoraEntrada.setBounds(557, 22, 79, 14);
+		}
+		return lblHoraEntrada;
+	}
+	private JLabel getLblHoraSalida() {
+		if (lblHoraSalida == null) {
+			lblHoraSalida = new JLabel("Hora salida:");
+			lblHoraSalida.setBounds(678, 22, 79, 14);
+		}
+		return lblHoraSalida;
+	}
+	private JLabel getLblReservaId() {
+		if (lblReservaId == null) {
+			lblReservaId = new JLabel("Reserva ID: ");
+			lblReservaId.setBounds(803, 22, 67, 14);
+		}
+		return lblReservaId;
+	}
 }

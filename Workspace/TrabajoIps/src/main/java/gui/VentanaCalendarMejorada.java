@@ -22,9 +22,12 @@ import javax.swing.event.ListSelectionListener;
 import javax.swing.JComboBox;
 import com.toedter.calendar.JDateChooser;
 
+import db.Database;
 import db.Parser;
+import logic.Actividad;
 import logic.Instalacion;
 import logic.Reserva;
+import logic.ReservaActividad;
 
 import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
@@ -66,6 +69,7 @@ public class VentanaCalendarMejorada extends JDialog {
 	private VentanaCalendarMejorada ref = this;
 	private String socioID;
 	private JTextArea textArea;
+	private JButton btnApuntarme;
 
 	/**
 	 * Launch the application.
@@ -89,7 +93,7 @@ public class VentanaCalendarMejorada extends JDialog {
 		setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 		setResizable(false);
 		setTitle("Calendario para socios");
-		setBounds(100, 100, 1008, 660);
+		setBounds(100, 100, 1059, 660);
 		getContentPane().setLayout(new BorderLayout());
 		contentPanel.setBackground(Color.WHITE);
 		contentPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
@@ -104,12 +108,12 @@ public class VentanaCalendarMejorada extends JDialog {
 		panel.setLayout(null);
 		panel.setBorder(new TitledBorder(null, "Descripcion", TitledBorder.LEADING, TitledBorder.TOP, null, null));
 		panel.setBackground(Color.WHITE);
-		panel.setBounds(786, 72, 206, 448);
+		panel.setBounds(847, 72, 161, 448);
 		contentPanel.add(panel);
 		
 		textArea = new JTextArea();
 		textArea.setEditable(false);
-		textArea.setBounds(10, 27, 186, 397);
+		textArea.setBounds(10, 27, 141, 397);
 		panel.add(textArea);
 		{
 			JPanel buttonPane = new JPanel();
@@ -229,7 +233,7 @@ public class VentanaCalendarMejorada extends JDialog {
 			pnTabla = new JPanel();
 			pnTabla.setBackground(Color.WHITE);
 			pnTabla.setBorder(new TitledBorder(null, "Tabla", TitledBorder.LEADING, TitledBorder.TOP, null, null));
-			pnTabla.setBounds(292, 72, 484, 448);
+			pnTabla.setBounds(292, 72, 535, 448);
 			pnTabla.setLayout(null);
 			pnTabla.add(getTable());
 		}
@@ -241,7 +245,7 @@ public class VentanaCalendarMejorada extends JDialog {
 			pnAcciones = new JPanel();
 			pnAcciones.setBackground(Color.WHITE);
 			pnAcciones.setBorder(new TitledBorder(UIManager.getBorder("TitledBorder.border"), "Acciones", TitledBorder.LEADING, TitledBorder.TOP, null, new Color(0, 0, 0)));
-			pnAcciones.setBounds(28, 538, 753, 57);
+			pnAcciones.setBounds(28, 538, 912, 57);
 			pnAcciones.setLayout(new GridLayout(0, 1, 0, 0));
 			pnAcciones.add(getPnAccionesInterno());
 		}
@@ -300,15 +304,15 @@ public class VentanaCalendarMejorada extends JDialog {
 			Object[] nombreColumnas = new Object[2];
 			nombreColumnas[0] = "Hora";
 			nombreColumnas[1] = "Reserva";
-			DataTableModel modeloTabla = new DataTableModel(new Object[][] { { "Horas", "Reserva" }, { "00:00", null },
-					{ "01:00", null }, { "02:00", null }, { "03:00", null }, { "04:00", null }, { "05:00", null },
-					{ "06:00", null }, { "07:00", null }, { "08:00", null }, { "09:00", null }, { "10:00", null },
-					{ "11:00", null }, { "12:00", null }, { "13:00", null }, { "14:00", null }, { "15:00", null },
-					{ "16:00", null }, { "17:00", null }, { "18:00", null }, { "19:00", null }, { "20:00", null },
-					{ "21:00", null }, { "22:00", null }, { "23:00", null }, },
-					new String[] { "Horas", "Disponibilidad" });
+			DataTableModel modeloTabla = new DataTableModel(new Object[][] { { "Horas", "Reserva","Actividad" }, { "00:00", null, null },
+					{ "01:00", null, null }, { "02:00", null, null }, { "03:00", null, null }, { "04:00", null, null }, { "05:00", null, null },
+					{ "06:00", null, null }, { "07:00", null, null }, { "08:00", null, null }, { "09:00", null, null }, { "10:00", null, null },
+					{ "11:00", null, null }, { "12:00", null, null }, { "13:00", null, null }, { "14:00", null, null }, { "15:00", null, null },
+					{ "16:00", null, null }, { "17:00", null, null }, { "18:00", null, null }, { "19:00", null, null }, { "20:00", null, null },
+					{ "21:00", null, null }, { "22:00", null, null }, { "23:00", null, null }, },
+					new String[] { "Horas", "Disponibilidad","Actividad" });
 			table.setModel(modeloTabla);
-			table.setBounds(23, 22, 433, 415);	
+			table.setBounds(23, 22, 491, 415);	
 			table.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
 
 				@Override
@@ -484,6 +488,7 @@ public class VentanaCalendarMejorada extends JDialog {
 			pnAccionesInterno.add(getBtnMisReservas());
 			pnAccionesInterno.add(getBtnMisActividades());
 			pnAccionesInterno.add(getBtnReservasFuturas());
+			pnAccionesInterno.add(getBtnApuntarme());
 		}
 		return pnAccionesInterno;
 	}
@@ -554,7 +559,7 @@ public class VentanaCalendarMejorada extends JDialog {
 		parser.removeArrays();
 		parser.fillArrays();
 		
-
+		
 		Date date = dateChooser.getDate();
 		date.setHours(horaComienzo-1);
 		Date date2 = dateChooser.getDate();
@@ -634,6 +639,8 @@ public class VentanaCalendarMejorada extends JDialog {
 		for (int i = 1; i < table.getRowCount(); i++) {
 			table.clearSelection();
 			table.setValueAt("", i, 1);
+			table.setValueAt("", i, 2);
+
 		}
 		
 	}
@@ -668,6 +675,16 @@ public class VentanaCalendarMejorada extends JDialog {
 					}
 				}
 			}
+		}
+		
+		
+		for(ReservaActividad reservaActividad : parser.getReservasactividad()){
+		for(Actividad actividad : parser.getActividades()){
+		for(Reserva reserva : parser.getReservas()){
+			if(reservaActividad.getReservaID() == reserva.getReservaID())
+			table.setValueAt(actividad.getActividad_nombre(),getHora(reserva.getHoraComienzo())+1, 2);
+		}
+		}
 		}
 	}
 	
@@ -744,5 +761,32 @@ public class VentanaCalendarMejorada extends JDialog {
 				return res.getPrecio();
 		}
 		return -1;
+	}
+	private JButton getBtnApuntarme() {
+		if (btnApuntarme == null) {
+			btnApuntarme = new JButton("Apuntarme actividad");
+			btnApuntarme.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					//Reserva actividad como socio DB 
+					String nombre = (String) table.getModel().getValueAt(table.getSelectedRow(), 2);
+					for(Actividad actividad : parser.getActividades()){
+						for(ReservaActividad ractividad : parser.getReservasactividad()){
+							if(nombre.equals(actividad.getActividad_nombre())){
+					try {
+						Database.getInstance().getC().createStatement().execute(
+								"INSERT INTO SocioActividad (SocioID, ActividadID, ReservaID, Presentado, NoSocioID) VALUES ('"
+										+ socioID + "'," + ractividad.getActividadID() + ","
+										+ ractividad.getReservaID() + ","
+										+ null + "," + null + ");");
+					} catch (SQLException e1) {
+						e1.printStackTrace();
+					}
+							}
+					}
+					}
+				}
+			});
+		}
+		return btnApuntarme;
 	}
 }
