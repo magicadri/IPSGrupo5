@@ -22,6 +22,7 @@ import javax.swing.JLabel;
 import javax.swing.JButton;
 import java.awt.event.ActionListener;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Date;
 import java.awt.event.ActionEvent;
 import javax.swing.JTable;
@@ -59,6 +60,7 @@ public class VentanaActividades extends JFrame {
 	 * Create the frame.
 	 */
 	public VentanaActividades() {
+		parser = new Parser();
 		this.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
 		setBounds(100, 100, 656, 472);
 		contentPane = new JPanel();
@@ -75,6 +77,7 @@ public class VentanaActividades extends JFrame {
 		llenarTabla();
 
 	}
+
 	private JTextField getTfSocioID() {
 		if (tfSocioID == null) {
 			tfSocioID = new JTextField();
@@ -83,6 +86,7 @@ public class VentanaActividades extends JFrame {
 		}
 		return tfSocioID;
 	}
+
 	private JLabel getLblSocioid() {
 		if (lblSocioid == null) {
 			lblSocioid = new JLabel("SocioID:");
@@ -90,6 +94,7 @@ public class VentanaActividades extends JFrame {
 		}
 		return lblSocioid;
 	}
+
 	private JLabel getLblActividadid() {
 		if (lblActividadid == null) {
 			lblActividadid = new JLabel("ActividadID:");
@@ -97,6 +102,7 @@ public class VentanaActividades extends JFrame {
 		}
 		return lblActividadid;
 	}
+
 	private JTextField getTfActividadID() {
 		if (tfActividadID == null) {
 			tfActividadID = new JTextField();
@@ -105,6 +111,7 @@ public class VentanaActividades extends JFrame {
 		}
 		return tfActividadID;
 	}
+
 	private JButton getBtnOk() {
 		if (btnOk == null) {
 			btnOk = new JButton("OK");
@@ -112,17 +119,19 @@ public class VentanaActividades extends JFrame {
 				public void actionPerformed(ActionEvent arg0) {
 					String SocioID = tfSocioID.getText();
 					int ActividadID = Integer.parseInt(tfActividadID.getText());
-					
-					for(ReservaActividad reserva: parser.getReservasactividad()){
-						if(reserva.getActividadID() == ActividadID) {
-							//Consigue la id de la reserva que coincide con la id de la actividad escrita en el tf
+
+					for (ReservaActividad reserva : parser.getReservasactividad()) {
+						if (reserva.getActividadID() == ActividadID) {
+							// Consigue la id de la reserva que coincide con la
+							// id de la actividad escrita en el tf
 							ReservaID = reserva.getReservaID();
 						}
 					}
-					
+
 					try {
-					Database.getInstance().getC().createStatement().execute("INSERT INTO SOCIOACTIVIDAD (socioID, actividadID, reservaID, presentado) VALUES (" 
-								+ SocioID + "," + ActividadID + "," + ReservaID + "," + false + ");");
+						Database.getInstance().getC().createStatement().execute(
+								"INSERT INTO SOCIOACTIVIDAD (socioID, actividadID, reservaID, presentado) VALUES ("
+										+ SocioID + "," + ActividadID + "," + ReservaID + "," + false + ");");
 					} catch (SQLException e) {
 						e.printStackTrace();
 					}
@@ -132,6 +141,7 @@ public class VentanaActividades extends JFrame {
 		}
 		return btnOk;
 	}
+
 	private JButton getBtnCancelar() {
 		if (btnCancelar == null) {
 			btnCancelar = new JButton("Cancelar");
@@ -144,46 +154,39 @@ public class VentanaActividades extends JFrame {
 		}
 		return btnCancelar;
 	}
+
 	private JTable getTable() {
 		if (table == null) {
-			table = new JTable(){
-		
+			table = new JTable() {
+
 			};
 			table.setToolTipText("");
-			
-			
+
 			table.setBounds(92, 35, 258, 342);
 
-			DataTableModel dm = new DataTableModel(
-					new Object[][] { { null, null,null }, {  null, null,null }, {  null, null,null }, { null, null,null },
-							{  null,null,null }, {  null,null,null }, {  null, null,null }, {  null, null,null },
-							{  null, null,null }, {  null, null,null }, {  null, null,null }, {  null, null,null },
-							{  null, null,null }, {  null, null,null }, { null, null,null }, {  null, null,null },
-							{  null, null,null }, {  null, null,null }, {  null, null,null }, {  null, null,null },
-							{  null, null,null }, {  null, null,null }, {  null, null,null }, {  null, null,null }, },
-					new String[] { "Lugar", "ReservaID", "Semanas" });
+			DataTableModel dm = new DataTableModel(new Object[][] { { null, null, null }, { null, null, null },
+					{ null, null, null }, { null, null, null }, { null, null, null }, { null, null, null },
+					{ null, null, null }, { null, null, null }, { null, null, null }, { null, null, null },
+					{ null, null, null }, { null, null, null }, { null, null, null }, { null, null, null },
+					{ null, null, null }, { null, null, null }, { null, null, null }, { null, null, null },
+					{ null, null, null }, { null, null, null }, { null, null, null }, { null, null, null },
+					{ null, null, null }, { null, null, null }, }, new String[] { "Lugar", "ReservaID", "Semanas" });
 			table.setModel(dm);
 		}
 		return table;
 	}
-	
-	
-	
-	
-	@SuppressWarnings("deprecation")
-	public void llenarTabla() {
-	
 
+	public void llenarTabla() {
 		int i = 0;
 		for (Actividad actividad : parser.getActividades()) {
 			
-						table.setValueAt(actividad.getActividad_nombre(), i, 0);
-						table.setValueAt(actividad.getActividadID(), i, 1);
-						table.setValueAt(actividad.getSemanas(), i, 2);
-							
-										i++;
-						
-					}
+			table.setValueAt(actividad.getActividad_nombre(), i, 0);
+			table.setValueAt(actividad.getActividadID(), i, 1);
+			table.setValueAt(actividad.getSemanas(), i, 2);
+
+			i++;
+
 		}
-	
+	}
+
 }

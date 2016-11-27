@@ -1,0 +1,149 @@
+﻿DROP TABLE IF EXISTS SOCIO;
+DROP TABLE IF EXISTS INSTALACION;
+DROP TABLE IF EXISTS RESERVA;
+DROP TABLE IF EXISTS OBJETOCUOTA;
+DROP TABLE IF EXISTS ACTIVIDAD;
+DROP TABLE IF EXISTS RESERVAACTIVIDAD;
+DROP TABLE IF EXISTS SOCIOACTIVIDAD;
+DROP TABLE IF EXISTS CUOTA;
+DROP TABLE IF EXISTS RECIBO;
+DROP TALBE IF EXISTS SOCIOSCONFALTA;
+
+CREATE TABLE socio (
+	socioID varchar(32) NOT NULL,
+	PRIMARY KEY (socioID)
+);
+
+CREATE TABLE instalacion (
+	instalacionID integer NOT NULL,
+	instalacion_nombre varchar(32) NOT NULL,
+	PRIMARY KEY (instalacionID)
+);
+
+CREATE TABLE reserva (
+	socioID varchar(32) NOT NULL,
+	instalacionID integer NOT NULL,
+	reservaID integer NOT NULL,
+	horaComienzo  TIMESTAMP NOT NULL,
+	horaFinal TIMESTAMP NOT NULL,
+	horaEntrada TIMESTAMP,
+	horaSalida TIMESTAMP,
+	modoPago varchar(32),
+	reciboGenerado BOOLEAN,
+	precio integer,
+	CONSTRAINT FK_SOCIO FOREIGN KEY (socioID) REFERENCES SOCIO(socioID),
+	CONSTRAINT FK_INSTALACION FOREIGN KEY (instalacionID) REFERENCES INSTALACION(instalacionID),
+        CONSTRAINT chk_pago CHECK (modoPago IN ('Efectivo', 'Cuota')),
+	PRIMARY KEY (socioID, instalacionID, horaComienzo)
+);
+
+CREATE TABLE objetocuota (
+    reciboID INTEGER NOT NULL,
+    socioID VARCHAR(32) NOT NULL,
+    pagado BOOLEAN,
+    importe INTEGER NOT NULL,
+    fecha TIMESTAMP NOT NULL,
+    PRIMARY KEY (reciboID)
+);
+
+CREATE TABLE actividad (
+	actividadID INTEGER NOT NULL,
+	actividad_nombre varchar(32) NOT NULL,
+	instalacionID integer NOT NULL,
+	semanas integer NOT NULL,
+	max_plazas integer NOT NULL,
+	PRIMARY KEY (actividadID)
+);
+
+CREATE TABLE reservaactividad (
+	actividadID INTEGER NOT NULL,
+	reservaID INTEGER NOT NULL,
+	PRIMARY KEY (actividadID, reservaID)
+);
+
+CREATE TABLE socioactividad (
+	socioID varchar(32) not NULL,
+	actividadID INTEGER NOT NULL,
+	reservaID INTEGER NOT NULL,
+	presentado BOOLEAN,
+	nosocioID varchar(32),
+	PRIMARY KEY(socioID, actividadID, reservaID)
+);
+
+CREATE TABLE cuota (
+	socioID varchar(32) NOT NULL,
+	importe integer,
+	mes INTEGER not null,
+	CONSTRAINT FK_SOCIO_CUOTA FOREIGN KEY (socioID) REFERENCES SOCIO(socioID)
+);
+
+CREATE TABLE recibo (
+	socioID varchar(32) NOT NULL,
+	importe integer,
+	descripcion varchar(300)
+);
+
+CREATE TABLE sociosconfalta (
+	socioID varchar(32) NOT NULL,
+	actividadID int,
+	PRIMARY KEY(socioID, actividadID)
+);
+
+INSERT INTO SOCIO VALUES ('adri');
+INSERT INTO SOCIO VALUES ('david');
+INSERT INTO SOCIO VALUES ('joni');
+INSERT INTO SOCIO VALUES ('jose');
+INSERT INTO SOCIO VALUES ('admin');
+
+INSERT INTO CUOTA VALUES('adri', 5, 10);
+INSERT INTO CUOTA VALUES('adri', 5, 11);
+INSERT INTO CUOTA VALUES('david', 6, 10);
+INSERT INTO CUOTA VALUES('david', 6, 11);
+INSERT INTO CUOTA VALUES('joni', 4, 10);
+INSERT INTO CUOTA VALUES('joni', 4, 11);
+INSERT INTO CUOTA VALUES('jose', 9, 10);
+INSERT INTO CUOTA VALUES('jose', 9, 11);
+
+INSERT INTO INSTALACION VALUES (1, 'Piscina');
+INSERT INTO INSTALACION VALUES (2, 'Cancha fútbol');
+INSERT INTO INSTALACION VALUES (3, 'Pista tenis');
+
+INSERT INTO RESERVA VALUES ('adri', 1, 1,  PARSEDATETIME('29-11-2016 10:00:00', 'dd-MM-yyyy HH:mm:ss'), PARSEDATETIME('29-11-2016 12:00:00', 'dd-MM-yyyy HH:mm:ss'), null, null, 'Efectivo' , FALSE, 2);
+INSERT INTO RESERVA VALUES ('adri', 1, 2,  PARSEDATETIME('30-11-2016 10:00:00', 'dd-MM-yyyy HH:mm:ss'), PARSEDATETIME('30-11-2016 12:00:00', 'dd-MM-yyyy HH:mm:ss'), null, null, 'Efectivo' , FALSE,  2);
+INSERT INTO RESERVA VALUES ('adri', 1, 3,  PARSEDATETIME('29-11-2016 13:00:00', 'dd-MM-yyyy HH:mm:ss'), PARSEDATETIME('29-11-2016 14:00:00', 'dd-MM-yyyy HH:mm:ss'), null, null, 'Efectivo' , FALSE, 2);
+INSERT INTO RESERVA VALUES ('joni', 2, 4,  PARSEDATETIME('30-11-2016 10:00:00', 'dd-MM-yyyy HH:mm:ss'), PARSEDATETIME('30-11-2016 11:00:00', 'dd-MM-yyyy HH:mm:ss'), null, null, 'Efectivo' , TRUE, 2);
+INSERT INTO RESERVA VALUES ('admin', 3, 5,  PARSEDATETIME('29-11-2016 14:00:00', 'dd-MM-yyyy HH:mm:ss'), PARSEDATETIME('29-11-2016 15:00:00', 'dd-MM-yyyy HH:mm:ss'), null, null, 'Efectivo' , TRUE, 2);
+
+INSERT INTO RESERVA VALUES ('adri', 1, 6,  PARSEDATETIME('27-11-2016 16:00:00', 'dd-MM-yyyy HH:mm:ss'), PARSEDATETIME('27-11-2016 17:00:00', 'dd-MM-yyyy HH:mm:ss'), null, null, 'Efectivo' , FALSE, 2);
+INSERT INTO RESERVA VALUES ('david', 1, 7,  PARSEDATETIME('27-11-2016 16:00:00', 'dd-MM-yyyy HH:mm:ss'), PARSEDATETIME('27-11-2016 17:00:00', 'dd-MM-yyyy HH:mm:ss'), null, null, 'Efectivo' , FALSE,  2);
+INSERT INTO RESERVA VALUES ('joni', 1, 8,  PARSEDATETIME('27-11-2016 16:00:00', 'dd-MM-yyyy HH:mm:ss'), PARSEDATETIME('27-11-2016 17:00:00', 'dd-MM-yyyy HH:mm:ss'), null, null, 'Efectivo' , FALSE, 2);
+INSERT INTO RESERVA VALUES ('adri', 2, 9,  PARSEDATETIME('27-11-2016 17:00:00', 'dd-MM-yyyy HH:mm:ss'), PARSEDATETIME('27-11-2016 18:00:00', 'dd-MM-yyyy HH:mm:ss'), null, null, 'Efectivo' , TRUE, 2);
+INSERT INTO RESERVA VALUES ('david', 2, 10,  PARSEDATETIME('27-11-2016 17:00:00', 'dd-MM-yyyy HH:mm:ss'), PARSEDATETIME('27-11-2016 18:00:00', 'dd-MM-yyyy HH:mm:ss'), null, null, 'Efectivo' , TRUE, 2);
+INSERT INTO RESERVA VALUES ('joni', 2, 11,  PARSEDATETIME('27-11-2016 17:00:00', 'dd-MM-yyyy HH:mm:ss'), PARSEDATETIME('27-11-2016 18:00:00', 'dd-MM-yyyy HH:mm:ss'), null, null, 'Efectivo' , FALSE, 2);
+INSERT INTO RESERVA VALUES ('adri', 3, 12,  PARSEDATETIME('27-11-2016 18:00:00', 'dd-MM-yyyy HH:mm:ss'), PARSEDATETIME('27-11-2016 20:00:00', 'dd-MM-yyyy HH:mm:ss'), null, null, 'Efectivo' , FALSE,  2);
+INSERT INTO RESERVA VALUES ('david', 3, 13,  PARSEDATETIME('27-11-2016 18:00:00', 'dd-MM-yyyy HH:mm:ss'), PARSEDATETIME('27-11-2016 20:00:00', 'dd-MM-yyyy HH:mm:ss'), null, null, 'Efectivo' , FALSE, 2);
+INSERT INTO RESERVA VALUES ('joni', 3, 14,  PARSEDATETIME('27-11-2016 18:00:00', 'dd-MM-yyyy HH:mm:ss'), PARSEDATETIME('27-11-2016 20:00:00', 'dd-MM-yyyy HH:mm:ss'), null, null, 'Efectivo' , TRUE, 2);
+
+INSERT INTO ACTIVIDAD VALUES (1, 'Yoga', 1, 5, 30);
+INSERT INTO ACTIVIDAD VALUES (2, 'Spinning', 3, 4, 40);
+INSERT INTO ACTIVIDAD VALUES (3, 'Zumba', 2, 5, 6);
+
+INSERT INTO RESERVAACTIVIDAD VALUES (1, 6);
+INSERT INTO RESERVAACTIVIDAD VALUES (1, 7);
+INSERT INTO RESERVAACTIVIDAD VALUES (1, 8);
+INSERT INTO RESERVAACTIVIDAD VALUES (2, 9);
+INSERT INTO RESERVAACTIVIDAD VALUES (2, 10);
+INSERT INTO RESERVAACTIVIDAD VALUES (2, 11);
+INSERT INTO RESERVAACTIVIDAD VALUES (3, 12);
+INSERT INTO RESERVAACTIVIDAD VALUES (3, 13);
+INSERT INTO RESERVAACTIVIDAD VALUES (3, 14);
+
+INSERT INTO SOCIOACTIVIDAD VALUES ('adri', 1, 6, false, null);
+INSERT INTO SOCIOACTIVIDAD VALUES ('david', 1, 7, false, null);
+INSERT INTO SOCIOACTIVIDAD VALUES ('joni', 1, 8, false, null);
+INSERT INTO SOCIOACTIVIDAD VALUES ('adri', 2, 9, false, null);
+INSERT INTO SOCIOACTIVIDAD VALUES ('david', 2, 10, false, null);
+INSERT INTO SOCIOACTIVIDAD VALUES ('joni', 2, 11, false, null);
+INSERT INTO SOCIOACTIVIDAD VALUES ('adri', 3, 12, false, null);
+INSERT INTO SOCIOACTIVIDAD VALUES ('david', 3, 13, false, null);
+INSERT INTO SOCIOACTIVIDAD VALUES ('joni', 3, 14, false, null);

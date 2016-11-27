@@ -1,7 +1,5 @@
 package logic;
 
-import java.sql.Timestamp;
-
 public class Cuota {
 	
 	private String socioID;

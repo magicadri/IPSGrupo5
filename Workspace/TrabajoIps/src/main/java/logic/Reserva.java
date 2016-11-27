@@ -255,6 +255,7 @@ public class Reserva {
 					boolean aux = addReservaABase(reserva);
 					Reserva rem = comprobarDisponibilidadPorSocioAdmin(socioID, horaComienzo, horaFinal);
 					removeReservaDeBase(rem);
+					
 					disculpaSocio(rem.getSocioID() + ", lo sentimos, su reserva " + rem.getReservaID()
 							+ " ha sido cancelada.");
 					if (aux) {

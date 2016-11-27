@@ -21,6 +21,7 @@ import logic.Reserva;
 import logic.ReservaActividad;
 import logic.Socio;
 import logic.SocioActividad;
+import logic.SociosConFalta;
 
 public class Parser {
 
@@ -31,6 +32,7 @@ public class Parser {
 	ArrayList<Actividad> actividades = new ArrayList<>();
 	ArrayList<ReservaActividad> reservasactividad = new ArrayList<>();
 	ArrayList<SocioActividad> sociosactividad = new ArrayList<>();
+	ArrayList<SociosConFalta> sociosConFalta = new ArrayList<>();
 
 	public ArrayList<SocioActividad> getSociosactividad() {
 		return sociosactividad;
@@ -66,6 +68,10 @@ public class Parser {
 	public ArrayList<Actividad> getActividades() {
 		return actividades;
 	}
+	
+	public ArrayList<SociosConFalta> getSociosConFalta(){
+		return sociosConFalta;
+	}
 
 	Connection c = Database.getInstance().getC();
 
@@ -79,6 +85,7 @@ public class Parser {
 		cuotas.clear();
 		sociosactividad.clear();
 		reservasactividad.clear();
+		sociosConFalta.clear();
 
 		Statement s = c.createStatement();
 		ResultSet rs = s.executeQuery("select * from SOCIO");
@@ -125,7 +132,7 @@ public class Parser {
 		rs = s.executeQuery("Select * From SOCIOACTIVIDAD");
 		while (rs.next()) {
 			sociosactividad.add(new SocioActividad(rs.getString("socioID"), rs.getInt("reservaID"),
-					rs.getInt("actividadID"), rs.getBoolean("presentado")));
+					rs.getInt("actividadID"), rs.getBoolean("presentado"), rs.getString("noSocioID")));
 		}
 
 		s = c.createStatement();
@@ -140,7 +147,12 @@ public class Parser {
 			actividades.add(new Actividad(rs.getInt("actividadID"), rs.getInt("instalacionID"),
 					rs.getString("actividad_nombre"), rs.getInt("semanas")));
 		}
-
+		
+		s = c.createStatement();
+		rs = s.executeQuery("Select * From SOCIOSCONFALTA");
+		while (rs.next()) {
+			sociosConFalta.add(new SociosConFalta(rs.getString("socioID") ,rs.getInt("actividadID")));
+		}
 	}
 
 	/**
@@ -383,6 +395,18 @@ public class Parser {
 				}
 		}
 
+	}
+
+	public void guardarNoPresentado(String elementAt, int actividadID) {
+		try {
+			Statement s1 = c.createStatement();
+			s1.executeUpdate("insert into sociosConFalta values ( '" + elementAt + "', " + actividadID + ")" );
+			JOptionPane.showMessageDialog(null, "cliente " + elementAt + " guardado en lista de faltas para "
+					+ "la actividad "+ actividadID + ".");
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 
 }

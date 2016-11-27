@@ -95,6 +95,7 @@ public class VentanaOcupacionAdminMejorada extends JDialog {
 				btOk.addActionListener(new ActionListener() {
 					public void actionPerformed(ActionEvent e) {
 						dispose();
+						setModal(false);
 					}
 				});
 				btOk.setActionCommand("OK");
@@ -210,7 +211,7 @@ public class VentanaOcupacionAdminMejorada extends JDialog {
 			pnDescripcion = new JPanel();
 			pnDescripcion.setBackground(Color.WHITE);
 			pnDescripcion.setBorder(
-					new TitledBorder(null, "Descripci\u00F3n", TitledBorder.LEADING, TitledBorder.TOP, null, null));
+					new TitledBorder(null, "Descripcion", TitledBorder.LEADING, TitledBorder.TOP, null, null));
 			pnDescripcion.setBounds(10, 545, 774, 78);
 			pnDescripcion.setLayout(null);
 			pnDescripcion.add(getTaDescripcion());

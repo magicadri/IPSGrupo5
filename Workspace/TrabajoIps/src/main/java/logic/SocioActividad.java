@@ -6,13 +6,15 @@ public class SocioActividad {
 	private int reservaID;
 	private int actividadID;
 	private boolean presentado;
+	private String noSocioID;
 	
-	public SocioActividad(String socioID, int reservaID, int actividadID, boolean presentado)
+	public SocioActividad(String socioID, int reservaID, int actividadID, boolean presentado, String noSocioID)
 	{
 		this.socioID=socioID;
 		this.reservaID=reservaID;
 		this.actividadID=actividadID;
 		this.presentado=presentado;
+		this.noSocioID = noSocioID;
 	}
 
 	public String getSocioID() {
@@ -31,4 +33,7 @@ public class SocioActividad {
 		return presentado;
 	}
 
+	public String getNoSocioID(){
+		return this.noSocioID;
+	}
 }

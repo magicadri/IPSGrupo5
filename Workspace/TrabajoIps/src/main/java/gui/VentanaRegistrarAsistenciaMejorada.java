@@ -10,9 +10,11 @@ import db.Parser;
 import logic.Actividad;
 import logic.Reserva;
 import logic.ReservaActividad;
+import logic.Socio;
 import logic.SocioActividad;
 
 import javax.swing.JList;
+import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.DefaultListModel;
@@ -38,8 +40,18 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.SpinnerNumberModel;
 
 public class VentanaRegistrarAsistenciaMejorada extends JDialog {
+	
+	private VentanaRegistrarAsistenciaMejorada ref = this;
+	
 	public VentanaRegistrarAsistenciaMejorada() {
 		parser = new Parser();
+		parser.removeArrays();
+		try {
+			parser.fillArrays();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		setBounds(100, 100, 589, 527);
 		getContentPane().setBackground(Color.WHITE);
 		setTitle("Ventana para registrar asistencia");
@@ -55,6 +67,37 @@ public class VentanaRegistrarAsistenciaMejorada extends JDialog {
 		getContentPane().add(getLblNoPresentados());
 		getContentPane().add(getLblPresentados());
 		getContentPane().add(getPnHorario());
+		
+		JButton btPersonasSinReserva = new JButton("Personas sin reserva");
+		btPersonasSinReserva.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				String respuesta = "No socio";
+				Object[] options = { "Socio", "No socio"};
+				int n = JOptionPane.showOptionDialog(ref, "Seleccione un tipo:", "Persona sin reserva", JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE, null, options, options[1]);
+				if(n==0){
+					boolean a = false;
+					respuesta = JOptionPane.showInputDialog("ID de socio:");
+					for(Socio s : parser.getSocios()){
+						if(s.getSocioID().equals(respuesta)){
+							a = true;
+							respuesta = respuesta + " (SR)";
+							JOptionPane.showMessageDialog(ref, "Socio insertado con exito");
+						}
+					}
+					if(!a){
+						JOptionPane.showMessageDialog(ref, "El socio no existe");
+						return;
+					}
+				}
+				DefaultListModel<String> modelo = (DefaultListModel<String>) listaRegistrados.getModel();
+				
+				modelo.addElement(respuesta);
+				
+				listaRegistrados.setModel(modelo);
+			}
+		});
+		btPersonasSinReserva.setBounds(20, 451, 192, 29);
+		getContentPane().add(btPersonasSinReserva);
 	}
 
 	private static final long serialVersionUID = -6729417827694538682L;
@@ -77,6 +120,8 @@ public class VentanaRegistrarAsistenciaMejorada extends JDialog {
 	private JLabel lblHasta;
 	private JSpinner spHasta;
 	private Actividad referencia;
+	private int maxPlazasActual;
+	private DefaultListModel<String> ultimoPorRegistrar;
 
 	private JLabel getLblActividad() {
 		if (lblActividad == null) {
@@ -103,7 +148,7 @@ public class VentanaRegistrarAsistenciaMejorada extends JDialog {
 		}
 		return comboBox;
 	}
-
+	
 	/**
 	 * Recoge las actividades de la base de datos
 	 */
@@ -236,6 +281,7 @@ public class VentanaRegistrarAsistenciaMejorada extends JDialog {
 			btnSalir.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent arg0) {
 					setModal(false);
+					guardarNoPresentados();
 					dispose();
 				}
 			});
@@ -252,11 +298,18 @@ public class VentanaRegistrarAsistenciaMejorada extends JDialog {
 					cambiarEstado();
 				}
 			});
-			btnRegistrar.setBounds(356, 451, 88, 29);
+			btnRegistrar.setBounds(356, 451, 97, 29);
 		}
 		return btnRegistrar;
 	}
 	
+	private void guardarNoPresentados(){
+		if(ultimoPorRegistrar!=null)
+			for (int i = 0; i<ultimoPorRegistrar.getSize(); i++){
+				if(!ultimoPorRegistrar.getElementAt(i).equals("No socio") && !ultimoPorRegistrar.getElementAt(i).contains("(SR)"))
+					parser.guardarNoPresentado(ultimoPorRegistrar.getElementAt(i), referencia.getActividadID());
+			}
+	}
 	/**
 	 * Pasa los clientes en registrados a true y los no registrados a false
 	 */
@@ -264,11 +317,14 @@ public class VentanaRegistrarAsistenciaMejorada extends JDialog {
 		DefaultListModel<String> aux = (DefaultListModel<String>) listaRegistrados.getModel();
 		DefaultListModel<String> aux2 = (DefaultListModel<String>) listaPorRegistrar.getModel();
 		for (int i = 0; i<aux.getSize(); i++){
-			parser.actualizaRegistroT(aux.getElementAt(i), referencia.getActividadID());
+			if(!aux.getElementAt(i).equals("No socio") && !aux.getElementAt(i).contains("(SR)") )
+				parser.actualizaRegistroT(aux.getElementAt(i), referencia.getActividadID());
 		}
 		for (int i = 0; i<aux2.getSize(); i++){
-			parser.actualizaRegistroF(aux2.getElementAt(i), referencia.getActividadID());
+			if(!aux2.getElementAt(i).equals("No socio") && !aux2.getElementAt(i).contains("(SR)"))
+				parser.actualizaRegistroF(aux2.getElementAt(i), referencia.getActividadID());
 		}
+		ultimoPorRegistrar = aux2;
 	}
 
 	private JLabel getLblNoPresentados() {
@@ -364,10 +420,11 @@ public class VentanaRegistrarAsistenciaMejorada extends JDialog {
 				if(isHora(a)){
 					for(SocioActividad sa : parser.getSociosactividad()){
 						if(sa.getActividadID() == a.getActividadID()){
-							if(!noPresentado(sa.getSocioID()))
+							if(!noPresentado(sa.getSocioID())){
 								modelo.addElement(sa.getSocioID());
-							else
+							}else{
 								modelo2.addElement(sa.getSocioID());
+							}
 						}
 					}
 				}

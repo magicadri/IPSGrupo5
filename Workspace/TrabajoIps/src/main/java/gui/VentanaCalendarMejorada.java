@@ -39,6 +39,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.awt.event.ActionEvent;
 import java.awt.GridLayout;
+import javax.swing.JTextArea;
 
 public class VentanaCalendarMejorada extends JDialog {
 
@@ -64,6 +65,7 @@ public class VentanaCalendarMejorada extends JDialog {
 	private JPanel pnAccionesInterno;
 	private VentanaCalendarMejorada ref = this;
 	private String socioID;
+	private JTextArea textArea;
 
 	/**
 	 * Launch the application.
@@ -87,7 +89,7 @@ public class VentanaCalendarMejorada extends JDialog {
 		setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 		setResizable(false);
 		setTitle("Calendario para socios");
-		setBounds(100, 100, 803, 672);
+		setBounds(100, 100, 1008, 660);
 		getContentPane().setLayout(new BorderLayout());
 		contentPanel.setBackground(Color.WHITE);
 		contentPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
@@ -97,6 +99,18 @@ public class VentanaCalendarMejorada extends JDialog {
 		contentPanel.add(getPnDatos());
 		contentPanel.add(getPnTabla());
 		contentPanel.add(getPnAcciones());
+		
+		JPanel panel = new JPanel();
+		panel.setLayout(null);
+		panel.setBorder(new TitledBorder(null, "Descripcion", TitledBorder.LEADING, TitledBorder.TOP, null, null));
+		panel.setBackground(Color.WHITE);
+		panel.setBounds(786, 72, 206, 448);
+		contentPanel.add(panel);
+		
+		textArea = new JTextArea();
+		textArea.setEditable(false);
+		textArea.setBounds(10, 27, 186, 397);
+		panel.add(textArea);
 		{
 			JPanel buttonPane = new JPanel();
 			buttonPane.setBackground(Color.WHITE);
@@ -114,6 +128,13 @@ public class VentanaCalendarMejorada extends JDialog {
 				getRootPane().setDefaultButton(btOk);
 			}
 		}
+	}
+	
+	/**
+	 * Limpia los valores de la tabla en la columna de las reservas
+	 */
+	private void limpiarDescripcion() {
+		textArea.setText("");
 	}
 
 	private JLabel getLblCalendarioParaSocios() {
@@ -287,10 +308,56 @@ public class VentanaCalendarMejorada extends JDialog {
 					{ "21:00", null }, { "22:00", null }, { "23:00", null }, },
 					new String[] { "Horas", "Disponibilidad" });
 			table.setModel(modeloTabla);
-			table.setBounds(23, 22, 433, 415);			
+			table.setBounds(23, 22, 433, 415);	
+			table.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
+
+				@Override
+				public void valueChanged(ListSelectionEvent ev) {
+					if(table.getSelectedColumn()!=-1 && table.getSelectedRow()!=-1 && table.getModel().getValueAt(table.getSelectedRow(), table.getSelectedColumn())!="" && table.getSelectedRow()!=0
+							&& table.getSelectedColumn()!=0 && table.getModel().getValueAt(table.getSelectedRow(), table.getSelectedColumn())!=null){
+						// Pone en la descripcion el valor de la celda seleccionada
+						try {
+							textArea.setText((String) table.getModel().getValueAt(table.getSelectedRow(), 0) + " - Reserva id: "
+								+ table.getModel().getValueAt(table.getSelectedRow(), table.getSelectedColumn()) + " -\nModo de pago: "
+								+ getModoPago((int) table.getModel().getValueAt(table.getSelectedRow(), table.getSelectedColumn()))
+							);
+						} catch (SQLException e) {
+							System.err.println("[...ERROR AL ESCRIBIR DATOS DE LA DESCRIPCION EN LA CLASE VENTANAOCUPACIONADMINMEJORADA...]");
+						}
+					}
+					else{
+						limpiarDescripcion();
+					}
+				}
+			});
 		}
 		return table;
 	}
+	
+	/**
+	 * Consigue el modo de pago dada una reserva id
+	 * @param reservaID
+	 * @return
+	 * @throws SQLException
+	 */
+	private String getModoPago(int reservaID) throws SQLException{
+		// Actualizar datos de la base
+		parser.removeArrays();
+		parser.fillArrays();
+
+		// Pasarlos a la clase actual
+		ArrayList<Reserva> r = new ArrayList<Reserva>();
+		r = parser.getReservas();
+		
+		for(Reserva res : r){
+			if(res.getReservaID() == reservaID){
+				return res.getModoPago();
+			}
+		}
+		
+		return "";
+	}
+	
 	private JButton getBtnReservar() {
 		if (btnReservar == null) {
 			btnReservar = new JButton("Reservar");
