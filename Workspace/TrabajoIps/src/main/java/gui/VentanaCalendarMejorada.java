@@ -767,23 +767,8 @@ public class VentanaCalendarMejorada extends JDialog {
 			btnApuntarme = new JButton("Apuntarme actividad");
 			btnApuntarme.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
-					//Reserva actividad como socio DB 
-					String nombre = (String) table.getModel().getValueAt(table.getSelectedRow(), 2);
-					for(Actividad actividad : parser.getActividades()){
-						for(ReservaActividad ractividad : parser.getReservasactividad()){
-							if(nombre.equals(actividad.getActividad_nombre())){
-					try {
-						Database.getInstance().getC().createStatement().execute(
-								"INSERT INTO SocioActividad (SocioID, ActividadID, ReservaID, Presentado, NoSocioID) VALUES ('"
-										+ socioID + "'," + ractividad.getActividadID() + ","
-										+ ractividad.getReservaID() + ","
-										+ null + "," + null + ");");
-					} catch (SQLException e1) {
-						e1.printStackTrace();
-					}
-							}
-					}
-					}
+					VentanaActividadesSocio VAS = new VentanaActividadesSocio(socioID);
+					VAS.setVisible(true);
 				}
 			});
 		}

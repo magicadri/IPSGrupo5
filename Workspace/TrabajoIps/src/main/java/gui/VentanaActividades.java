@@ -33,8 +33,6 @@ public class VentanaActividades extends JFrame {
 	private JPanel contentPane;
 	private JTextField tfSocioID;
 	private JLabel lblSocioid;
-	private JLabel lblActividadid;
-	private JTextField tfActividadID;
 	private JButton btnOk;
 	private JButton btnCancelar;
 	private Parser parser;
@@ -42,6 +40,9 @@ public class VentanaActividades extends JFrame {
 	private JTable table;
 	private JButton btnCancelarActividad;
 	private JButton btnActualizar;
+	private JLabel lblActividad;
+	private JLabel lblActividadid_1;
+	private JLabel lblSemanas;
 
 	/**
 	 * Launch the application.
@@ -72,13 +73,14 @@ public class VentanaActividades extends JFrame {
 		contentPane.setLayout(null);
 		contentPane.add(getTfSocioID());
 		contentPane.add(getLblSocioid());
-		contentPane.add(getLblActividadid());
-		contentPane.add(getTfActividadID());
 		contentPane.add(getBtnOk());
 		contentPane.add(getBtnCancelar());
 		contentPane.add(getTable());
 		contentPane.add(getBtnCancelarActividad());
 		contentPane.add(getBtnActualizar());
+		contentPane.add(getLblActividad());
+		contentPane.add(getLblActividadid_1());
+		contentPane.add(getLblSemanas());
 		llenarTabla();
 
 	}
@@ -100,30 +102,14 @@ public class VentanaActividades extends JFrame {
 		return lblSocioid;
 	}
 
-	private JLabel getLblActividadid() {
-		if (lblActividadid == null) {
-			lblActividadid = new JLabel("ActividadID:");
-			lblActividadid.setBounds(439, 71, 65, 14);
-		}
-		return lblActividadid;
-	}
-
-	private JTextField getTfActividadID() {
-		if (tfActividadID == null) {
-			tfActividadID = new JTextField();
-			tfActividadID.setBounds(514, 68, 86, 20);
-			tfActividadID.setColumns(10);
-		}
-		return tfActividadID;
-	}
-
 	private JButton getBtnOk() {
 		if (btnOk == null) {
 			btnOk = new JButton("OK");
 			btnOk.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent arg0) {
+					boolean aux = false;
 					String SocioID = tfSocioID.getText();
-					int ActividadID = Integer.parseInt(tfActividadID.getText());
+					int ActividadID = (int) table.getModel().getValueAt(table.getSelectedRow(), 1);
 
 					for (ReservaActividad reserva : parser.getReservasactividad()) {
 						if (reserva.getActividadID() == ActividadID) {
@@ -134,12 +120,18 @@ public class VentanaActividades extends JFrame {
 					}
 
 					try {
-						Database.getInstance().getC().createStatement().execute(
-								"INSERT INTO SOCIOACTIVIDAD (socioID, actividadID, reservaID, presentado) VALUES ("
-										+ SocioID + "," + ActividadID + "," + ReservaID + "," +null + ");");
+						aux = Database.getInstance().getC().createStatement().execute(
+								"INSERT INTO SOCIOACTIVIDAD (socioID, actividadID, reservaID, presentado) VALUES ('"
+										+ SocioID + "'," + ActividadID + "," + ReservaID + "," +null + ");");
 					} catch (SQLException e) {
 						e.printStackTrace();
 					}
+					if(aux){
+						JOptionPane.showMessageDialog(null, "Socio añadido con exito.");
+					}else{
+					JOptionPane.showMessageDialog(null, "Error al añadir al socio.");
+					}
+
 				}
 			});
 			btnOk.setBounds(422, 387, 89, 23);
@@ -175,7 +167,7 @@ public class VentanaActividades extends JFrame {
 					{ null, null, null }, { null, null, null }, { null, null, null }, { null, null, null },
 					{ null, null, null }, { null, null, null }, { null, null, null }, { null, null, null },
 					{ null, null, null }, { null, null, null }, { null, null, null }, { null, null, null },
-					{ null, null, null }, { null, null, null }, }, new String[] { "Lugar", "ReservaID", "Semanas" });
+					{ null, null, null }, { null, null, null }, }, new String[] { "Lugar", "ActividadID", "Semanas" });
 			table.setModel(dm);
 		}
 		return table;
@@ -284,5 +276,26 @@ public class VentanaActividades extends JFrame {
 			btnActualizar.setBounds(22, 81, 60, 23);
 		}
 		return btnActualizar;
+	}
+	private JLabel getLblActividad() {
+		if (lblActividad == null) {
+			lblActividad = new JLabel("Actividad:");
+			lblActividad.setBounds(92, 11, 60, 14);
+		}
+		return lblActividad;
+	}
+	private JLabel getLblActividadid_1() {
+		if (lblActividadid_1 == null) {
+			lblActividadid_1 = new JLabel("ActividadID:");
+			lblActividadid_1.setBounds(187, 11, 70, 14);
+		}
+		return lblActividadid_1;
+	}
+	private JLabel getLblSemanas() {
+		if (lblSemanas == null) {
+			lblSemanas = new JLabel("Semanas:");
+			lblSemanas.setBounds(278, 10, 65, 14);
+		}
+		return lblSemanas;
 	}
 }
