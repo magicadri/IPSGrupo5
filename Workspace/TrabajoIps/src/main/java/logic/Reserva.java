@@ -1,15 +1,19 @@
 package logic;
 
+import java.awt.HeadlessException;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 
 import javax.swing.JOptionPane;
 
 import db.Database;
 import db.Parser;
+import gui.VentanaResolverColisiones;
 
 public class Reserva {
 
@@ -40,9 +44,9 @@ public class Reserva {
 		this.parser = new Parser();
 	}
 
-	public Reserva() {	
+	public Reserva() {
 		this.parser = new Parser();
-		}
+	}
 
 	public int getReservaID() {
 		return this.reservaID;
@@ -161,7 +165,7 @@ public class Reserva {
 				// Comprobar duracion
 				if (comprobarMaxHorasSeguidas(horaComienzo, horaFinal)) {
 					// Comprobar reservas simultaneas
-					if (!comprobarDisponibilidadPorSocio(socioID, instalacionID, horaComienzo, horaFinal)) { 
+					if (!comprobarDisponibilidadPorSocio(socioID, instalacionID, horaComienzo, horaFinal)) {
 						// Comprobar disponibilidad
 						if (comprobarDisponibilidadPorInstalacion(instalacionID, horaComienzo, horaFinal)) {
 							boolean aux = addReservaABase(reserva);
@@ -194,7 +198,7 @@ public class Reserva {
 		}
 
 	}
-	
+
 	public void hacerReservaTodoElDia(String socioID, int instalacionID, int reservaID, Timestamp horaComienzo,
 			Timestamp horaFinal, Timestamp horaEntrada, Timestamp horaSalida, String modoPago, boolean reciboGenerado,
 			int precio) {
@@ -209,14 +213,14 @@ public class Reserva {
 				// Comprobar duracion
 				if (comprobarMaxHorasSeguidas(horaComienzo, horaFinal)) {
 					// Comprobar reservas simultaneas
-					if (!comprobarDisponibilidadPorSocio(socioID, instalacionID, horaComienzo, horaFinal)) { 
+					if (!comprobarDisponibilidadPorSocio(socioID, instalacionID, horaComienzo, horaFinal)) {
 						// Comprobar disponibilidad
 						if (comprobarDisponibilidadPorInstalacion(instalacionID, horaComienzo, horaFinal)) {
 							boolean aux = addReservaABase(reserva);
 							if (aux) {
-								
+
 							} else {
-								
+
 							}
 						} else {
 							JOptionPane.showMessageDialog(null,
@@ -257,7 +261,7 @@ public class Reserva {
 					boolean aux = addReservaABase(reserva);
 					Reserva rem = comprobarDisponibilidadPorSocioAdmin(socioID, horaComienzo, horaFinal);
 					removeReservaDeBase(rem);
-					
+
 					disculpaSocio(rem.getSocioID() + ", lo sentimos, su reserva " + rem.getReservaID()
 							+ " ha sido cancelada.");
 					if (aux) {
@@ -359,7 +363,7 @@ public class Reserva {
 	 * @author David
 	 */
 	@SuppressWarnings("deprecation")
-	private boolean comprobarMaxHorasSeguidas(Timestamp horaComienzo, Timestamp horaFinal) {
+	public boolean comprobarMaxHorasSeguidas(Timestamp horaComienzo, Timestamp horaFinal) {
 		if (horaFinal.getHours() - horaComienzo.getHours() <= 2)
 			return true;
 		else
@@ -456,6 +460,40 @@ public class Reserva {
 			System.err.println("Error al comprobarDisponibilidadPorSocio con las reservas del socio: " + socioID);
 		}
 		return parser.comprobarDisponibilidadPorSocioAdmin(socioID, horaComienzo, horaFinal);
+	}
+
+	public void reservaNueva(String socioID, int instalacionID, int reservaID, Timestamp horaComienzo,
+			Timestamp horaFinal, Timestamp horaEntrada, Timestamp horaSalida, String modoPago, boolean reciboGenerado,
+			int precio) throws HeadlessException, SQLException {
+		// Nueva reserva
+		Reserva reserva = new Reserva(reservaID, socioID, instalacionID, horaComienzo, horaFinal, horaEntrada,
+				horaSalida, modoPago, reciboGenerado, precio);
+		// Comprobar reservas simultaneas
+		if (comprobarColisiones(reserva).size()!=0) {
+			VentanaResolverColisiones vrc = new VentanaResolverColisiones(null, comprobarColisiones(reserva), reserva);
+			vrc.setVisible(true);
+		} 
+		else {
+			boolean aux = addReservaABase(reserva);
+			if (aux) {
+				JOptionPane.showMessageDialog(null, "Reserva " + reservaID + " añadida a la base de datos.");
+			} else {
+				JOptionPane.showMessageDialog(null,
+						"Reserva " + reservaID + " no ha podido ser añadida a la base de datos.");
+			}
+		}
+	}
+	
+	public ArrayList<Reserva> comprobarColisiones(Reserva reserva) throws SQLException
+	{
+		parser.fillArrays();
+		ArrayList<Reserva> aux = new ArrayList<>();
+		for(Reserva each: parser.getReservas())
+		{
+			if (each.getHoraComienzo().before(reserva.getHoraFinal()) && reserva.getHoraComienzo().before(each.getHoraFinal()) && each.getInstalacionID() == reserva.getInstalacionID())
+				aux.add(each);
+		}
+		return aux;
 	}
 
 }

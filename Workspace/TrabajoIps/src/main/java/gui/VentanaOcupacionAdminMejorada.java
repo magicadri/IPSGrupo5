@@ -6,6 +6,7 @@ import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 
 import javax.swing.JButton;
 import javax.swing.JDialog;
@@ -21,6 +22,7 @@ import javax.swing.table.TableCellRenderer;
 import javax.swing.JComboBox;
 import com.toedter.calendar.JDateChooser;
 
+import db.Database;
 import db.Parser;
 import logic.Instalacion;
 import logic.Reserva;
@@ -52,7 +54,10 @@ public class VentanaOcupacionAdminMejorada extends JDialog {
 	private JPanel pnDescripcion;
 	private JTextArea taDescripcion;
 	private JTable table;
+	private VentanaOcupacionAdminMejorada ref = this;
 	private Parser parser;
+	private JButton btnReservar;
+	private JButton btnCancel;
 
 	/**
 	 * Launch the application.
@@ -102,6 +107,7 @@ public class VentanaOcupacionAdminMejorada extends JDialog {
 				buttonPane.add(btOk);
 				getRootPane().setDefaultButton(btOk);
 			}
+			buttonPane.add(getBtnCancel());
 		}
 	}
 
@@ -139,13 +145,14 @@ public class VentanaOcupacionAdminMejorada extends JDialog {
 			pnDatos.setBackground(Color.WHITE);
 			pnDatos.setBorder(new TitledBorder(UIManager.getBorder("TitledBorder.border"), "Datos",
 					TitledBorder.LEADING, TitledBorder.TOP, null, new Color(0, 0, 0)));
-			pnDatos.setBounds(10, 82, 250, 339);
+			pnDatos.setBounds(10, 82, 250, 383);
 			pnDatos.setLayout(null);
 			pnDatos.add(getLblInstalacion());
 			pnDatos.add(getLblFecha());
 			pnDatos.add(getCbInstalacion());
 			pnDatos.add(getDateChooser());
 			pnDatos.add(getBtComprobar());
+			pnDatos.add(getBtnReservar());
 		}
 		return pnDatos;
 	}
@@ -189,7 +196,7 @@ public class VentanaOcupacionAdminMejorada extends JDialog {
 					}
 				}
 			});
-			btComprobar.setBounds(121, 299, 115, 29);
+			btComprobar.setBounds(121, 327, 115, 29);
 		}
 		return btComprobar;
 	}
@@ -240,6 +247,11 @@ public class VentanaOcupacionAdminMejorada extends JDialog {
 					if(dateChooser.getDate()==null)
 						return comp;
 					
+					//Permite seleccionar mas de una linea
+					if(isCellSelected(row, col)){           
+			            comp.setBackground(Color.lightGray);
+			            return comp;             
+			        }
 					String value = String.valueOf(getModel().getValueAt(row, col));
 					try {
 						if (itsAdmin(value,row,col) == 0) {
@@ -445,9 +457,18 @@ public class VentanaOcupacionAdminMejorada extends JDialog {
 					if(getMes(new Timestamp(dateChooser.getDate().getTime())) == getMes(res.getHoraComienzo())){
 						if(getYear(new Timestamp(dateChooser.getDate().getTime())) == getYear(res.getHoraComienzo())){
 							if(getHora(res.getHoraFinal()) - getHora(res.getHoraComienzo()) > 1){
-								table.setValueAt(res.getReservaID(), getHora(res.getHoraComienzo())+1, 1);
-								table.setValueAt(res.getReservaID(), getHora(res.getHoraComienzo())+2, 1);
-							}else{
+								int duracion= getHora(res.getHoraFinal()) - getHora(res.getHoraComienzo());
+								for(int i=0;i<duracion; i++)
+								{
+								table.setValueAt(res.getReservaID(), getHora(res.getHoraComienzo())+i+1, 1);
+								}
+							}else if (getHora(res.getHoraFinal()) - getHora(res.getHoraComienzo())==0){
+								for(int i=0; i<24;i++)
+								{
+									table.setValueAt(res.getReservaID(), getHora(res.getHoraComienzo())+i+1, 1);
+								}
+							} else
+							{
 								table.setValueAt(res.getReservaID(), getHora(res.getHoraComienzo())+1, 1);
 							}
 						}
@@ -509,5 +530,103 @@ public class VentanaOcupacionAdminMejorada extends JDialog {
 					return 0;
 		}
 		return 1;
+	}
+	private JButton getBtnReservar() {
+		if (btnReservar == null) {
+			btnReservar = new JButton("Reservar");
+			btnReservar.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {	
+					int[] selecciones = table.getSelectedRows();
+					if (selecciones.length!=0){
+						try {
+							if(dateChooser.getDate()!=null)
+								hacerReserva(selecciones[0], selecciones[selecciones.length-1]);
+						} catch (SQLException e1) {
+							// TODO Auto-generated catch block
+							e1.printStackTrace();
+						}
+					} else
+						return;
+				}
+
+
+			});
+			btnReservar.setBounds(10, 327, 101, 29);
+		}
+		return btnReservar;
+	}
+	
+	@SuppressWarnings("deprecation")
+	private void hacerReserva(int horaComienzo, int horaComienzo2) throws SQLException{
+		// Actualizar datos de la base
+		parser.removeArrays();
+		parser.fillArrays();
+		
+		
+		Date date = dateChooser.getDate();
+		date.setHours(horaComienzo-1);
+		Date date2 = dateChooser.getDate();
+		date2.setHours(horaComienzo);
+		Date date3 = dateChooser.getDate();
+		date3.setHours(horaComienzo2);
+		date3.setMinutes(0);
+		date3.setSeconds(0);
+
+		// Crear y guardar la reserva
+		Reserva reserva = new Reserva();
+		if(horaComienzo2 != -1)
+		{
+			reserva.reservaNueva("admin", getInstalacionIDFromNombre((String) cbInstalacion.getSelectedItem()), parser.getNum().size()+1,
+				new Timestamp(date.getTime()), new Timestamp(date3.getTime()), null, null, "Efectivo",
+				false, getPrecioFromNombre((String) cbInstalacion.getSelectedItem()));
+			increasenum();
+		}
+		else
+		{
+			reserva.reservaNueva("admin", getInstalacionIDFromNombre((String) cbInstalacion.getSelectedItem()), parser.getNum().size()+1,
+					new Timestamp(date.getTime()), new Timestamp(date2.getTime()), null, null, "Efectivo",
+					false, getPrecioFromNombre((String) cbInstalacion.getSelectedItem()));
+			increasenum();
+		}
+		// Actualizar datos de la base
+		parser.removeArrays();
+		parser.fillArrays();
+		
+		// Rellenar la tabla		
+		limpiarTabla();
+		fillTabla();
+	}
+	
+	private int getPrecioFromNombre(String nombre) throws SQLException{ 
+		int id = getInstalacionIDFromNombre(nombre);
+		
+		// Pasarlos a la clase actual
+		ArrayList<Reserva> r = new ArrayList<Reserva>();
+		r = parser.getReservas();
+
+		// Ver si es admin
+		for (Reserva res : r) {
+			if (res.getInstalacionID() == id)
+				return res.getPrecio();
+		}
+		return -1;
+	}
+	
+	public void increasenum() throws SQLException
+	{
+		Database.getInstance().getC().createStatement().execute(
+				"INSERT INTO NUM Values(1);");
+	}
+	
+	private JButton getBtnCancel() {
+		if (btnCancel == null) {
+			btnCancel = new JButton("Cancel");
+			btnCancel.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent arg0) {
+					dispose();
+				}
+			});
+		}
+		return btnCancel;
 	}
 }

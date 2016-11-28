@@ -186,7 +186,7 @@ public class VentanaEliminarRecibo extends JDialog {
 		if (buscarSocio(textFieldSocio.getText()) && !sociosBuscados.contains(getTextFieldSocio().getText())) {
 			sociosBuscados.add(textFieldSocio.getText());
 			for (ObjetoCuota each : parser.getObjetosCuota()) {
-					if(!marcada.contains(each) && !each.getPagado())
+					if(!marcada.contains(each) && !each.getPagado() && textFieldSocio.getText().equals(each.getSocioID()))
 					{
 						row[0] = each.getSocioID();
 						row[1] = each.getFecha();
@@ -271,6 +271,6 @@ public class VentanaEliminarRecibo extends JDialog {
 	{
 		Calendar cal = Calendar.getInstance();
 		cal.setTimeInMillis(t.getTime());
-		return cal.get(Calendar.MONTH);
+		return cal.get(Calendar.MONTH)+1;
 	}
 }

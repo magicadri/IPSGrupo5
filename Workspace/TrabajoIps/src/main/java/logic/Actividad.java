@@ -6,13 +6,19 @@ public class Actividad {
 	private int instalacionID;
 	private int semanas;
 	private String actividad_nombre;
+	private int max_plazas;
 	
-	public Actividad(int actividadID,int instalacionID, String actividad_nombre, int semanas)
+	public Actividad(int actividadID,int instalacionID, String actividad_nombre, int semanas, int max_plazas)
 	{
 		this.actividadID=actividadID;
 		this.semanas=semanas;
 		this.instalacionID=instalacionID;
 		this.actividad_nombre=actividad_nombre;
+		this.max_plazas=max_plazas;
+	}
+
+	public int getMax_plazas() {
+		return max_plazas;
 	}
 
 	public int getInstalacionID() {

@@ -15,6 +15,7 @@ import javax.swing.JOptionPane;
 import logic.Actividad;
 import logic.Cuota;
 import logic.Instalacion;
+import logic.Num;
 import logic.ObjetoCuota;
 import logic.Recibo;
 import logic.Reserva;
@@ -33,9 +34,15 @@ public class Parser {
 	ArrayList<ReservaActividad> reservasactividad = new ArrayList<>();
 	ArrayList<SocioActividad> sociosactividad = new ArrayList<>();
 	ArrayList<SociosConFalta> sociosConFalta = new ArrayList<>();
-
+	ArrayList<Num> num = new ArrayList<>();
+	
 	public ArrayList<SocioActividad> getSociosactividad() {
 		return sociosactividad;
+	}
+	
+	public ArrayList<Num> getNum()
+	{
+		return num;
 	}
 
 	ArrayList<Cuota> cuotas = new ArrayList<>();
@@ -86,6 +93,7 @@ public class Parser {
 		sociosactividad.clear();
 		reservasactividad.clear();
 		sociosConFalta.clear();
+		num.clear();
 
 		Statement s = c.createStatement();
 		ResultSet rs = s.executeQuery("select * from SOCIO");
@@ -145,13 +153,19 @@ public class Parser {
 		rs = s.executeQuery("Select * From ACTIVIDAD");
 		while (rs.next()) {
 			actividades.add(new Actividad(rs.getInt("actividadID"), rs.getInt("instalacionID"),
-					rs.getString("actividad_nombre"), rs.getInt("semanas")));
+					rs.getString("actividad_nombre"), rs.getInt("semanas"), rs.getInt("max_plazas")));
 		}
 		
 		s = c.createStatement();
 		rs = s.executeQuery("Select * From SOCIOSCONFALTA");
 		while (rs.next()) {
 			sociosConFalta.add(new SociosConFalta(rs.getString("socioID") ,rs.getInt("actividadID")));
+		}
+		
+		s = c.createStatement();
+		rs = s.executeQuery("Select * From NUM");
+		while (rs.next()) {
+			num.add(new Num(rs.getInt("num")));
 		}
 	}
 

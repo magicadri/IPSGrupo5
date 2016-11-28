@@ -11,6 +11,7 @@ import java.awt.Font;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.sql.SQLException;
 //import com.toedter.calendar.JCalendar;
 //import com.toedter.calendar.JMonthChooser;
 import java.util.ArrayList;
@@ -107,8 +108,15 @@ public class VentanaPrincipal extends JFrame {
             btnAdmin.setBounds(397, 168, 308, 138);
             btnAdmin.addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent arg0) {
-                	VentanaAdminMenu vam = new VentanaAdminMenu();
-                	vam.setVisible(true);
+                	VentanaAdminMenu vam;
+					try {
+						vam = new VentanaAdminMenu();
+						vam.setVisible(true);
+					} catch (SQLException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+                	
 
                 }
             });

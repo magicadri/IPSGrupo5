@@ -570,13 +570,19 @@ public class VentanaCalendarMejorada extends JDialog {
 		// Crear y guardar la reserva
 		Reserva reserva = new Reserva();
 		if(horaComienzo2 != -1)
-			reserva.hacerReserva(getSocioID(), getInstalacionIDFromNombre((String) cbInstalacion.getSelectedItem()), parser.getReservas().size()+1,
+		{
+			reserva.hacerReserva(getSocioID(), getInstalacionIDFromNombre((String) cbInstalacion.getSelectedItem()), parser.getNum().size()+1,
 				new Timestamp(date.getTime()), new Timestamp(date3.getTime()), null, null, (String) modoPago,
 				false, getPrecioFromNombre((String) cbInstalacion.getSelectedItem()));
+			increasenum();
+		}
 		else
-			reserva.hacerReserva(getSocioID(), getInstalacionIDFromNombre((String) cbInstalacion.getSelectedItem()), parser.getReservas().size()+1,
+		{
+			reserva.hacerReserva(getSocioID(), getInstalacionIDFromNombre((String) cbInstalacion.getSelectedItem()), parser.getNum().size()+1,
 					new Timestamp(date.getTime()), new Timestamp(date2.getTime()), null, null, (String) modoPago,
 					false, getPrecioFromNombre((String) cbInstalacion.getSelectedItem()));
+			increasenum();
+		}
 		// Actualizar datos de la base
 		parser.removeArrays();
 		parser.fillArrays();
@@ -605,6 +611,12 @@ public class VentanaCalendarMejorada extends JDialog {
 		}
 		
 		return true;
+	}
+	
+	public void increasenum() throws SQLException
+	{
+		Database.getInstance().getC().createStatement().execute(
+				"INSERT INTO NUM Values(1);");
 	}
 		
 	/**

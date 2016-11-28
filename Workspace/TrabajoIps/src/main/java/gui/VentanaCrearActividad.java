@@ -37,6 +37,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import javax.swing.JComboBox;
 import javax.swing.JTextField;
+import javax.swing.JCheckBox;
 
 public class VentanaCrearActividad extends JFrame {
 
@@ -61,6 +62,8 @@ public class VentanaCrearActividad extends JFrame {
 	private JLabel lblNombre;
 	private VentanaCrearActividad ref = this;
 	private JTextField textFieldNombre;
+	private JSpinner spPlazas;
+	private JCheckBox chckbxPlazas;
 
 	/**
 	 * Launch the application.
@@ -83,7 +86,7 @@ public class VentanaCrearActividad extends JFrame {
 	 */
 	public VentanaCrearActividad() {
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setBounds(100, 100, 450, 300);
+		setBounds(100, 100, 479, 333);
 		parser = new Parser();
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
@@ -173,16 +176,27 @@ public class VentanaCrearActividad extends JFrame {
 			gbc_lblInstalacion.gridx = 2;
 			gbc_lblInstalacion.gridy = 4;
 			panelSpinners.add(getLblInstalacion(), gbc_lblInstalacion);
+			GridBagConstraints gbc_chckbxPlazas = new GridBagConstraints();
+			gbc_chckbxPlazas.anchor = GridBagConstraints.WEST;
+			gbc_chckbxPlazas.insets = new Insets(0, 0, 5, 5);
+			gbc_chckbxPlazas.gridx = 2;
+			gbc_chckbxPlazas.gridy = 5;
+			panelSpinners.add(getChckbxPlazas(), gbc_chckbxPlazas);
+			GridBagConstraints gbc_spPlazas = new GridBagConstraints();
+			gbc_spPlazas.insets = new Insets(0, 0, 5, 0);
+			gbc_spPlazas.gridx = 4;
+			gbc_spPlazas.gridy = 5;
+			panelSpinners.add(getSpPlazas(), gbc_spPlazas);
 			GridBagConstraints gbc_lblNombre = new GridBagConstraints();
 			gbc_lblNombre.anchor = GridBagConstraints.WEST;
 			gbc_lblNombre.insets = new Insets(0, 0, 0, 5);
 			gbc_lblNombre.gridx = 2;
-			gbc_lblNombre.gridy = 5;
+			gbc_lblNombre.gridy = 6;
 			panelSpinners.add(getLblNombre(), gbc_lblNombre);
 			GridBagConstraints gbc_textFieldNombre = new GridBagConstraints();
 			gbc_textFieldNombre.fill = GridBagConstraints.HORIZONTAL;
 			gbc_textFieldNombre.gridx = 4;
-			gbc_textFieldNombre.gridy = 5;
+			gbc_textFieldNombre.gridy = 6;
 			panelSpinners.add(getTextFieldNombre(), gbc_textFieldNombre);
 		}
 		return panelSpinners;
@@ -315,14 +329,23 @@ public class VentanaCrearActividad extends JFrame {
 	
 	private void crearActividad() throws SQLException
 	{
+		parser.fillArrays();
 		int res=0;
-		Database.getInstance().getC().createStatement().execute("INSERT INTO Actividad (actividadID, instalacionID, actividad_nombre, semanas) VALUES (" 
-				+ parser.getActividades().size()+1 + "," + comboBoxInstalacion.getSelectedIndex() + ",'" + textFieldNombre.getText() + "'," + (int) spSemanas.getValue()  + ");");
+		int id = parser.getActividades().size()+1;
+		if(spPlazas.isEnabled())
+		{
+		Database.getInstance().getC().createStatement().execute("INSERT INTO Actividad (actividadID, instalacionID, actividad_nombre, semanas, max_plazas) VALUES (" 
+				+ id + "," + comboBoxInstalacion.getSelectedIndex() + ",'" + textFieldNombre.getText() + "'," + (int) spSemanas.getValue()  + "," + (int) spPlazas.getValue() +  ");");
+		} else
+		{
+			Database.getInstance().getC().createStatement().execute("INSERT INTO Actividad (actividadID, instalacionID, actividad_nombre, semanas, max_plazas) VALUES (" 
+					+ id + "," + comboBoxInstalacion.getSelectedIndex() + ",'" + textFieldNombre.getText() + "'," + (int) spSemanas.getValue()  + "," + 0 +  ");");
+		}
 		for(int i=0;i<(int)spSemanas.getValue()*7;i=i+7)
 		{
-			res = hacerReserva(aumentarFecha(dateChooser.getDate(),i));
+			res = hacerReservaActividad(aumentarFecha(dateChooser.getDate(),i));
 			Database.getInstance().getC().createStatement().execute("INSERT INTO ReservaActividad (actividadID, reservaID) VALUES (" 
-					+ parser.getActividades().size()+1 + "," + res + ");");
+					+ id + "," + res + ");");
 		}
 		
 		
@@ -369,6 +392,36 @@ private int hacerReserva(Date fecha) throws SQLException{
 	return reserva.getReservaID();
 	
 }
+
+@SuppressWarnings("deprecation")
+private int hacerReservaActividad(Date fecha) throws SQLException{
+	Timestamp tt = new Timestamp(fecha.getTime());
+	tt.setHours((int)spComienzo.getValue());
+	Timestamp horaComienzo = tt;
+	Timestamp hf = new Timestamp(fecha.getTime());
+	hf.setHours((int)spFinal.getValue());
+	Timestamp horaFinal = hf;
+	try {
+		parser.fillArrays();
+	} catch (SQLException e) {
+		e.printStackTrace();
+	} 
+	
+	int id = parser.getReservas().size()+1;
+	
+	int instalacionID = comboBoxInstalacion.getSelectedIndex();
+	
+	Timestamp nulo = null;
+	
+	Reserva reserva = new Reserva(id, "admin", instalacionID, horaComienzo, horaFinal, null, null, "Cuota", false, 0);
+	
+	reserva.reservaNueva("admin", instalacionID, id , horaComienzo, horaFinal, null, null, "Cuota" ,false, 0);
+	parser.fillArrays();
+	
+	return reserva.getReservaID();
+	
+}
+
 	private JLabel getLblNombre() {
 		if (lblNombre == null) {
 			lblNombre = new JLabel("Nombre de la actividad:");
@@ -381,5 +434,27 @@ private int hacerReserva(Date fecha) throws SQLException{
 			textFieldNombre.setColumns(10);
 		}
 		return textFieldNombre;
+	}
+	private JSpinner getSpPlazas() {
+		if (spPlazas == null) {
+			spPlazas = new JSpinner();
+			spPlazas.setEnabled(false);
+			spPlazas.setModel(new SpinnerNumberModel(new Integer(1), new Integer(1), null, new Integer(1)));
+		}
+		return spPlazas;
+	}
+	private JCheckBox getChckbxPlazas() {
+		if (chckbxPlazas == null) {
+			chckbxPlazas = new JCheckBox("L\u00EDmite de plazas");
+			chckbxPlazas.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					if(spPlazas.isEnabled())
+						spPlazas.setEnabled(false);
+					else
+						spPlazas.setEnabled(true);
+				}
+			});
+		}
+		return chckbxPlazas;
 	}
 }
